@@ -4,6 +4,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from dealgraph.core.errors import AppError
 from dealgraph.core.logging import configure_logging
 from dealgraph.domain.models import Candidate
 from dealgraph.pipeline.service import Pipeline
@@ -138,6 +139,20 @@ def test_offline_pipeline_never_uses_network(tmp_path: Path, monkeypatch) -> Non
         "pricing": None,
         "evidence_ids": [],
     }
+
+
+def test_offline_pipeline_requires_local_source_file(tmp_path: Path) -> None:
+    def fail_on_request(request: httpx.Request) -> httpx.Response:
+        raise AssertionError(f"offline mode attempted network: {request.url}")
+
+    with pytest.raises(AppError, match="source file"):
+        Pipeline(client=httpx.Client(transport=httpx.MockTransport(fail_on_request))).run(
+            topic="AI agents",
+            batch=None,
+            limit=1,
+            output=tmp_path,
+            offline=True,
+        )
 
 
 def test_verbose_pipeline_logs_unexpected_candidate_traceback(
