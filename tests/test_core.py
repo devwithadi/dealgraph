@@ -4,18 +4,22 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.analysis import analyze, calculate_score, evidence_confidence, recommendation_for, validate_citations
-from app.logging import bind_request_id
+from dealgraph.analysis.scoring import (
+    calculate_score,
+    evidence_confidence,
+    recommendation_for,
+    validate_citations,
+)
+from dealgraph.analysis.service import analyze
+from dealgraph.core.logging import bind_request_id
+from dealgraph.domain.enums import AnalysisMode, Recommendation
+from dealgraph.domain.models import Candidate, DimensionScore, Evidence
 from pydantic import ValidationError
 
-from app.models import Candidate, DimensionScore, Evidence
-from app.sources import (
-    SOURCE_REGISTRY,
-    SourcePolicyError,
-    hn_evidence,
-    load_candidates,
-    validate_public_url,
-)
+from dealgraph.sourcing.candidates import load_candidates
+from dealgraph.sourcing.evidence import hn_evidence
+from dealgraph.sourcing.policy import SourcePolicyError, validate_public_url
+from dealgraph.sourcing.registry import SOURCE_REGISTRY
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -24,6 +28,11 @@ FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
 def test_yc_filter_normalizes_batch_and_topic() -> None:
     candidates = load_candidates(FIXTURE, topic="AI agents for SMBs", batch="W25", limit=10)
     assert [candidate.slug for candidate in candidates] == ["agentdesk"]
+
+
+def test_closed_business_states_are_string_enums() -> None:
+    assert Recommendation.TAKE_A_MEETING.value == "Take a meeting"
+    assert AnalysisMode.DETERMINISTIC_FALLBACK.value == "deterministic_fallback"
 
 
 @pytest.mark.parametrize("slug", ["../outside", "/tmp/outside", "company/name"])

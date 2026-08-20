@@ -2,8 +2,8 @@ import logging
 
 import pytest
 
-from app.errors import AppError
-from app.logging import RequestIdFilter, bind_request_id, request_headers
+from dealgraph.core.errors import AppError
+from dealgraph.core.logging import RequestIdFilter, bind_request_id, request_headers
 
 
 def test_request_context_is_shared_by_logs_and_http_headers() -> None:
