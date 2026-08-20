@@ -2,12 +2,23 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dealgraph.cli.main import main
+from dealgraph.cli.main import build_parser, main
 from dealgraph.core.errors import AppError
+from dealgraph.domain.enums import AIProvider
 from dealgraph.domain.models import RunSummary
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
+
+
+def test_cli_defaults_to_bedrock_and_allows_openai() -> None:
+    default = build_parser().parse_args(["run", "--topic", "AI"])
+    openai = build_parser().parse_args(
+        ["run", "--topic", "AI", "--provider", "openai"]
+    )
+
+    assert default.provider is AIProvider.BEDROCK
+    assert openai.provider is AIProvider.OPENAI
 
 
 def test_cli_offline_replay_creates_memos(tmp_path: Path) -> None:

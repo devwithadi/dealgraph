@@ -12,7 +12,7 @@ from dealgraph.analysis.scoring import (
 )
 from dealgraph.analysis.service import analyze
 from dealgraph.core.logging import bind_request_id
-from dealgraph.domain.enums import AnalysisMode, Recommendation
+from dealgraph.domain.enums import AIProvider, AnalysisMode, Recommendation
 from dealgraph.domain.models import Candidate, DimensionScore, Evidence
 from pydantic import ValidationError
 
@@ -33,6 +33,7 @@ def test_yc_filter_normalizes_batch_and_topic() -> None:
 def test_closed_business_states_are_string_enums() -> None:
     assert Recommendation.TAKE_A_MEETING.value == "Take a meeting"
     assert AnalysisMode.DETERMINISTIC_FALLBACK.value == "deterministic_fallback"
+    assert AIProvider.BEDROCK.value == "bedrock"
 
 
 @pytest.mark.parametrize("slug", ["../outside", "/tmp/outside", "company/name"])
@@ -178,6 +179,7 @@ def test_hn_evidence_prefers_matching_candidate_domain() -> None:
 
 def test_openai_request_keeps_run_request_id(monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://gateway.example/custom/v1/")
     bind_request_id("req-openai")
     candidate = Candidate(
         slug="agentdesk",
@@ -200,6 +202,7 @@ def test_openai_request_keeps_run_request_id(monkeypatch) -> None:
     ]
 
     def handler(request: httpx.Request) -> httpx.Response:
+        assert str(request.url) == "https://gateway.example/custom/v1/chat/completions"
         assert request.headers["x-kong-request-id"] == "req-openai"
         assert request.headers["authorization"] == "Bearer test-key"
         narrative = {
@@ -219,6 +222,72 @@ def test_openai_request_keeps_run_request_id(monkeypatch) -> None:
             request=request,
         )
 
-    result = analyze(candidate, evidence, httpx.Client(transport=httpx.MockTransport(handler)))
+    result = analyze(
+        candidate,
+        evidence,
+        httpx.Client(transport=httpx.MockTransport(handler)),
+        provider=AIProvider.OPENAI,
+    )
 
     assert result.analysis_mode == "openai"
+
+
+def test_bedrock_converse_uses_model_region_and_request_metadata(monkeypatch) -> None:
+    monkeypatch.setenv("BEDROCK_MODEL_ID", "amazon.nova-micro-v1:0")
+    bind_request_id("req-bedrock")
+    candidate = Candidate(
+        slug="agentdesk",
+        name="AgentDesk",
+        website="https://agentdesk.example",
+        one_liner="AI support",
+        source_url="https://www.ycombinator.com/companies/agentdesk",
+    )
+    evidence = [
+        Evidence(
+            id="ev-001",
+            claim="Product",
+            excerpt="AI support product",
+            source_url=candidate.source_url,
+            source_title="YC",
+            source_type="yc_directory",
+            trust_tier="curated_directory",
+            verification="third_party",
+        )
+    ]
+    calls: list[dict] = []
+
+    class BedrockClient:
+        def converse(self, **kwargs):
+            calls.append(kwargs)
+            narrative = {
+                "summary": "Summary",
+                "team": "Unknown",
+                "product": "AI support",
+                "market": "Unknown",
+                "why_now": "Unknown",
+                "risks": ["Unknown traction"],
+                "open_questions": ["What is retention?"],
+                "changes_mind": ["Verified retention"],
+                "citations": ["ev-001"],
+            }
+            return {
+                "output": {
+                    "message": {"content": [{"text": json.dumps(narrative)}]}
+                }
+            }
+
+    result = analyze(
+        candidate,
+        evidence,
+        httpx.Client(),
+        provider=AIProvider.BEDROCK,
+        bedrock_client=BedrockClient(),
+    )
+
+    assert result.analysis_mode == "bedrock"
+    assert calls[0]["modelId"] == "amazon.nova-micro-v1:0"
+    assert calls[0]["requestMetadata"] == {
+        "application": "dealgraph",
+        "request_id": "req-bedrock",
+    }
+    assert calls[0]["messages"][0]["role"] == "user"
