@@ -15,6 +15,8 @@ from urllib.robotparser import RobotFileParser
 
 import httpx
 
+from app.errors import AppError
+from app.logging import USER_AGENT, request_headers
 from app.models import Candidate, Evidence
 
 YC_URL = "https://yc-oss.github.io/api/companies/all.json"
@@ -26,11 +28,10 @@ SOURCE_REGISTRY = {
     "pitchbook": {"access": "licensed_api_only", "trust": "licensed_vendor", "enabled": False},
 }
 BLOCKED_HOSTS = {"pitchbook.com", "crunchbase.com", "linkedin.com"}
-USER_AGENT = "IDA-case-study/1.0 (public research; contact in repository)"
 MAX_RESPONSE_BYTES = 2_000_000
 
 
-class SourcePolicyError(ValueError):
+class SourcePolicyError(AppError, ValueError):
     pass
 
 
@@ -199,7 +200,7 @@ class SafeFetcher:
         if origin not in self._robots:
             robots = RobotFileParser(f"{origin}/robots.txt")
             try:
-                response = self.client.get(robots.url, headers={"user-agent": USER_AGENT}, timeout=5)
+                response = self.client.get(robots.url, headers=request_headers(), timeout=5)
                 robots.parse(response.text.splitlines() if response.status_code == 200 else [])
             except httpx.HTTPError:
                 robots.parse([])
@@ -213,7 +214,7 @@ class SafeFetcher:
                 raise SourcePolicyError(f"robots.txt disallows {current}")
             response = self.client.get(
                 current,
-                headers={"user-agent": USER_AGENT},
+                headers=request_headers(),
                 timeout=10,
                 follow_redirects=False,
             )
@@ -301,7 +302,7 @@ def hn_evidence(candidate: Candidate, client: httpx.Client, evidence_id: int) ->
     response = client.get(
         HN_URL,
         params={"query": domain or candidate.name, "tags": "story", "hitsPerPage": 5},
-        headers={"user-agent": USER_AGENT},
+        headers=request_headers(),
         timeout=10,
     )
     response.raise_for_status()

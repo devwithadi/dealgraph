@@ -30,3 +30,9 @@ This is a factual work log, not a retrospective written to sound impressive.
 - Final local result: 20 tests, 87%+ coverage, compatible dependencies, and a live 10-company run with 10 successes.
 
 AI produced the implementation and tests. The scoring thesis, trust policy, and final memo quality should still be challenged by a human investment partner; deterministic fallback scoring is intentionally transparent rather than presented as investment truth.
+
+## 2026-08-21 — observability and CLI reliability
+
+- `ecba13b`: RED — defined concise CLI, centralized error, and request propagation behavior.
+- `550094e`: RED — added request-ID injection and verbose lifecycle requirements.
+- Added standard-library logging and error modules, one validated request ID across logs/artifacts/outbound requests, concise default output, JSON/verbose modes, connection retries, pool limits, and safe source-load failures.

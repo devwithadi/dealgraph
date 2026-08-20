@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from datetime import datetime, timezone
 
 import httpx
 
+from app.logging import request_headers
 from app.models import Analysis, Candidate, DimensionScore, Evidence, Financials
+
+LOGGER = logging.getLogger("ida.analysis")
 
 THESIS = (
     "Pre-seed and seed B2B AI companies that replace a frequent, expensive SMB "
@@ -160,7 +164,7 @@ Evidence:\n<evidence>{evidence_json}</evidence>"""
     try:
         response = client.post(
             "https://api.openai.com/v1/chat/completions",
-            headers={"authorization": f"Bearer {key}"},
+            headers=request_headers({"Authorization": f"Bearer {key}"}),
             json={
                 "model": os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
                 "temperature": 0.1,
@@ -180,14 +184,23 @@ Evidence:\n<evidence>{evidence_json}</evidence>"""
             return None
         return {**result, "analysis_mode": "openai"}
     except (httpx.HTTPError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        LOGGER.warning("OpenAI narrative unavailable; using deterministic fallback")
         return None
 
 
-def analyze(candidate: Candidate, evidence: list[Evidence], client: httpx.Client) -> Analysis:
+def analyze(
+    candidate: Candidate,
+    evidence: list[Evidence],
+    client: httpx.Client,
+    *,
+    allow_openai: bool = True,
+) -> Analysis:
     dimensions = _dimensions(candidate, evidence)
     score = calculate_score(dimensions)
     confidence = evidence_confidence(evidence)
-    narrative = _openai_narrative(candidate, evidence, client) or _fallback(candidate, evidence)
+    narrative = (
+        _openai_narrative(candidate, evidence, client) if allow_openai else None
+    ) or _fallback(candidate, evidence)
     return Analysis(
         company=candidate.name,
         thesis=THESIS,
