@@ -45,3 +45,9 @@ AI produced the implementation and tests. The scoring thesis, trust policy, and 
 - `d4cc528`: GREEN — moved the working application into `core`, `domain`, `sourcing`, `analysis`, `reporting`, `pipeline`, and `cli` packages without changing external behavior.
 - `24c083a`: RED — proved offline mode without a local source could still attempt YC network access.
 - `de7dacb`: GREEN/refactor — split sourcing into registry/candidates/policy/evidence and analysis into scoring/service, then made offline mode fail before all network access. Final verification: 38 tests, 90.62% coverage, and successful wheel/source builds.
+
+## 2026-08-21 — analysis providers
+
+- Verified the current Bedrock Converse request/response contract against official AWS documentation before implementation.
+- `7bafa70`: RED — tests defined Bedrock-default selection, Converse metadata, manifest provenance, and a configurable OpenAI base URL.
+- `227622a`: GREEN — added direct Bedrock/OpenAI/deterministic dispatch, Bedrock request metadata, HTTPS OpenAI base URL validation, and Boto3 support without provider factories.

@@ -17,9 +17,26 @@ Memos: /absolute/path/data/runs/latest/memos
 Request ID: req-5ae470bb25d84a87
 ```
 
-Open `data/runs/latest/memos/` for the finished memos. No API key is required. If `OPENAI_API_KEY` is set, OpenAI writes the narrative sections; otherwise the complete run uses the labelled deterministic fallback.
+Open `data/runs/latest/memos/` for the finished memos. Bedrock is the default narrative provider and uses Boto3's standard AWS credential chain. If the selected provider is unavailable, the run uses an explicitly labelled deterministic fallback.
 
 ## Common commands
+
+Choose the narrative provider:
+
+```bash
+# Default: Amazon Bedrock Converse API
+uv run dealgraph run --topic "AI agents" --provider bedrock
+
+# OpenAI or an HTTPS OpenAI-compatible gateway
+OPENAI_API_KEY=... uv run dealgraph run --topic "AI agents" --provider openai
+OPENAI_BASE_URL=https://gateway.example/v1 OPENAI_API_KEY=... \
+  uv run dealgraph run --topic "AI agents" --provider openai
+
+# No model API
+uv run dealgraph run --topic "AI agents" --provider deterministic
+```
+
+Bedrock uses `AWS_REGION` (default `us-east-1`) and `BEDROCK_MODEL_ID` (default `amazon.nova-micro-v1:0`). OpenAI uses `OPENAI_MODEL` and `OPENAI_BASE_URL` (default `https://api.openai.com/v1`). Custom OpenAI gateways must resolve to a public address and use HTTPS port 443. Copy `.env.example` for the complete configuration list; do not commit credentials.
 
 Limit the search to a YC batch:
 
@@ -81,11 +98,11 @@ data/runs/latest/
 └── memos/<company>.md
 ```
 
-`manifest.json` records the sources, analysis mode, successes, failures, evidence gaps, and request ID. A failure enriching one company does not stop the rest of the batch.
+`manifest.json` records the selected provider, actual analysis mode, model, sources, successes, failures, evidence gaps, and request ID. A failure enriching one company does not stop the rest of the batch.
 
 ## Logging and request tracking
 
-One request ID is generated per run and attached to every outbound call as `X-Kong-Request-ID`, including YC, robots.txt, company pages, Hacker News, and OpenAI. Use `--request-id <trusted-id>` to continue an upstream trace. IDs are restricted to 1–128 safe characters to prevent header and log injection.
+One request ID is generated per run. HTTP calls receive it as `X-Kong-Request-ID`; Bedrock Converse calls receive it as `requestMetadata.request_id` for invocation-log correlation. Use `--request-id <trusted-id>` to continue an upstream trace. IDs are restricted to 1–128 safe characters to prevent header and log injection.
 
 Default mode prints only the result, memo directory, and request ID. `--verbose` adds run and candidate lifecycle logs without response bodies, prompts, authorization headers, or API keys. Expected failures return a concise message and exit code; unexpected tracebacks appear only in verbose mode.
 
