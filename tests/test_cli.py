@@ -109,3 +109,22 @@ def test_verbose_cli_logs_lifecycle_to_stderr(tmp_path: Path, capsys) -> None:
     assert exit_code == 0
     assert "INFO [req-readable] run started" in captured.err
     assert "INFO [req-readable] run completed candidates=1 succeeded=1 failed=0" in captured.err
+
+
+def test_missing_source_file_uses_central_error_boundary(tmp_path: Path, capsys) -> None:
+    exit_code = main(
+        [
+            "run",
+            "--topic",
+            "AI agents",
+            "--source-file",
+            str(tmp_path / "missing.json"),
+            "--request-id",
+            "req-missing",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert captured.err == f"Error [req-missing]: source file not found: {tmp_path / 'missing.json'}\n"
