@@ -46,6 +46,15 @@ class DimensionScore(FrozenModel):
     evidence_ids: list[str] = Field(default_factory=list)
 
 
+class Financials(FrozenModel):
+    revenue: str | None = None
+    burn: str | None = None
+    runway: str | None = None
+    funding: str | None = None
+    pricing: str | None = None
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
 class Analysis(FrozenModel):
     company: str
     thesis: str
@@ -53,6 +62,8 @@ class Analysis(FrozenModel):
     team: str
     product: str
     market: str
+    why_now: str
+    financials: Financials
     risks: list[str]
     open_questions: list[str]
     changes_mind: list[str]

@@ -15,6 +15,10 @@ def render_memo(candidate: Candidate, analysis: Analysis, evidence: list[Evidenc
         f"- [{item.id}] [{item.source_title}]({item.source_url}) — {item.verification}"
         for item in evidence
     )
+    financials = "\n".join(
+        f"- **{name.title()}:** {value or 'Unknown'}"
+        for name, value in analysis.financials.model_dump(exclude={"evidence_ids"}).items()
+    )
     return f"""# {candidate.name} — Investment Memo
 
 **Decision:** {analysis.recommendation}
@@ -37,6 +41,12 @@ def render_memo(candidate: Candidate, analysis: Analysis, evidence: list[Evidenc
 ## Market and why now
 
 {analysis.market}
+
+{analysis.why_now}
+
+## Public financial signals
+
+{financials}
 
 ## Thesis score
 
