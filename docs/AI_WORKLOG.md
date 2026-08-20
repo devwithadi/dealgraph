@@ -43,4 +43,5 @@ AI produced the implementation and tests. The scoring thesis, trust policy, and 
 - Applied the requested ECC TDD flow and Ponytail constraint: domain boundaries without repositories, factories, interfaces, or new dependencies.
 - `18bd65d`: RED — tests defined the `src/dealgraph` package, domain imports, central enum values, and agent-workflow contract.
 - `d4cc528`: GREEN — moved the working application into `core`, `domain`, `sourcing`, `analysis`, `reporting`, `pipeline`, and `cli` packages without changing external behavior.
-- Split the two mixed-responsibility hotspots: sourcing into registry/candidates/policy/evidence and analysis into scoring/service.
+- `24c083a`: RED — proved offline mode without a local source could still attempt YC network access.
+- `de7dacb`: GREEN/refactor — split sourcing into registry/candidates/policy/evidence and analysis into scoring/service, then made offline mode fail before all network access. Final verification: 38 tests, 90.62% coverage, and successful wheel/source builds.
