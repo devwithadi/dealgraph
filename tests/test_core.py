@@ -1,10 +1,17 @@
 from pathlib import Path
 
+import httpx
 import pytest
 
 from app.analysis import calculate_score, evidence_confidence, recommendation_for, validate_citations
-from app.models import DimensionScore, Evidence
-from app.sources import SOURCE_REGISTRY, SourcePolicyError, load_candidates, validate_public_url
+from app.models import Candidate, DimensionScore, Evidence
+from app.sources import (
+    SOURCE_REGISTRY,
+    SourcePolicyError,
+    hn_evidence,
+    load_candidates,
+    validate_public_url,
+)
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -101,3 +108,44 @@ def test_confidence_counts_independent_sources_not_page_count() -> None:
     independent = first_party_only + [item("ev-006", "hacker_news")]
     assert evidence_confidence(first_party_only) == 0.55
     assert evidence_confidence(independent) == 0.7
+
+
+def test_hn_evidence_prefers_matching_candidate_domain() -> None:
+    candidate = Candidate(
+        slug="agentdesk",
+        name="AgentDesk",
+        website="https://agentdesk.example",
+        one_liner="AI support",
+        source_url="https://www.ycombinator.com/companies/agentdesk",
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "hn.algolia.com"
+        return httpx.Response(
+            200,
+            json={
+                "hits": [
+                    {
+                        "objectID": "99",
+                        "title": "Launch roundup mentions AgentDesk",
+                        "url": "https://news.example/roundup",
+                        "points": 500,
+                        "num_comments": 100,
+                        "created_at": "2025-02-01T00:00:00Z",
+                    },
+                    {
+                        "objectID": "42",
+                        "title": "Show HN: AgentDesk",
+                        "url": "https://agentdesk.example",
+                        "points": 83,
+                        "num_comments": 21,
+                        "created_at": "2025-02-01T00:00:00Z",
+                    },
+                ]
+            },
+            request=request,
+        )
+
+    evidence = hn_evidence(candidate, httpx.Client(transport=httpx.MockTransport(handler)), 7)
+    assert evidence[0].source_url == "https://news.ycombinator.com/item?id=42"
+    assert "83 points" in evidence[0].claim

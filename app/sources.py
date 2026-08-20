@@ -87,6 +87,10 @@ def _topic_tokens(topic: str) -> set[str]:
     }
 
 
+def _normalized_host(value: str) -> str:
+    return (urlsplit(value).hostname or "").lower().removeprefix("www.")
+
+
 def _candidate(record: dict) -> Candidate:
     launched = record.get("launched_at")
     return Candidate(
@@ -285,10 +289,18 @@ def website_evidence(candidate: Candidate, fetcher: SafeFetcher, start: int) -> 
 
 
 def hn_evidence(candidate: Candidate, client: httpx.Client, evidence_id: int) -> list[Evidence]:
-    domain = urlsplit(candidate.website).hostname or candidate.name
+    domain = _normalized_host(candidate.website)
+    company_name = candidate.name.lower()
+
+    def matches_candidate(hit: dict) -> bool:
+        target = _normalized_host(str(hit.get("url") or hit.get("story_url") or ""))
+        if domain and target:
+            return target == domain or target.endswith(f".{domain}")
+        return company_name in str(hit.get("title") or "").lower()
+
     response = client.get(
         HN_URL,
-        params={"query": domain, "tags": "story", "hitsPerPage": 5},
+        params={"query": domain or candidate.name, "tags": "story", "hitsPerPage": 5},
         headers={"user-agent": USER_AGENT},
         timeout=10,
     )
@@ -296,7 +308,13 @@ def hn_evidence(candidate: Candidate, client: httpx.Client, evidence_id: int) ->
     hits = response.json().get("hits", [])
     if not hits:
         return []
-    hit = max(hits, key=lambda item: (item.get("points") or 0) + (item.get("num_comments") or 0))
+    matching_hits = [item for item in hits if matches_candidate(item)]
+    if not matching_hits:
+        return []
+    hit = max(
+        matching_hits,
+        key=lambda item: (item.get("points") or 0) + (item.get("num_comments") or 0),
+    )
     points, comments = hit.get("points") or 0, hit.get("num_comments") or 0
     return [
         Evidence(
