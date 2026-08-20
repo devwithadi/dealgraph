@@ -13,7 +13,7 @@ class AppError(Exception):
 
 
 def report_cli_error(error: Exception, request_id: str) -> int:
-    logger = logging.getLogger("ida")
+    logger = logging.getLogger("dealgraph")
     if isinstance(error, AppError):
         logger.info("run failed: %s", error)
         message, exit_code = str(error), error.exit_code

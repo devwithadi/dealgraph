@@ -49,4 +49,4 @@ Python 3.10+ and `uv` are expected. Keep total coverage at or above 80%.
 - Update `README.md` when CLI commands or observable behavior change.
 - Before handoff, run tests with coverage, `uv pip check`, `git diff --check`, and inspect `git status`.
 
-The primary command is `dealgraph`; `ida` remains a compatibility alias for existing scripts.
+The primary command is `dealgraph`; `ida` remains an execution alias for existing scripts and displays the primary DealGraph help identity.

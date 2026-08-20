@@ -28,7 +28,7 @@ from app.sources import (
     yc_evidence,
 )
 
-LOGGER = logging.getLogger("ida.pipeline")
+LOGGER = logging.getLogger("dealgraph.pipeline")
 
 
 def _write_json(path: Path, value: object) -> None:
