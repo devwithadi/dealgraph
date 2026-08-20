@@ -6,6 +6,7 @@ from pathlib import Path
 
 from dealgraph.core.errors import AppError, report_cli_error
 from dealgraph.core.logging import bind_request_id, configure_logging, new_request_id
+from dealgraph.domain.enums import AIProvider
 from dealgraph.pipeline.service import Pipeline
 
 
@@ -25,6 +26,13 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--json", action="store_true", help="print the machine-readable run summary")
     run.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
     run.add_argument("--request-id", help="reuse an upstream request ID for end-to-end tracking")
+    run.add_argument(
+        "--provider",
+        type=AIProvider,
+        choices=list(AIProvider),
+        default=AIProvider.BEDROCK,
+        help="narrative provider (default: bedrock)",
+    )
     return parser
 
 
@@ -45,6 +53,7 @@ def main(argv: list[str] | None = None) -> int:
             source_file=args.source_file,
             offline=args.offline,
             request_id=request_id,
+            provider=args.provider,
         )
     except Exception as error:
         return report_cli_error(error, request_id)

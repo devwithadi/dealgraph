@@ -11,10 +11,11 @@ from typing import Callable
 
 import httpx
 
+from dealgraph.analysis.providers import model_for
 from dealgraph.analysis.service import analyze
 from dealgraph.core.errors import AppError
 from dealgraph.core.logging import bind_request_id, request_headers
-from dealgraph.domain.enums import AnalysisMode
+from dealgraph.domain.enums import AIProvider, AnalysisMode
 from dealgraph.domain.models import RunSummary
 from dealgraph.reporting.memo import render_memo
 from dealgraph.sourcing.candidates import filter_candidates, load_candidates
@@ -34,6 +35,7 @@ class Pipeline:
         self,
         client: httpx.Client | None = None,
         resolver: Callable[[str], list[str]] | None = None,
+        bedrock_client=None,
     ) -> None:
         self.client = client or httpx.Client(
             timeout=httpx.Timeout(10, connect=5),
@@ -41,6 +43,7 @@ class Pipeline:
             transport=httpx.HTTPTransport(retries=2),
         )
         self.resolver = resolver
+        self.bedrock_client = bedrock_client
 
     def run(
         self,
@@ -52,6 +55,7 @@ class Pipeline:
         source_file: Path | None = None,
         offline: bool = False,
         request_id: str | None = None,
+        provider: AIProvider = AIProvider.BEDROCK,
     ) -> RunSummary:
         request_id = bind_request_id(request_id)
         LOGGER.info("run started limit=%d offline=%s", limit, offline)
@@ -59,6 +63,7 @@ class Pipeline:
             raise AppError("topic cannot be empty", exit_code=2)
         if offline and source_file is None:
             raise AppError("offline mode requires a local source file", exit_code=2)
+        effective_provider = AIProvider.DETERMINISTIC if offline else provider
         output = output.resolve()
         for name in ("evidence", "analyses", "memos"):
             (output / name).mkdir(parents=True, exist_ok=True)
@@ -97,7 +102,13 @@ class Pipeline:
                     except (httpx.HTTPError, KeyError, TypeError, ValueError) as error:
                         LOGGER.warning("candidate enrichment failed stage=hacker_news candidate=%r", candidate.slug)
                         gaps.append({"candidate": candidate.slug, "stage": "hacker_news", "error": str(error)})
-                result = analyze(candidate, evidence, self.client, allow_openai=not offline)
+                result = analyze(
+                    candidate,
+                    evidence,
+                    self.client,
+                    provider=effective_provider,
+                    bedrock_client=self.bedrock_client,
+                )
                 modes.add(result.analysis_mode)
                 _write_json(output / "evidence" / f"{candidate.slug}.json", [item.model_dump(mode="json") for item in evidence])
                 _write_json(output / "analyses" / f"{candidate.slug}.json", result.model_dump(mode="json"))
@@ -114,7 +125,9 @@ class Pipeline:
 
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         analysis_mode = (
-            AnalysisMode.OPENAI
+            AnalysisMode.BEDROCK
+            if AnalysisMode.BEDROCK in modes
+            else AnalysisMode.OPENAI
             if AnalysisMode.OPENAI in modes
             else AnalysisMode.DETERMINISTIC_FALLBACK
         )
@@ -128,8 +141,13 @@ class Pipeline:
                 "batch": batch,
                 "candidate_source": source,
                 "evidence_sources": [YC_URL, HN_URL, "company public websites"],
+                "provider": effective_provider,
                 "analysis_mode": analysis_mode,
-                "model": os.getenv("OPENAI_MODEL") if analysis_mode == AnalysisMode.OPENAI else None,
+                "model": (
+                    model_for(effective_provider)
+                    if analysis_mode != AnalysisMode.DETERMINISTIC_FALLBACK
+                    else None
+                ),
                 "prompt_version": "analysis-v1",
                 "candidates": len(candidates),
                 "succeeded": succeeded,

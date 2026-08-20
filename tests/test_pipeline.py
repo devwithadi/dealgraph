@@ -66,7 +66,11 @@ def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
                 "why_now": "AI adoption",
                 "risks": ["Retention is unknown"],
                 "open_questions": ["What is retention?"],
-                "changes_mind": ["Verified retention"],
+                "changes_mind": [
+                    "Verified retention",
+                    "Reference customers",
+                    "Defensible distribution",
+                ],
                 "citations": ["ev-001"],
             }
             return {
