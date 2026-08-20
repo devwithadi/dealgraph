@@ -1,9 +1,11 @@
+import json
 from pathlib import Path
 
 import httpx
 import pytest
 
-from app.analysis import calculate_score, evidence_confidence, recommendation_for, validate_citations
+from app.analysis import analyze, calculate_score, evidence_confidence, recommendation_for, validate_citations
+from app.logging import bind_request_id
 from pydantic import ValidationError
 
 from app.models import Candidate, DimensionScore, Evidence
@@ -163,3 +165,51 @@ def test_hn_evidence_prefers_matching_candidate_domain() -> None:
     evidence = hn_evidence(candidate, httpx.Client(transport=httpx.MockTransport(handler)), 7)
     assert evidence[0].source_url == "https://news.ycombinator.com/item?id=42"
     assert "83 points" in evidence[0].claim
+
+
+def test_openai_request_keeps_run_request_id(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    bind_request_id("req-openai")
+    candidate = Candidate(
+        slug="agentdesk",
+        name="AgentDesk",
+        website="https://agentdesk.example",
+        one_liner="AI support",
+        source_url="https://www.ycombinator.com/companies/agentdesk",
+    )
+    evidence = [
+        Evidence(
+            id="ev-001",
+            claim="Product",
+            excerpt="AI support product",
+            source_url=candidate.source_url,
+            source_title="YC",
+            source_type="yc_directory",
+            trust_tier="curated_directory",
+            verification="third_party",
+        )
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["x-kong-request-id"] == "req-openai"
+        assert request.headers["authorization"] == "Bearer test-key"
+        narrative = {
+            "summary": "Summary",
+            "team": "Unknown",
+            "product": "AI support",
+            "market": "Unknown",
+            "why_now": "Unknown",
+            "risks": ["Unknown traction"],
+            "open_questions": ["What is retention?"],
+            "changes_mind": ["Verified retention"],
+            "citations": ["ev-001"],
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(narrative)}}]},
+            request=request,
+        )
+
+    result = analyze(candidate, evidence, httpx.Client(transport=httpx.MockTransport(handler)))
+
+    assert result.analysis_mode == "openai"
