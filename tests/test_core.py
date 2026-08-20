@@ -10,6 +10,7 @@ from dealgraph.analysis.scoring import (
     recommendation_for,
     validate_citations,
 )
+from dealgraph.analysis.providers import _openai_url
 from dealgraph.analysis.service import analyze
 from dealgraph.core.logging import bind_request_id
 from dealgraph.domain.enums import AIProvider, AnalysisMode, Recommendation
@@ -230,6 +231,13 @@ def test_openai_request_keeps_run_request_id(monkeypatch) -> None:
     )
 
     assert result.analysis_mode == "openai"
+
+
+def test_openai_base_url_rejects_private_targets(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://127.0.0.1/v1")
+
+    with pytest.raises(ValueError, match="public"):
+        _openai_url()
 
 
 def test_bedrock_converse_uses_model_region_and_request_metadata(monkeypatch) -> None:
