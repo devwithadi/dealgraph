@@ -4,6 +4,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from app.logging import configure_logging
 from app.models import Candidate
 from app.pipeline import Pipeline
 from app.sources import SafeFetcher, SourcePolicyError, hn_evidence
@@ -134,6 +135,28 @@ def test_offline_pipeline_never_uses_network(tmp_path: Path) -> None:
         "pricing": None,
         "evidence_ids": [],
     }
+
+
+def test_verbose_pipeline_logs_unexpected_candidate_traceback(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    monkeypatch.setattr("app.pipeline.render_memo", lambda *_args: (_ for _ in ()).throw(RuntimeError("render broke")))
+    configure_logging(verbose=True)
+
+    result = Pipeline().run(
+        topic="AI agents for SMBs",
+        batch="W25",
+        limit=1,
+        output=tmp_path,
+        source_file=FIXTURE,
+        offline=True,
+        request_id="req-render-failure",
+    )
+
+    assert result.failed == 1
+    stderr = capsys.readouterr().err
+    assert "candidate failed stage=pipeline" in stderr
+    assert "Traceback" in stderr
 
 
 def test_hn_evidence_ignores_unrelated_hits() -> None:

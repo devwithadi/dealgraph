@@ -4,6 +4,7 @@ from pathlib import Path
 
 from app.cli import main
 from app.errors import AppError
+from app.models import RunSummary
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -128,3 +129,21 @@ def test_missing_source_file_uses_central_error_boundary(tmp_path: Path, capsys)
     assert exit_code == 2
     assert captured.out == ""
     assert captured.err == f"Error [req-missing]: source file not found: {tmp_path / 'missing.json'}\n"
+
+
+def test_cli_returns_failure_when_any_candidate_fails(monkeypatch, tmp_path: Path, capsys) -> None:
+    monkeypatch.setattr("app.cli.new_request_id", lambda: "req-partial")
+    monkeypatch.setattr(
+        "app.cli.Pipeline.run",
+        lambda *_args, **_kwargs: RunSummary(
+            run_id="run-1",
+            request_id="req-partial",
+            output=str(tmp_path),
+            candidates=2,
+            succeeded=1,
+            failed=1,
+        ),
+    )
+
+    assert main(["run", "--topic", "AI"]) == 1
+    assert "Completed 1/2 companies." in capsys.readouterr().out
