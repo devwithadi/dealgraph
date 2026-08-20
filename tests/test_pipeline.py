@@ -6,9 +6,9 @@ import pytest
 
 from dealgraph.core.errors import AppError
 from dealgraph.core.logging import configure_logging
-from dealgraph.domain.enums import AIProvider
+from dealgraph.domain.enums import AIProvider, AnalysisMode
 from dealgraph.domain.models import Candidate
-from dealgraph.pipeline.service import Pipeline
+from dealgraph.pipeline.service import Pipeline, _summarize_modes
 from dealgraph.sourcing.evidence import hn_evidence
 from dealgraph.sourcing.policy import SafeFetcher, SourcePolicyError
 
@@ -187,6 +187,29 @@ def test_offline_pipeline_requires_local_source_file(tmp_path: Path) -> None:
             output=tmp_path,
             offline=True,
         )
+
+
+def test_selected_openai_rejects_invalid_base_before_network(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-leak")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://127.0.0.1/v1")
+
+    with pytest.raises(AppError, match="OPENAI_BASE_URL"):
+        Pipeline().run(
+            topic="AI agents",
+            batch="W25",
+            limit=1,
+            output=tmp_path,
+            source_file=FIXTURE,
+            provider=AIProvider.OPENAI,
+        )
+
+
+def test_mixed_provider_results_are_reported_as_mixed() -> None:
+    assert _summarize_modes(
+        {AnalysisMode.BEDROCK, AnalysisMode.DETERMINISTIC_FALLBACK}
+    ) == AnalysisMode.MIXED
 
 
 def test_verbose_pipeline_logs_unexpected_candidate_traceback(
