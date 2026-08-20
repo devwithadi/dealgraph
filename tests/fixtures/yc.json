@@ -1,0 +1,36 @@
+[
+  {
+    "id": 101,
+    "name": "AgentDesk",
+    "slug": "agentdesk",
+    "website": "https://agentdesk.example",
+    "one_liner": "AI agents that automate support workflows for SMBs",
+    "long_description": "AgentDesk resolves repetitive support tickets and integrates with existing help desks.",
+    "team_size": 6,
+    "industry": "B2B",
+    "subindustry": "B2B -> Customer Success",
+    "launched_at": 1735689600,
+    "tags": ["Artificial Intelligence", "SaaS", "Customer Support"],
+    "isHiring": true,
+    "batch": "Winter 2025",
+    "status": "Active",
+    "url": "https://www.ycombinator.com/companies/agentdesk"
+  },
+  {
+    "id": 102,
+    "name": "FarmBox",
+    "slug": "farmbox",
+    "website": "https://farmbox.example",
+    "one_liner": "Fresh vegetables delivered weekly",
+    "long_description": "A consumer grocery subscription.",
+    "team_size": 3,
+    "industry": "Consumer",
+    "subindustry": "Consumer -> Food",
+    "launched_at": 1704067200,
+    "tags": ["Food", "Subscriptions"],
+    "isHiring": false,
+    "batch": "Winter 2025",
+    "status": "Active",
+    "url": "https://www.ycombinator.com/companies/farmbox"
+  }
+]
