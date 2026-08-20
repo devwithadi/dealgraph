@@ -2,7 +2,7 @@ import tomllib
 from pathlib import Path
 
 from app.cli import build_parser
-from app.logging import USER_AGENT
+from app.logging import USER_AGENT, configure_logging
 
 
 ROOT = Path(__file__).parents[1]
@@ -17,6 +17,7 @@ def test_dealgraph_is_the_primary_project_identity() -> None:
     assert build_parser().prog == "dealgraph"
     assert "DealGraph" in build_parser().description
     assert USER_AGENT.startswith("DealGraph/")
+    assert configure_logging().name == "dealgraph"
     assert (ROOT / "README.md").read_text().startswith("# DealGraph\n")
 
 
