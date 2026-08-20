@@ -1,0 +1,1 @@
+"""DealGraph command-line interface."""

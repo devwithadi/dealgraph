@@ -10,8 +10,9 @@ from datetime import datetime, timezone
 
 import httpx
 
-from app.logging import request_headers
-from app.models import Analysis, Candidate, DimensionScore, Evidence, Financials
+from dealgraph.core.logging import request_headers
+from dealgraph.domain.enums import AnalysisMode, Recommendation
+from dealgraph.domain.models import Analysis, Candidate, DimensionScore, Evidence, Financials
 
 LOGGER = logging.getLogger("dealgraph.analysis")
 
@@ -30,12 +31,12 @@ def calculate_score(dimensions: list[DimensionScore]) -> float:
     return round(sum(item.score * item.weight for item in dimensions) / 100, 1)
 
 
-def recommendation_for(score: float, confidence: float) -> str:
+def recommendation_for(score: float, confidence: float) -> Recommendation:
     if score >= 75 and confidence >= 0.65:
-        return "Take a meeting"
+        return Recommendation.TAKE_A_MEETING
     if score >= 60 or (score >= 75 and confidence < 0.65):
-        return "Watch"
-    return "Pass"
+        return Recommendation.WATCH
+    return Recommendation.PASS
 
 
 def validate_citations(ids: list[str], evidence: list[Evidence]) -> None:
@@ -118,7 +119,7 @@ def _fallback(candidate: Candidate, evidence: list[Evidence]) -> dict:
             "Reference calls confirming fast deployment and durable ROI.",
             "Evidence that integrations or proprietary data improve the moat over time.",
         ],
-        "analysis_mode": "deterministic_fallback",
+        "analysis_mode": AnalysisMode.DETERMINISTIC_FALLBACK,
     }
 
 
@@ -182,7 +183,7 @@ Evidence:\n<evidence>{evidence_json}</evidence>"""
         required = {"summary", "team", "product", "market", "why_now", "risks", "open_questions", "changes_mind"}
         if not required <= result.keys():
             return None
-        return {**result, "analysis_mode": "openai"}
+        return {**result, "analysis_mode": AnalysisMode.OPENAI}
     except (httpx.HTTPError, KeyError, TypeError, ValueError, json.JSONDecodeError):
         LOGGER.warning("OpenAI narrative unavailable; using deterministic fallback")
         return None

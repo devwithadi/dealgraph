@@ -54,6 +54,19 @@ YC public JSON → topic/batch filter → company website + Hacker News evidence
                → cited JSON analysis + Markdown memo
 ```
 
+The code follows the same domain boundaries:
+
+```text
+src/dealgraph/
+├── cli/          command parsing and top-level error boundary
+├── core/         logging, request tracking, and application errors
+├── domain/       immutable models and closed business enums
+├── sourcing/     registry, candidates, fetch policy, and evidence adapters
+├── analysis/     scoring and evidence-backed narrative analysis
+├── reporting/    Markdown memo rendering
+└── pipeline/     end-to-end orchestration and run artifacts
+```
+
 Every run creates:
 
 ```text
@@ -105,7 +118,7 @@ PitchBook, Crunchbase, and LinkedIn scraping are disabled. PitchBook should only
 
 ```bash
 uv run pytest
-uv run pytest --cov=app --cov-report=term-missing
+uv run pytest --cov=dealgraph --cov-report=term-missing
 ```
 
 The committed `data/runs/demo/` directory provides reviewable output without external calls. See [docs/AI_WORKLOG.md](docs/AI_WORKLOG.md) for the implementation trail and deliberate scope cuts.
