@@ -1,4 +1,4 @@
-# Investment Decision Assistant
+# DealGraph
 
 A small, replayable CLI that finds YC startups, collects public evidence, scores each company against a fixed seed thesis, and writes cited investment memos.
 
@@ -6,7 +6,7 @@ A small, replayable CLI that finds YC startups, collects public evidence, scores
 
 ```bash
 uv sync --extra dev
-uv run ida run --topic "AI agents for SMBs" --limit 10 --output data/runs/latest
+uv run dealgraph run --topic "AI agents for SMBs" --limit 10 --output data/runs/latest
 ```
 
 Normal output stays intentionally short:
@@ -24,13 +24,13 @@ Open `data/runs/latest/memos/` for the finished memos. No API key is required. I
 Limit the search to a YC batch:
 
 ```bash
-uv run ida run --topic "AI agents for SMBs" --batch W25 --limit 10
+uv run dealgraph run --topic "AI agents for SMBs" --batch W25 --limit 10
 ```
 
 Replay a saved source file without website, Hacker News, or OpenAI requests:
 
 ```bash
-uv run ida run \
+uv run dealgraph run \
   --topic "AI agents for SMBs" \
   --batch W25 \
   --limit 1 \
@@ -42,8 +42,8 @@ uv run ida run \
 Use `--json` for automation and `--verbose` for operational logs. JSON and summaries go to stdout; logs and errors go to stderr, so redirects remain safe:
 
 ```bash
-uv run ida run --topic "AI agents" --json > run-summary.json
-uv run ida run --topic "AI agents" --verbose
+uv run dealgraph run --topic "AI agents" --json > run-summary.json
+uv run dealgraph run --topic "AI agents" --verbose
 ```
 
 ## Pipeline

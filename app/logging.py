@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from app.errors import AppError
 
-USER_AGENT = "IDA-case-study/1.0 (public research; contact in repository)"
+USER_AGENT = "DealGraph/0.1.0 (public research; contact in repository)"
 _request_id: ContextVar[str] = ContextVar("request_id", default="unbound")
 
 

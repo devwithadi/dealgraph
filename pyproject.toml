@@ -1,5 +1,5 @@
 [project]
-name = "investment-decision-assistant"
+name = "dealgraph"
 version = "0.1.0"
 description = "Replayable public-data startup sourcing and investment memo pipeline"
 readme = "README.md"
@@ -10,6 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
+dealgraph = "app.cli:main"
 ida = "app.cli:main"
 
 [build-system]

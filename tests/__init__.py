@@ -1,1 +1,1 @@
-"""Automated test suite for IDA application."""
+"""Automated test suite for DealGraph."""

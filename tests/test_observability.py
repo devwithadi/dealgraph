@@ -13,7 +13,7 @@ def test_request_context_is_shared_by_logs_and_http_headers() -> None:
     assert RequestIdFilter().filter(record) is True
     assert record.request_id == "req-test"
     assert request_headers() == {
-        "User-Agent": "IDA-case-study/1.0 (public research; contact in repository)",
+        "User-Agent": "DealGraph/0.1.0 (public research; contact in repository)",
         "X-Kong-Request-ID": "req-test",
     }
 
@@ -27,7 +27,7 @@ def test_tracking_headers_cannot_be_overridden() -> None:
 
     assert {key.lower(): value for key, value in headers.items()} == {
         "authorization": "safe",
-        "user-agent": "IDA-case-study/1.0 (public research; contact in repository)",
+        "user-agent": "DealGraph/0.1.0 (public research; contact in repository)",
         "x-kong-request-id": "req-trusted",
     }
 
