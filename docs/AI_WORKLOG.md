@@ -35,4 +35,5 @@ AI produced the implementation and tests. The scoring thesis, trust policy, and 
 
 - `ecba13b`: RED — defined concise CLI, centralized error, and request propagation behavior.
 - `550094e`: RED — added request-ID injection and verbose lifecycle requirements.
-- Added standard-library logging and error modules, one validated request ID across logs/artifacts/outbound requests, concise default output, JSON/verbose modes, connection retries, pool limits, and safe source-load failures.
+- `fc8181e` and `e9b304b`: RED — covered safe artifact names, partial failures, reserved headers, OpenAI tracking, and fully offline analysis.
+- `22a8f28`: GREEN — added standard-library logging and error modules, one validated request ID across logs/artifacts/outbound requests, concise default output, JSON/verbose modes, connection retries, pool limits, and safe source-load failures. Final verification: 34 tests and 89.94% coverage.
