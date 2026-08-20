@@ -73,6 +73,7 @@ def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
     assert "# AgentDesk — Investment Memo" in memo
     assert "Pass\n" in memo or "Watch\n" in memo or "Take a meeting\n" in memo
     assert "https://agentdesk.example" in memo
+    assert "[ev-001]" in next(line for line in memo.splitlines() if "Pain Roi" in line)
 
 
 def test_fetcher_revalidates_redirects_and_obeys_robots() -> None:
