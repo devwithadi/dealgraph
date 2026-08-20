@@ -25,7 +25,7 @@ def test_cli_offline_replay_creates_memos(tmp_path: Path) -> None:
         "--output",
         str(tmp_path),
     ]
-    completed = subprocess.run(command, text=True, capture_output=True, check=False)
+    completed = subprocess.run(command, text=True, capture_output=True, check=False, timeout=15)
     assert completed.returncode == 0, completed.stderr
     summary = json.loads(completed.stdout)
     assert summary["succeeded"] == 1
