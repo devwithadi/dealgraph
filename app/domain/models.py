@@ -1,13 +1,11 @@
-"""Small immutable contracts shared by the pipeline."""
-
 from datetime import datetime, timezone
 from pydantic import BaseModel, ConfigDict, Field
 
-from dealgraph.domain.enums import AnalysisMode, Recommendation
+from app.domain.enums import AnalysisMode, Recommendation
 
 
 class FrozenModel(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
 
 class Candidate(FrozenModel):
@@ -38,12 +36,11 @@ class Evidence(FrozenModel):
     retrieved_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class DimensionScore(FrozenModel):
-    name: str
-    score: float = Field(ge=0, le=100)
-    weight: int = Field(ge=0, le=100)
+class ScreeningDecision(FrozenModel):
+    slug: str
+    advance: bool
+    fit_score: float = Field(ge=0, le=100)
     rationale: str
-    evidence_ids: list[str] = Field(default_factory=list)
 
 
 class Financials(FrozenModel):
@@ -66,9 +63,8 @@ class Analysis(FrozenModel):
     financials: Financials
     risks: list[str]
     open_questions: list[str]
-    changes_mind: list[str]
-    dimensions: list[DimensionScore]
-    score: float
+    changes_mind: list[str] = Field(min_length=2, max_length=3)
+    score: float = Field(ge=0, le=100)
     confidence: float = Field(ge=0, le=1)
     recommendation: Recommendation
     analysis_mode: AnalysisMode
@@ -79,5 +75,8 @@ class RunSummary(FrozenModel):
     request_id: str
     output: str
     candidates: int
+    screened: int
+    finalists: int
+    selected: int
     succeeded: int
     failed: int

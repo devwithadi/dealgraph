@@ -1,13 +1,7 @@
-"""Render the one artifact an investment partner should need to read."""
-
-from dealgraph.domain.models import Analysis, Candidate, Evidence
+from app.domain.models import Analysis, Candidate, Evidence
 
 
 def render_memo(candidate: Candidate, analysis: Analysis, evidence: list[Evidence]) -> str:
-    scores = "\n".join(
-        f"| {item.name.replace('_', ' ').title()} | {item.score:.0f}/100 | {item.weight}% | {item.rationale} [{', '.join(item.evidence_ids)}] |"
-        for item in analysis.dimensions
-    )
     risks = "\n".join(f"- {item}" for item in analysis.risks)
     questions = "\n".join(f"- {item}" for item in analysis.open_questions)
     changes = "\n".join(f"- {item}" for item in analysis.changes_mind)
@@ -47,12 +41,6 @@ def render_memo(candidate: Candidate, analysis: Analysis, evidence: list[Evidenc
 ## Public financial signals
 
 {financials}
-
-## Thesis score
-
-| Dimension | Score | Weight | Evidence-grounded rationale |
-|---|---:|---:|---|
-{scores}
 
 ## Risks and open questions
 

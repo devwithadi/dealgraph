@@ -11,15 +11,15 @@ dependencies = [
 ]
 
 [project.scripts]
-dealgraph = "dealgraph.cli.main:main"
-ida = "dealgraph.cli.main:main"
+dealgraph = "app.cli.main:main"
+ida = "app.cli.main:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/dealgraph"]
+packages = ["app"]
 
 [project.optional-dependencies]
 dev = [
@@ -34,7 +34,7 @@ python_functions = ["test_*"]
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["dealgraph"]
+source = ["app"]
 
 [tool.coverage.report]
 fail_under = 80

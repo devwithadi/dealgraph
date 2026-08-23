@@ -1,5 +1,3 @@
-"""Closed business states serialized in DealGraph artifacts."""
-
 from enum import Enum
 
 
@@ -17,11 +15,9 @@ class Recommendation(ValueEnum):
 class AIProvider(ValueEnum):
     BEDROCK = "bedrock"
     OPENAI = "openai"
-    DETERMINISTIC = "deterministic"
 
 
 class AnalysisMode(ValueEnum):
-    DETERMINISTIC_FALLBACK = "deterministic_fallback"
     BEDROCK = "bedrock"
     OPENAI = "openai"
     MIXED = "mixed"

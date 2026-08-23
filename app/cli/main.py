@@ -1,13 +1,18 @@
-"""The only supported user interface."""
-
 import argparse
 import json
 from pathlib import Path
 
-from dealgraph.core.errors import AppError, report_cli_error
-from dealgraph.core.logging import bind_request_id, configure_logging, new_request_id
-from dealgraph.domain.enums import AIProvider
-from dealgraph.pipeline.service import Pipeline
+from app.core.errors import AppError, report_cli_error
+from app.core.logging import bind_request_id, configure_logging, new_request_id
+from app.domain.enums import AIProvider
+from app.pipeline.service import Pipeline
+
+
+def _positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be positive")
+    return parsed
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -19,7 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     run = subparsers.add_parser("run", help="source startups and write investment memos")
     run.add_argument("--topic", required=True)
     run.add_argument("--batch")
-    run.add_argument("--limit", type=int, default=10, choices=range(1, 21))
+    run.add_argument("--limit", type=_positive_int, help="optional emergency cap after date filtering")
     run.add_argument("--output", type=Path, default=Path("data/runs/latest"))
     run.add_argument("--source-file", type=Path)
     run.add_argument("--offline", action="store_true", help="replay source data without web enrichment")
@@ -60,7 +65,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(result.model_dump(), indent=2))
     else:
-        print(f"Completed {result.succeeded}/{result.candidates} companies.")
+        print(
+            f"Screened {result.screened}/{result.candidates} companies; "
+            f"created {result.succeeded}/{result.finalists} finalist memos; "
+            f"selected {result.selected}."
+        )
         print(f"Memos: {Path(result.output) / 'memos'}")
         print(f"Request ID: {result.request_id}")
     return 0 if result.failed == 0 else 1
