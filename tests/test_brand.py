@@ -1,8 +1,8 @@
 import tomllib
 from pathlib import Path
 
-from dealgraph.cli.main import build_parser
-from dealgraph.core.logging import USER_AGENT, configure_logging
+from app.cli.main import build_parser
+from app.core.logging import USER_AGENT, configure_logging
 
 
 ROOT = Path(__file__).parents[1]
@@ -12,8 +12,8 @@ def test_dealgraph_is_the_primary_project_identity() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
 
     assert project["name"] == "dealgraph"
-    assert project["scripts"]["dealgraph"] == "dealgraph.cli.main:main"
-    assert project["scripts"]["ida"] == "dealgraph.cli.main:main"
+    assert project["scripts"]["dealgraph"] == "app.cli.main:main"
+    assert project["scripts"]["ida"] == "app.cli.main:main"
     assert build_parser().prog == "dealgraph"
     assert "DealGraph" in build_parser().description
     assert USER_AGENT.startswith("DealGraph/")
