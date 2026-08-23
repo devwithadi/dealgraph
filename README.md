@@ -1,90 +1,112 @@
 # DealGraph
 
-A small, replayable CLI that finds YC startups, collects public evidence, scores each company against a fixed seed thesis, and writes cited investment memos.
+DealGraph is a two-stage, evidence-first CLI for screening recently launched YC companies and writing cited seed-investment memos.
+
+It deliberately separates inexpensive breadth from expensive depth:
+
+```text
+YC public JSON
+  → launch-date eligibility
+  → batched small-model semantic screening
+  → Agent Reach / Exa research for finalists
+  → main-model synthesis, score, recommendation, and memo
+```
+
+There is no topic keyword filter and no deterministic investment score. The topic is supplied to both LLM stages, and the synthesizer owns the final `Take a meeting`, `Watch`, or `Pass` judgment.
 
 ## Quick start
 
 ```bash
 uv sync --extra dev
-uv run dealgraph run --topic "AI agents for SMBs" --limit 10 --output data/runs/latest
+agent-reach doctor --json
+uv run dealgraph run --topic "AI agents for SMBs" --output data/runs/latest
 ```
 
-Normal output stays intentionally short:
+By default, DealGraph screens every active YC company launched in the last 30 days. Use `--batch W26` to restrict a YC batch, or `--limit 50` as an optional emergency cap after date selection. There is no default count cap.
 
-```text
-Completed 10/10 companies.
-Memos: /absolute/path/data/runs/latest/memos
-Request ID: req-5ae470bb25d84a87
-```
+## Configuration
 
-Open `data/runs/latest/memos/` for the finished memos. Bedrock is the default narrative provider and uses Boto3's standard AWS credential chain. If the selected provider is unavailable, the run uses an explicitly labelled deterministic fallback.
-
-## Common commands
-
-Choose the narrative provider:
+The launch window is controlled by the environment:
 
 ```bash
-# Default: Amazon Bedrock Converse API
-uv run dealgraph run --topic "AI agents" --provider bedrock
-
-# OpenAI or an HTTPS OpenAI-compatible gateway
-OPENAI_API_KEY=... uv run dealgraph run --topic "AI agents" --provider openai
-OPENAI_BASE_URL=https://gateway.example/v1 OPENAI_API_KEY=... \
-  uv run dealgraph run --topic "AI agents" --provider openai
-
-# No model API
-uv run dealgraph run --topic "AI agents" --provider deterministic
+DEALGRAPH_LOOKBACK_DAYS=60 uv run dealgraph run --topic "AI infrastructure"
 ```
 
-Bedrock uses `AWS_REGION` (default `us-east-1`) and `BEDROCK_MODEL_ID` (default `amazon.nova-micro-v1:0`). OpenAI uses `OPENAI_MODEL` and `OPENAI_BASE_URL` (default `https://api.openai.com/v1`). Custom OpenAI gateways must resolve to a public address and use HTTPS port 443. Copy `.env.example` for the complete configuration list; do not commit credentials.
+`DEALGRAPH_LOOKBACK_DAYS` defaults to `30` and must be an integer from 1 to 3650. YC exposes `launched_at`; DealGraph uses that as the available posting/launch date and excludes records without one.
 
-Limit the search to a YC batch:
+Amazon Bedrock is the default provider:
 
 ```bash
-uv run dealgraph run --topic "AI agents for SMBs" --batch W25 --limit 10
+AWS_BEARER_TOKEN_BEDROCK=... \
+AWS_REGION=us-east-1 \
+BEDROCK_SCREENING_MODEL_ID=amazon.nova-micro-v1:0 \
+BEDROCK_MODEL_ID=amazon.nova-lite-v1:0 \
+uv run dealgraph run --topic "AI agents"
 ```
 
-Replay a saved source file without website, Hacker News, or OpenAI requests:
+`AWS_BEARER_TOKEN_BEDROCK` is AWS's official environment variable for a Bedrock
+API key. Boto3 consumes it directly; DealGraph never forwards or persists the
+token. If it is absent, Boto3's normal credential chain still supports AWS
+profiles, temporary credentials, and workload IAM roles.
+
+Both Bedrock model IDs are passed to Bedrock unchanged. They may name any
+text-generation base model or inference profile that supports the Bedrock
+Converse API and system prompts in the configured region; embeddings,
+image-only models, and imported models are outside this client contract. Nova
+Micro and Nova Lite are only defaults. This allows a small inexpensive model
+for screening and a different main model for final synthesis. If an ARN is
+configured, its AWS account ID is redacted in `manifest.json`.
+
+To load a local file based on [`.env.example`](.env.example), use:
 
 ```bash
-uv run dealgraph run \
-  --topic "AI agents for SMBs" \
-  --batch W25 \
-  --limit 1 \
-  --source-file tests/fixtures/yc.json \
-  --offline \
-  --output data/runs/replay
+uv run --env-file .env dealgraph run --topic "AI agents"
 ```
 
-`--offline` requires `--source-file`; DealGraph fails before making any request when the local input is missing.
-
-Use `--json` for automation and `--verbose` for operational logs. JSON and summaries go to stdout; logs and errors go to stderr, so redirects remain safe:
+OpenAI and public HTTPS OpenAI-compatible gateways are also supported:
 
 ```bash
-uv run dealgraph run --topic "AI agents" --json > run-summary.json
-uv run dealgraph run --topic "AI agents" --verbose
+OPENAI_API_KEY=... \
+OPENAI_SCREENING_MODEL=gpt-4.1-nano \
+OPENAI_MODEL=gpt-4.1-mini \
+uv run dealgraph run --topic "AI agents" --provider openai
 ```
 
-## Pipeline
+Custom `OPENAI_BASE_URL` values must use public HTTPS on port 443. Credentials, prompts, model responses, and authorization headers are never written to logs or artifacts.
 
-```text
-YC public JSON → topic/batch filter → company website + Hacker News evidence
-               → deterministic thesis score → optional OpenAI narrative
-               → cited JSON analysis + Markdown memo
+## Screening and call volume
+
+Eligible companies are sent to the small screening model in batches of 20. Each company receives an LLM decision containing `advance`, `fit_score`, and a concise rationale. Invalid or incomplete model responses are recorded as failures; there is no keyword or deterministic fallback.
+
+For `N` eligible companies and `F` finalists, a successful run makes:
+
+- `ceil(N / 20)` small-model screening calls
+- `F` Agent Reach research calls
+- `F` main-model synthesis calls
+
+Only companies advanced by the screening model incur research and synthesis cost.
+
+The two LLM stages have separate prompt packages under `app/prompts/screening/`
+and `app/prompts/synthesis/`. Each stage keeps its persona, workflow,
+guardrails, and JSON output contract in separate modules, then assembles them
+into one prompt at its public package entrypoint. Screening remains focused on
+high-recall semantic triage; synthesis contains the full evidence-governed VC
+judge method used for the final memo.
+
+## Research
+
+All finalist web research is routed through Agent Reach's Exa backend using `mcporter`. DealGraph no longer crawls company pages or queries Hacker News directly.
+
+The adapter uses a fixed subprocess argument list, does not invoke a shell, limits execution time and output size, removes secrets from the child environment, and rejects results from PitchBook, Crunchbase, and LinkedIn. Those vendors are not scraped. PitchBook requires a separately licensed API and permitted use.
+
+Run this before a live job:
+
+```bash
+agent-reach doctor --json
+mcporter list exa --schema --json
 ```
 
-The code follows the same domain boundaries:
-
-```text
-src/dealgraph/
-├── cli/          command parsing and top-level error boundary
-├── core/         logging, request tracking, and application errors
-├── domain/       immutable models and closed business enums
-├── sourcing/     registry, candidates, fetch policy, and evidence adapters
-├── analysis/     scoring and evidence-backed narrative analysis
-├── reporting/    Markdown memo rendering
-└── pipeline/     end-to-end orchestration and run artifacts
-```
+## Outputs
 
 Every run creates:
 
@@ -92,52 +114,37 @@ Every run creates:
 data/runs/latest/
 ├── input.json
 ├── candidates.json
+├── screenings.json
+├── shortlist.json        # synthesis decisions other than Pass
 ├── manifest.json
-├── evidence/<company>.json
-├── analyses/<company>.json
-└── memos/<company>.md
+├── evidence/<finalist>.json
+├── analyses/<finalist>.json
+└── memos/<finalist>.md
 ```
 
-`manifest.json` records the selected provider, actual analysis mode, model, sources, successes, failures, evidence gaps, and request ID. A failure enriching one company does not stop the rest of the batch.
+The manifest records the launch cutoff, eligible/screened/finalist/selected/memo counts, both model IDs, provider, Agent Reach source, failures, and one validated request ID. YC and OpenAI HTTP requests receive `X-Kong-Request-ID`; Bedrock calls receive the same ID in `requestMetadata`. The Agent Reach subprocess receives it as `DEALGRAPH_REQUEST_ID` for local correlation.
 
-## Logging and request tracking
+Normal output is concise:
 
-One request ID is generated per run. HTTP calls receive it as `X-Kong-Request-ID`; Bedrock Converse calls receive it as `requestMetadata.request_id` for invocation-log correlation. Use `--request-id <trusted-id>` to continue an upstream trace. IDs are restricted to 1–128 safe characters to prevent header and log injection.
+```text
+Screened 48/48 companies; created 6/6 finalist memos; selected 4.
+Memos: /absolute/path/data/runs/latest/memos
+Request ID: req-5ae470bb25d84a87
+```
 
-Default mode prints only the result, memo directory, and request ID. `--verbose` adds run and candidate lifecycle logs without response bodies, prompts, authorization headers, or API keys. Expected failures return a concise message and exit code; unexpected tracebacks appear only in verbose mode.
+Use `--json` for automation and `--verbose` for operational logs.
 
-The internally created HTTP client reuses connections, limits its pool, applies timeouts, and retries connection failures twice. Runs remain sequential because the assignment batch is only 1–20 companies and predictable source load is more valuable than added concurrency.
+## Offline behavior
 
-## Scoring and missing data
-
-The thesis targets pre-seed and seed B2B AI companies that replace frequent, expensive SMB workflows and compound an advantage through integrations, data, or distribution.
-
-| Dimension | Weight |
-|---|---:|
-| Pain and ROI | 25% |
-| Differentiation | 20% |
-| Team | 20% |
-| Distribution | 15% |
-| Market | 10% |
-| Freshness/traction | 10% |
-
-- `Take a meeting`: score ≥75 and evidence confidence ≥65%
-- `Watch`: score ≥60, or high score with low confidence
-- `Pass`: score <60
-
-Revenue, burn, runway, funding, pricing, or team facts remain `null`/`Unknown` unless the evidence supports them. The model is never asked to invent missing financial data.
-
-## Source policy
-
-Enabled sources are YC's public community JSON feed, public company websites, and Hacker News. URLs are checked against blocked vendors and non-public IP ranges on every redirect. Robots rules are respected and responses are capped at 2 MB.
-
-PitchBook, Crunchbase, and LinkedIn scraping are disabled. PitchBook should only be integrated through a licensed API contract that permits the intended use.
+Fresh screening is intentionally LLM-only. Consequently, `--offline` fails before making any HTTP, model, or Agent Reach request instead of silently substituting heuristic judgments. A future recorded-artifact replay can restore offline memo generation without weakening that guarantee.
 
 ## Verify
 
 ```bash
 uv run pytest
-uv run pytest --cov=dealgraph --cov-report=term-missing
+uv run pytest --cov=app --cov-report=term-missing
+uv pip check
+git diff --check
 ```
 
-The committed `data/runs/demo/` directory provides reviewable output without external calls. See [docs/AI_WORKLOG.md](docs/AI_WORKLOG.md) for the implementation trail and deliberate scope cuts.
+Python 3.10+ and `uv` are expected. Total test coverage must remain at or above 80%.

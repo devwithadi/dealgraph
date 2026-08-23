@@ -7,7 +7,7 @@ DealGraph is a small Python CLI that turns public startup data into cited seed-i
 ```bash
 uv sync --extra dev
 uv run pytest
-uv run pytest --cov=dealgraph --cov-report=term-missing
+uv run pytest --cov=app --cov-report=term-missing
 uv run dealgraph run --topic "AI agents for SMBs" --limit 10
 ```
 
@@ -23,13 +23,14 @@ Read and apply the `$ponytail` skill before planning or implementing code. Searc
 
 ## Architecture
 
-- `src/dealgraph/cli/`: the only supported user interface and top-level error boundary.
-- `src/dealgraph/core/`: logging, `X-Kong-Request-ID` context, and application errors.
-- `src/dealgraph/domain/`: immutable Pydantic contracts and closed business enums.
-- `src/dealgraph/sourcing/`: source registry, candidate selection, SSRF-safe fetching, and evidence adapters.
-- `src/dealgraph/analysis/`: deterministic scoring and optional OpenAI narrative generation.
-- `src/dealgraph/reporting/`: Markdown memo rendering.
-- `src/dealgraph/pipeline/`: orchestration, failure isolation, and run artifacts.
+- `app/cli/`: the only supported user interface and top-level error boundary.
+- `app/core/`: logging, `X-Kong-Request-ID` context, and application errors.
+- `app/domain/`: immutable Pydantic contracts and closed business enums.
+- `app/sourcing/`: source registry, candidate selection, SSRF-safe fetching, and evidence adapters.
+- `app/analysis/`: deterministic scoring and optional OpenAI narrative generation.
+- `app/prompts/`: modular persona, workflow, and structured-output prompts.
+- `app/reporting/`: Markdown memo rendering.
+- `app/pipeline/`: orchestration, failure isolation, and run artifacts.
 - `tests/fixtures/`: replayable inputs; tests must not require live network access.
 
 Dependencies point inward: CLI → pipeline → domain services → domain/core. Lower layers never import pipeline or CLI. Import concrete modules instead of hiding dependencies behind broad package re-exports.
