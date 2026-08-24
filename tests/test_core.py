@@ -582,9 +582,9 @@ def test_financials_extract_compact_pricing_from_scraped_company_page() -> None:
     assert result.evidence_ids == ["ev-001"]
 
 
-def test_source_registry_routes_research_only_through_agent_reach() -> None:
+def test_source_registry_enables_used_public_research_sources() -> None:
     assert SOURCE_REGISTRY["agent_reach"]["enabled"] is True
-    assert SOURCE_REGISTRY["company_website"]["enabled"] is False
+    assert SOURCE_REGISTRY["company_website"]["enabled"] is True
     assert SOURCE_REGISTRY["hacker_news"]["enabled"] is False
     assert SOURCE_REGISTRY["pitchbook"]["enabled"] is False
 
