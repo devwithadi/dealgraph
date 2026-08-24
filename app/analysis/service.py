@@ -63,10 +63,14 @@ _FINANCIAL_PATTERNS = {
         r"(\d+(?:\.\d+)?\s*(?:months?|years?))\s+(?:of\s+)?runway",
     ),
     "funding": (rf"(?:raised|funding|financing)\s*(?:was|is|of|:)?\s*({_AMOUNT})",),
-    "pricing": (rf"({_AMOUNT}\s*(?:/|per)\s*(?:month|year))",),
+    "pricing": (rf"({_AMOUNT}\s*(?:/|per\s+)(?:month|mo|m|year|yr))",),
 }
 def _financials(evidence: list[Evidence]) -> Financials:
-    priority = financial_source_priority()
+    configured_priority = financial_source_priority()
+    priority = {
+        **configured_priority,
+        "web_scraper": configured_priority["company_website"],
+    }
     ranked = sorted(
         (item for item in evidence if item.source_type in priority),
         key=lambda item: priority[item.source_type],
