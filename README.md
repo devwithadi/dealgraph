@@ -66,6 +66,8 @@ results/
 
 The JSON files contain public evidence, decisions, safe model provenance, request ID, and failure
 gaps. They never contain credentials, authorization headers, prompts, or raw model responses.
+If independent search is rate-limited, the run stops repeated quota-bound calls, completes from the
+available evidence, and records a sanitized `Research availability` gap instead of hiding the outage.
 
 A committed example run is available under `examples/ai-agents-smb/`, so reviewers can inspect the
 output without credentials or another paid run.
