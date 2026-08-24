@@ -20,6 +20,7 @@ from app.analysis.diligence import (
 from app.analysis.diligence.tools.scraper import WebFetchTool
 from app.analysis.diligence.agent import default_live_search
 from app.domain.models import Candidate, Evidence
+from app.domain.enums import CitationTag
 
 
 @pytest.fixture
@@ -129,6 +130,26 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
     )
     assert economics_gap.resolved is False
 
+    first_party_commercial = [
+        Evidence(
+            id="ev-001",
+            claim="Customer traction",
+            excerpt="We serve many enterprise customers in a growing market.",
+            source_url="https://nexus.example.com/customers",
+            source_title="Nexus customers",
+            source_type="company_website",
+            trust_tier="first_party",
+            verification="direct_scrape",
+            status=CitationTag.CLAIMED,
+        )
+    ]
+    commercial_gap = next(
+        gap
+        for gap in evaluate_evidence_gaps(mock_candidate, first_party_commercial)
+        if gap.pillar == DiligencePillar.COMMERCIAL_TAM.value
+    )
+    assert commercial_gap.resolved is False
+
     # 2. Comprehensive evidence resolving all pillars
     full_evidence = [
         Evidence(
@@ -140,6 +161,7 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
             source_type="deep_diligence",
             trust_tier="open_web",
             verification="multi_hop_search",
+            status=CitationTag.TRUSTED,
         ),
         Evidence(
             id="ev-002",
@@ -150,6 +172,7 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
             source_type="deep_diligence",
             trust_tier="open_web",
             verification="multi_hop_search",
+            status=CitationTag.TRUSTED,
         ),
         Evidence(
             id="ev-003",
@@ -160,6 +183,7 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
             source_type="deep_diligence",
             trust_tier="open_web",
             verification="multi_hop_search",
+            status=CitationTag.TRUSTED,
         ),
         Evidence(
             id="ev-004",
@@ -170,6 +194,7 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
             source_type="deep_diligence",
             trust_tier="open_web",
             verification="multi_hop_search",
+            status=CitationTag.TRUSTED,
         ),
     ]
     resolved_gaps = evaluate_evidence_gaps(mock_candidate, full_evidence, "Enterprise AI")

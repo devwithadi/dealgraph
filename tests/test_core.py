@@ -26,7 +26,7 @@ from app.domain.enums import AIProvider, AnalysisMode, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, Financials, ScreeningDecision
 from app.prompts.screening import build_screening_prompt
 from app.prompts.synthesis import build_synthesis_prompt
-from app.sourcing.evidence import agent_reach_evidence
+from app.sourcing.evidence import agent_reach_evidence, candidate_evidence
 from app.sourcing.policy import SourcePolicyError, validate_public_url
 from app.sourcing.registry import SOURCE_REGISTRY
 
@@ -446,9 +446,22 @@ def test_bedrock_uses_small_model_for_screening_and_main_model_for_synthesis(mon
         for call in calls
     )
     assert [call["inferenceConfig"] for call in calls] == [
-        {"maxTokens": 400},
-        {"maxTokens": 4096},
+        {"maxTokens": 400, "temperature": 0},
+        {"maxTokens": 4096, "temperature": 0},
     ]
+
+
+def test_candidate_evidence_does_not_label_hacker_news_as_yc_verified() -> None:
+    hn_candidate = candidate().model_copy(
+        update={"source_url": "https://news.ycombinator.com/item?id=123"}
+    )
+
+    item = candidate_evidence(hn_candidate)[0]
+
+    assert item.source_type == "hacker_news"
+    assert item.trust_tier == "public_community"
+    assert item.status.value == "TRUSTED"
+    assert "YC profile" not in item.claim
 
 
 def test_screening_rejects_missing_or_duplicate_candidate_decisions(monkeypatch) -> None:
