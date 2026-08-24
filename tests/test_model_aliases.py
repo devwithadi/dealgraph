@@ -4,10 +4,8 @@ import pytest
 
 from app.analysis.providers import (
     BEDROCK_MODEL_ALIASES,
-    DEFAULT_BEDROCK_MODEL,
-    DEFAULT_BEDROCK_SCREENING_MODEL,
-    DEFAULT_OPENAI_MODEL,
-    DEFAULT_OPENAI_SCREENING_MODEL,
+    MODEL_ALIASES,
+    PROVIDER_CONFIGS,
     is_reasoning_model,
     model_for,
     resolve_model_id,
@@ -18,60 +16,63 @@ from app.core.errors import AppError
 from app.domain.enums import AIProvider
 
 
-def test_all_specified_bedrock_aliases_are_present() -> None:
-    expected_aliases = {
-        "llama-3.3-70b": "us.meta.llama3-3-70b-instruct-v1:0",
-        "llama-3.1-70b": "us.meta.llama3-1-70b-instruct-v1:0",
-        "llama-3.1-8b": "us.meta.llama3-1-8b-instruct-v1:0",
-        "nova-pro": "amazon.nova-pro-v1:0",
-        "nova-lite": "amazon.nova-lite-v1:0",
-        "nova-micro": "amazon.nova-micro-v1:0",
-        "claude-3.5-sonnet": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
-        "claude-3.5-haiku": "us.anthropic.claude-3-5-haiku-20241022-v1:0",
-        "mistral-large": "mistral.mistral-large-2407-v1:0",
-    }
-    for alias, expected_id in expected_aliases.items():
-        assert BEDROCK_MODEL_ALIASES.get(alias) == expected_id
-        assert resolve_model_id(alias, DEFAULT_BEDROCK_MODEL) == expected_id
-        assert resolve_model_id(alias.upper(), DEFAULT_BEDROCK_MODEL) == expected_id
-        assert resolve_model_id(f"  {alias}  ", DEFAULT_BEDROCK_MODEL) == expected_id
+def test_model_aliases_dicts_exist() -> None:
+    assert isinstance(MODEL_ALIASES, dict)
+    assert isinstance(BEDROCK_MODEL_ALIASES, dict)
 
 
 def test_resolve_model_id_falls_back_to_default_when_none_or_empty() -> None:
-    assert resolve_model_id(None, DEFAULT_BEDROCK_MODEL) == DEFAULT_BEDROCK_MODEL
-    assert resolve_model_id("", DEFAULT_BEDROCK_MODEL) == DEFAULT_BEDROCK_MODEL
-    assert resolve_model_id("   ", DEFAULT_BEDROCK_MODEL) == DEFAULT_BEDROCK_MODEL
-    assert resolve_model_id(None, "nova-micro") == "amazon.nova-micro-v1:0"
+    default_bedrock = PROVIDER_CONFIGS[AIProvider.BEDROCK].default_synthesis_model
+    assert resolve_model_id(None, default_bedrock) == default_bedrock
+    assert resolve_model_id("", default_bedrock) == default_bedrock
+    assert resolve_model_id("   ", default_bedrock) == default_bedrock
+    assert resolve_model_id(None, "amazon.nova-micro-v1:0") == "amazon.nova-micro-v1:0"
 
 
-def test_resolve_model_id_passes_through_unaliased_ids() -> None:
+def test_resolve_model_id_passes_through_any_model_id_or_arn() -> None:
     custom_arn = "arn:aws:bedrock:us-east-1:123456789012:custom-model/test"
-    assert resolve_model_id(custom_arn, DEFAULT_BEDROCK_MODEL) == custom_arn
+    assert resolve_model_id(custom_arn, "default-model") == custom_arn
+
+    custom_id = "us.meta.llama3-3-70b-instruct-v1:0"
+    assert resolve_model_id(custom_id, "default-model") == custom_id
+
+    custom_openai = "gpt-4o"
+    assert resolve_model_id(custom_openai, "default-model") == custom_openai
 
 
-def test_screening_model_for_and_model_for_support_overrides(monkeypatch) -> None:
+def test_screening_model_for_and_model_for_env_and_cli_overrides(monkeypatch) -> None:
     monkeypatch.delenv("BEDROCK_SCREENING_MODEL_ID", raising=False)
     monkeypatch.delenv("BEDROCK_MODEL_ID", raising=False)
 
-    # Defaults
-    assert screening_model_for(AIProvider.BEDROCK) == DEFAULT_BEDROCK_SCREENING_MODEL
-    assert model_for(AIProvider.BEDROCK) == DEFAULT_BEDROCK_MODEL
+    bedrock_cfg = PROVIDER_CONFIGS[AIProvider.BEDROCK]
+    # Bedrock defaults
+    assert screening_model_for(AIProvider.BEDROCK) == bedrock_cfg.default_screening_model
+    assert model_for(AIProvider.BEDROCK) == bedrock_cfg.default_synthesis_model
 
-    # Overrides with aliases
-    assert screening_model_for(AIProvider.BEDROCK, "nova-pro") == "amazon.nova-pro-v1:0"
-    assert model_for(AIProvider.BEDROCK, "claude-3.5-sonnet") == "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+    # Bedrock env overrides
+    monkeypatch.setenv("BEDROCK_SCREENING_MODEL_ID", "amazon.nova-micro-v1:0")
+    monkeypatch.setenv("BEDROCK_MODEL_ID", "us.anthropic.claude-3-5-sonnet-20241022-v2:0")
+    assert screening_model_for(AIProvider.BEDROCK) == "amazon.nova-micro-v1:0"
+    assert model_for(AIProvider.BEDROCK) == "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
 
-    # Overrides with exact IDs
+    # Bedrock CLI overrides (preempts env)
     assert screening_model_for(AIProvider.BEDROCK, "custom.screen.v1") == "custom.screen.v1"
     assert model_for(AIProvider.BEDROCK, "custom.synth.v1") == "custom.synth.v1"
 
-    # OpenAI provider
+    # OpenAI provider defaults and overrides
     monkeypatch.delenv("OPENAI_SCREENING_MODEL", raising=False)
     monkeypatch.delenv("OPENAI_MODEL", raising=False)
-    assert screening_model_for(AIProvider.OPENAI) == DEFAULT_OPENAI_SCREENING_MODEL
-    assert model_for(AIProvider.OPENAI) == DEFAULT_OPENAI_MODEL
-    assert screening_model_for(AIProvider.OPENAI, "gpt-4o-mini") == "gpt-4o-mini"
-    assert model_for(AIProvider.OPENAI, "gpt-4o") == "gpt-4o"
+    openai_cfg = PROVIDER_CONFIGS[AIProvider.OPENAI]
+    assert screening_model_for(AIProvider.OPENAI) == openai_cfg.default_screening_model
+    assert model_for(AIProvider.OPENAI) == openai_cfg.default_synthesis_model
+
+    monkeypatch.setenv("OPENAI_SCREENING_MODEL", "gpt-4o-mini")
+    monkeypatch.setenv("OPENAI_MODEL", "gpt-4o")
+    assert screening_model_for(AIProvider.OPENAI) == "gpt-4o-mini"
+    assert model_for(AIProvider.OPENAI) == "gpt-4o"
+
+    assert screening_model_for(AIProvider.OPENAI, "o3-mini") == "o3-mini"
+    assert model_for(AIProvider.OPENAI, "o1") == "o1"
 
 
 def test_validate_provider_config_accepts_valid_overrides(monkeypatch) -> None:
@@ -83,8 +84,8 @@ def test_validate_provider_config_accepts_valid_overrides(monkeypatch) -> None:
     # With valid override, validation succeeds
     validate_provider_config(
         AIProvider.BEDROCK,
-        screening_override="nova-micro",
-        synthesis_override="nova-pro",
+        screening_override="amazon.nova-micro-v1:0",
+        synthesis_override="amazon.nova-pro-v1:0",
     )
 
 
@@ -170,65 +171,43 @@ def test_bedrock_json_error_handling() -> None:
         )
 
 
-def test_openai_model_aliases_all() -> None:
-    expected_openai_mappings = {
-        "luna": "gpt-5-luna",
-        "terra": "gpt-5-terra",
-        "sol": "gpt-5-sol",
-        "strawberry": "o1",
-        "o3-mini": "o3-mini",
-        "o1": "o1",
-        "o1-mini": "o1-mini",
-        "orion": "gpt-4.5-preview",
-        "gpt-4.5": "gpt-4.5-preview",
-        "gpt-4o": "gpt-4o",
-        "gpt-4o-mini": "gpt-4o-mini",
-    }
-    for alias, expected_target in expected_openai_mappings.items():
-        assert resolve_model_id(alias, DEFAULT_OPENAI_MODEL) == expected_target
-        assert resolve_model_id(alias.upper(), DEFAULT_OPENAI_MODEL) == expected_target
-        assert resolve_model_id(f"  {alias}  ", DEFAULT_OPENAI_MODEL) == expected_target
-
-
 def test_is_reasoning_model_detection() -> None:
     reasoning_cases = [
-        "terra",
-        "TERRA",
-        "gpt-5-terra",
         "o1",
         "o1-mini",
         "o1-preview",
         "o3",
         "o3-mini",
-        "strawberry",
-        "STRAWBERRY",
         "deepseek-reasoner",
         "deepseek-r1",
+        "DEEPSEEK-R1",
+        "deepseek/deepseek-r1",
+        "qwq",
+        "qwq-32b",
+        "qwen/qwq-32b-preview",
         "openai/o1",
         "openai/o3-mini",
-        "openai/gpt-5-terra",
+        "r1",
     ]
     for model in reasoning_cases:
         assert is_reasoning_model(model) is True
 
     non_reasoning_cases = [
-        "luna",
-        "gpt-5-luna",
-        "sol",
-        "gpt-5-sol",
-        "orion",
-        "gpt-4.5-preview",
-        "gpt-4.5",
         "gpt-4o",
         "gpt-4o-mini",
         "gpt-4.1",
         "gpt-4.1-mini",
+        "gpt-4.5",
+        "gpt-4.5-preview",
         "deepseek-chat",
         "deepseek-v3",
         "amazon.nova-lite-v1:0",
         "amazon.nova-pro-v1:0",
         "claude-3.5-sonnet",
         "qwen-turbo",
+        "qwen-plus",
+        "glm-4-plus",
+        "glm-4-air",
     ]
     for model in non_reasoning_cases:
         assert is_reasoning_model(model) is False
@@ -256,82 +235,52 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
 
-    # Test luna (screening stage) -> max_completion_tokens, temperature 0.1, no reasoning_effort
+    # Test gpt-4o-mini (screening stage) -> max_completion_tokens, temperature 0.1, no reasoning_effort
     model_json(
         "screening prompt",
         provider=AIProvider.OPENAI,
-        model="gpt-5-luna",
+        model="gpt-4o-mini",
         max_tokens=600,
         stage="screening",
         client=client,
     )
-    luna_req = captured_payloads[-1]
-    assert luna_req["model"] == "gpt-5-luna"
-    assert luna_req["max_completion_tokens"] == 600
-    assert "max_tokens" not in luna_req
-    assert luna_req["temperature"] == 0.1
-    assert "reasoning_effort" not in luna_req
+    mini_req = captured_payloads[-1]
+    assert mini_req["model"] == "gpt-4o-mini"
+    assert mini_req["max_completion_tokens"] == 600
+    assert "max_tokens" not in mini_req
+    assert mini_req["temperature"] == 0.1
+    assert "reasoning_effort" not in mini_req
 
-    # Test sol -> max_completion_tokens, temperature 0.1, no reasoning_effort
+    # Test gpt-4.1 -> max_completion_tokens, temperature 0.1, no reasoning_effort
     model_json(
         "synthesis prompt",
         provider=AIProvider.OPENAI,
-        model=resolve_model_id("sol", DEFAULT_OPENAI_MODEL),
+        model="gpt-4.1",
         max_tokens=1500,
         stage="synthesis",
         client=client,
     )
-    sol_req = captured_payloads[-1]
-    assert sol_req["model"] == "gpt-5-sol"
-    assert sol_req["max_completion_tokens"] == 1500
-    assert sol_req["temperature"] == 0.1
-    assert "reasoning_effort" not in sol_req
+    synth_req = captured_payloads[-1]
+    assert synth_req["model"] == "gpt-4.1"
+    assert synth_req["max_completion_tokens"] == 1500
+    assert synth_req["temperature"] == 0.1
+    assert "reasoning_effort" not in synth_req
 
-    # Test terra (synthesis stage) -> max_completion_tokens, reasoning_effort "low", no temperature
+    # Test o1 (reasoning model) -> max_completion_tokens, reasoning_effort "low", no temperature
     model_json(
-        "synthesis prompt",
+        "reasoning prompt",
         provider=AIProvider.OPENAI,
-        model="gpt-5-terra",
+        model="o1",
         max_tokens=4096,
         stage="synthesis",
         client=client,
     )
-    terra_req = captured_payloads[-1]
-    assert terra_req["model"] == "gpt-5-terra"
-    assert terra_req["max_completion_tokens"] == 4096
-    assert "max_tokens" not in terra_req
-    assert terra_req["reasoning_effort"] == "low"
-    assert "temperature" not in terra_req
-
-    # Test strawberry (reasoning model) -> mapped to o1, reasoning_effort "low", no temperature
-    model_json(
-        "reasoning prompt",
-        provider=AIProvider.OPENAI,
-        model=resolve_model_id("strawberry", DEFAULT_OPENAI_MODEL),
-        max_tokens=3000,
-        stage="synthesis",
-        client=client,
-    )
-    strawberry_req = captured_payloads[-1]
-    assert strawberry_req["model"] == "o1"
-    assert strawberry_req["max_completion_tokens"] == 3000
-    assert strawberry_req["reasoning_effort"] == "low"
-    assert "temperature" not in strawberry_req
-
-    # Test orion -> mapped to gpt-4.5-preview, max_completion_tokens, temperature 0.1, no reasoning_effort
-    model_json(
-        "synthesis prompt",
-        provider=AIProvider.OPENAI,
-        model=resolve_model_id("orion", DEFAULT_OPENAI_MODEL),
-        max_tokens=2000,
-        stage="synthesis",
-        client=client,
-    )
-    orion_req = captured_payloads[-1]
-    assert orion_req["model"] == "gpt-4.5-preview"
-    assert orion_req["max_completion_tokens"] == 2000
-    assert orion_req["temperature"] == 0.1
-    assert "reasoning_effort" not in orion_req
+    o1_req = captured_payloads[-1]
+    assert o1_req["model"] == "o1"
+    assert o1_req["max_completion_tokens"] == 4096
+    assert "max_tokens" not in o1_req
+    assert o1_req["reasoning_effort"] == "low"
+    assert "temperature" not in o1_req
 
     # Test o3-mini (reasoning model) with custom OPENAI_REASONING_EFFORT
     monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
@@ -348,5 +297,3 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
     assert o3_req["max_completion_tokens"] == 2048
     assert o3_req["reasoning_effort"] == "high"
     assert "temperature" not in o3_req
-
-

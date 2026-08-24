@@ -6,19 +6,10 @@ import httpx
 import pytest
 
 from app.analysis.providers import (
-    DEFAULT_DASHSCOPE_MODEL,
-    DEFAULT_DASHSCOPE_SCREENING_MODEL,
-    DEFAULT_DEEPSEEK_MODEL,
-    DEFAULT_DEEPSEEK_SCREENING_MODEL,
-    DEFAULT_OLLAMA_MODEL,
-    DEFAULT_OLLAMA_SCREENING_MODEL,
-    DEFAULT_OPENROUTER_MODEL,
-    DEFAULT_OPENROUTER_SCREENING_MODEL,
-    DEFAULT_ZHIPU_MODEL,
-    DEFAULT_ZHIPU_SCREENING_MODEL,
-    MODEL_ALIASES,
+    PROVIDER_CONFIGS,
     _parse_json,
     _provider_url,
+    is_reasoning_model,
     model_for,
     model_json,
     resolve_model_id,
@@ -30,52 +21,21 @@ from app.core.urls import PublicUrlError, validate_public_url
 from app.domain.enums import AIProvider
 
 
-def test_all_model_aliases_are_mapped_correctly() -> None:
-    expected_aliases = {
-        # OpenAI
-        "luna": "gpt-5-luna",
-        "terra": "gpt-5-terra",
-        "sol": "gpt-5-sol",
-        "strawberry": "o1",
-        "o3-mini": "o3-mini",
-        "o1": "o1",
-        "o1-mini": "o1-mini",
-        "orion": "gpt-4.5-preview",
-        "gpt-4.5": "gpt-4.5-preview",
-        "gpt-4o": "gpt-4o",
-        "gpt-4o-mini": "gpt-4o-mini",
-        # Qwen
-        "qwen-2.5-72b": "qwen/qwen-2.5-72b-instruct",
-        "qwen-2.5-32b": "qwen/qwen-2.5-32b-instruct",
-        "qwen-2.5-coder-32b": "qwen/qwen-2.5-coder-32b-instruct",
-        "qwen-max": "qwen-max",
-        "qwen-plus": "qwen-plus",
-        "qwen-turbo": "qwen-turbo",
-        # GLM
-        "glm-4": "glm-4",
-        "glm-4-plus": "glm-4-plus",
-        "glm-4-air": "glm-4-air",
-        "glm-5": "glm-5",
-        # DeepSeek
-        "deepseek-v3": "deepseek-chat",
-        "deepseek-r1": "deepseek-reasoner",
-        # Claude
-        "claude-3.5-sonnet": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
-        "claude-3.5-haiku": "us.anthropic.claude-3-5-haiku-20241022-v1:0",
-        # Llama
-        "llama-3.3-70b": "us.meta.llama3-3-70b-instruct-v1:0",
-        "llama-3.1-70b": "us.meta.llama3-1-70b-instruct-v1:0",
-        "llama-3.1-8b": "us.meta.llama3-1-8b-instruct-v1:0",
-        # Nova
-        "nova-pro": "amazon.nova-pro-v1:0",
-        "nova-lite": "amazon.nova-lite-v1:0",
-        "nova-micro": "amazon.nova-micro-v1:0",
-    }
-    for alias, expected in expected_aliases.items():
-        assert MODEL_ALIASES.get(alias) == expected
-        assert resolve_model_id(alias, "default-model") == expected
-        assert resolve_model_id(alias.upper(), "default-model") == expected
-        assert resolve_model_id(f"  {alias}  ", "default-model") == expected
+def test_resolve_model_id_passthrough() -> None:
+    test_models = [
+        "gpt-4o",
+        "gpt-4.1",
+        "qwen/qwen-2.5-72b-instruct",
+        "qwen-plus",
+        "glm-4-plus",
+        "deepseek-chat",
+        "deepseek-reasoner",
+        "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+        "amazon.nova-pro-v1:0",
+    ]
+    for model_name in test_models:
+        assert resolve_model_id(model_name, "default-model") == model_name
+        assert resolve_model_id(f"  {model_name}  ", "default-model") == model_name
 
 
 def test_parse_json_strips_thinking_tags() -> None:
@@ -110,32 +70,40 @@ def test_parse_json_strips_thinking_tags() -> None:
 
 def test_provider_defaults_and_env_overrides(monkeypatch) -> None:
     # Clear env vars
-    for provider in (
+    for provider_name in (
         "OPENROUTER",
         "DEEPSEEK",
         "DASHSCOPE",
         "ZHIPU",
         "OLLAMA",
     ):
-        monkeypatch.delenv(f"{provider}_SCREENING_MODEL", raising=False)
-        monkeypatch.delenv(f"{provider}_MODEL", raising=False)
+        monkeypatch.delenv(f"{provider_name}_SCREENING_MODEL", raising=False)
+        monkeypatch.delenv(f"{provider_name}_MODEL", raising=False)
 
     # Defaults
-    assert screening_model_for(AIProvider.OPENROUTER) == DEFAULT_OPENROUTER_SCREENING_MODEL
-    assert model_for(AIProvider.OPENROUTER) == DEFAULT_OPENROUTER_MODEL
-    assert screening_model_for(AIProvider.DEEPSEEK) == DEFAULT_DEEPSEEK_SCREENING_MODEL
-    assert model_for(AIProvider.DEEPSEEK) == DEFAULT_DEEPSEEK_MODEL
-    assert screening_model_for(AIProvider.DASHSCOPE) == DEFAULT_DASHSCOPE_SCREENING_MODEL
-    assert model_for(AIProvider.DASHSCOPE) == DEFAULT_DASHSCOPE_MODEL
-    assert screening_model_for(AIProvider.ZHIPU) == DEFAULT_ZHIPU_SCREENING_MODEL
-    assert model_for(AIProvider.ZHIPU) == DEFAULT_ZHIPU_MODEL
-    assert screening_model_for(AIProvider.OLLAMA) == DEFAULT_OLLAMA_SCREENING_MODEL
-    assert model_for(AIProvider.OLLAMA) == DEFAULT_OLLAMA_MODEL
+    assert screening_model_for(AIProvider.OPENROUTER) == PROVIDER_CONFIGS[AIProvider.OPENROUTER].default_screening_model
+    assert model_for(AIProvider.OPENROUTER) == PROVIDER_CONFIGS[AIProvider.OPENROUTER].default_synthesis_model
+    assert screening_model_for(AIProvider.DEEPSEEK) == PROVIDER_CONFIGS[AIProvider.DEEPSEEK].default_screening_model
+    assert model_for(AIProvider.DEEPSEEK) == PROVIDER_CONFIGS[AIProvider.DEEPSEEK].default_synthesis_model
+    assert screening_model_for(AIProvider.DASHSCOPE) == PROVIDER_CONFIGS[AIProvider.DASHSCOPE].default_screening_model
+    assert model_for(AIProvider.DASHSCOPE) == PROVIDER_CONFIGS[AIProvider.DASHSCOPE].default_synthesis_model
+    assert screening_model_for(AIProvider.ZHIPU) == PROVIDER_CONFIGS[AIProvider.ZHIPU].default_screening_model
+    assert model_for(AIProvider.ZHIPU) == PROVIDER_CONFIGS[AIProvider.ZHIPU].default_synthesis_model
+    assert screening_model_for(AIProvider.OLLAMA) == PROVIDER_CONFIGS[AIProvider.OLLAMA].default_screening_model
+    assert model_for(AIProvider.OLLAMA) == PROVIDER_CONFIGS[AIProvider.OLLAMA].default_synthesis_model
 
-    # Overrides with aliases
-    assert screening_model_for(AIProvider.DASHSCOPE, "qwen-2.5-32b") == "qwen/qwen-2.5-32b-instruct"
-    assert model_for(AIProvider.ZHIPU, "glm-5") == "glm-5"
-    assert model_for(AIProvider.DEEPSEEK, "deepseek-r1") == "deepseek-reasoner"
+    # Env overrides
+    monkeypatch.setenv("DASHSCOPE_SCREENING_MODEL", "qwen-2.5-32b")
+    monkeypatch.setenv("ZHIPU_MODEL", "glm-5")
+    monkeypatch.setenv("DEEPSEEK_MODEL", "deepseek-reasoner")
+
+    assert screening_model_for(AIProvider.DASHSCOPE) == "qwen-2.5-32b"
+    assert model_for(AIProvider.ZHIPU) == "glm-5"
+    assert model_for(AIProvider.DEEPSEEK) == "deepseek-reasoner"
+
+    # CLI overrides
+    assert screening_model_for(AIProvider.DASHSCOPE, "qwen-max") == "qwen-max"
+    assert model_for(AIProvider.ZHIPU, "glm-4-plus") == "glm-4-plus"
 
 
 def test_validate_public_url_with_local_llm_endpoints() -> None:
@@ -279,9 +247,9 @@ def test_fenced_json_without_language_tag() -> None:
     assert _parse_json(raw) == {"status": "ok"}
 
 
-def test_openai_luna_and_terra_reasoning_effort(monkeypatch) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
-    monkeypatch.setenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+def test_reasoning_models_dispatch_and_effort(monkeypatch) -> None:
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-or-key")
+    monkeypatch.setenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     monkeypatch.delenv("OPENAI_REASONING_EFFORT", raising=False)
 
     captured_requests: list[dict] = []
@@ -298,52 +266,34 @@ def test_openai_luna_and_terra_reasoning_effort(monkeypatch) -> None:
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
 
-    # 1. Luna (Screening - fast non-reasoning model)
-    res_luna = model_json(
-        "Screen candidate",
-        provider=AIProvider.OPENAI,
-        model=resolve_model_id("luna", "default"),
-        max_tokens=300,
-        stage="screening",
-        client=client,
-    )
-    assert res_luna == {"status": "ok"}
-    req_luna = captured_requests[-1]
-    assert req_luna["model"] == "gpt-5-luna"
-    assert req_luna["max_completion_tokens"] == 300
-    assert "max_tokens" not in req_luna
-    assert req_luna["temperature"] == 0.1
-    assert "reasoning_effort" not in req_luna
-
-    # 2. Terra (Synthesis - reasoning model with default low effort)
-    res_terra = model_json(
-        "Synthesize memo",
-        provider=AIProvider.OPENAI,
-        model=resolve_model_id("terra", "default"),
+    # DeepSeek R1 via OpenRouter (reasoning model with default low effort)
+    res_r1 = model_json(
+        "Synthesize memo with R1",
+        provider=AIProvider.OPENROUTER,
+        model="deepseek/deepseek-r1",
         max_tokens=4096,
         stage="synthesis",
         client=client,
     )
-    assert res_terra == {"status": "ok"}
-    req_terra = captured_requests[-1]
-    assert req_terra["model"] == "gpt-5-terra"
-    assert req_terra["max_completion_tokens"] == 4096
-    assert "max_tokens" not in req_terra
-    assert "temperature" not in req_terra
-    assert req_terra["reasoning_effort"] == "low"
+    assert res_r1 == {"status": "ok"}
+    req_r1 = captured_requests[-1]
+    assert req_r1["model"] == "deepseek/deepseek-r1"
+    assert req_r1["max_tokens"] == 4096
+    assert "temperature" not in req_r1
+    assert req_r1["reasoning_effort"] == "low"
 
-    # 3. Terra with custom OPENAI_REASONING_EFFORT
+    # QwQ reasoning model with custom OPENAI_REASONING_EFFORT
     monkeypatch.setenv("OPENAI_REASONING_EFFORT", "medium")
-    res_terra_custom = model_json(
-        "Synthesize memo custom",
-        provider=AIProvider.OPENAI,
-        model=resolve_model_id("terra", "default"),
-        max_tokens=4096,
+    res_qwq = model_json(
+        "Synthesize memo with QwQ",
+        provider=AIProvider.OPENROUTER,
+        model="qwen/qwq-32b",
+        max_tokens=2048,
         stage="synthesis",
         client=client,
     )
-    assert res_terra_custom == {"status": "ok"}
-    req_terra_custom = captured_requests[-1]
-    assert req_terra_custom["reasoning_effort"] == "medium"
-
-
+    assert res_qwq == {"status": "ok"}
+    req_qwq = captured_requests[-1]
+    assert req_qwq["model"] == "qwen/qwq-32b"
+    assert "temperature" not in req_qwq
+    assert req_qwq["reasoning_effort"] == "medium"
