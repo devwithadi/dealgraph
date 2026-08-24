@@ -111,6 +111,24 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
         assert q.hop == 2
         assert "Nexus AI" in q.query
 
+    pricing_heading_only = [
+        Evidence(
+            id="ev-001",
+            claim="Company website",
+            excerpt="[PRICING & TIERS]: Contact us to learn about the product.",
+            source_url="https://nexus.example.com/pricing",
+            source_title="Pricing",
+            source_type="web_scraper",
+            trust_tier="self_reported",
+            verification="direct_scrape",
+        )
+    ]
+    heading_gaps = evaluate_evidence_gaps(mock_candidate, pricing_heading_only)
+    economics_gap = next(
+        gap for gap in heading_gaps if gap.pillar == DiligencePillar.UNIT_ECONOMICS.value
+    )
+    assert economics_gap.resolved is False
+
     # 2. Comprehensive evidence resolving all pillars
     full_evidence = [
         Evidence(
