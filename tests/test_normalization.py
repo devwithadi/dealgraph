@@ -74,6 +74,13 @@ def test_evidence_confidence_is_deterministic_and_rewards_independent_coverage()
     )
 
     assert _evidence_confidence([yc, company]) == 0.6
+    same_company_pages = [
+        company.model_copy(
+            update={"id": f"ev-{index:03d}", "source_url": f"https://agentflow.example/page-{index}"}
+        )
+        for index in range(2, 7)
+    ]
+    assert _evidence_confidence([yc, *same_company_pages]) == 0.65
     assert _evidence_confidence([yc, company, independent]) == 1.0
     assert _evidence_confidence([yc, company, independent]) == _evidence_confidence(
         [yc, company, independent]
