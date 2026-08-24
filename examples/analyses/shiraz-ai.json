@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer adoption and revenue growth.",
+    "Detailed market size and competitive landscape."
+  ],
+  "company": "Shiraz AI",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "High-mix manufacturing faces significant challenges in hiring and adapting to rigid automation [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The product claims to deliver value quickly by adapting to new tasks without retraining, but specific customer metrics are not disclosed [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The advantage lies in the adaptability of the robots, but the defensibility through integrations or proprietary data is not detailed [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The team has strong credentials in robotics, but execution evidence is limited [ev-001].",
+      "score": 7.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Market size and distribution motion are not disclosed, limiting the assessment of market potential [ev-001].",
+      "score": 4.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market is described as high-mix manufacturing, but specific ICP clarity, market size, and distribution motion are not disclosed [ev-001].",
+  "open_questions": [
+    "What are the specific customer metrics and feedback on the robots' performance?"
+  ],
+  "product": "The product is a robot foundation model that learns new manufacturing tasks from a single human demonstration, offering a full stack solution including hardware, model, and on-site deployment [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "The risk of the technology not being able to adapt quickly enough to changing manufacturing lines [ev-001]."
+  ],
+  "score": 60.5,
+  "summary": "Shiraz AI presents an innovative approach to manufacturing automation with a strong founding team from Boston Dynamics and Amazon Robotics. However, detailed traction metrics, market size, and financials are not disclosed [ev-001].",
+  "team": "The team comprises experienced founders with backgrounds in robotics at Boston Dynamics and Amazon Robotics [ev-001].",
+  "thesis": "Shiraz AI aims to disrupt traditional manufacturing automation by deploying robots that can learn new tasks from a single human demonstration, targeting high-mix manufacturing environments [ev-001].",
+  "why_now": "The timing is driven by the increasing difficulty in hiring enough people and the rigidity and expense of traditional automation in high-mix manufacturing [ev-001]."
+}

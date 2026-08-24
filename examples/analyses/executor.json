@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer adoption and traction.",
+    "Detailed financials and revenue projections."
+  ],
+  "company": "Executor",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Frequent and costly integration efforts for AI agents [ev-001].",
+      "score": 7.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Quick setup with a free tier, but actual customer value needs verification [ev-002].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Potential advantage through integrations, but not yet proven [ev-002].",
+      "score": 5.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Limited team size raises execution concerns [ev-001].",
+      "score": 3.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "market_distribution",
+      "rationale": "Market potential is clear, but distribution motion is not detailed [ev-002].",
+      "score": 4.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market for integration platforms in the AI space is growing, but specific ICP clarity and route to customers are not disclosed [ev-002].",
+  "open_questions": [
+    "What is the go-to-market strategy for a one-person team?"
+  ],
+  "product": "Executor is an integration platform that connects AI agents to various services through a unified management layer. It offers both self-hosted and cloud-hosted options with a free tier [ev-002][ev-003].",
+  "recommendation": "Watch",
+  "risks": [
+    "The small team size may limit execution capacity [ev-001]."
+  ],
+  "score": 52.0,
+  "summary": "Executor provides an integration platform and gateway for AI agents, allowing secure connections to services like Google Workspace, GitHub, and Slack. The product offers a free tier and claims to reduce context window bloat significantly [ev-002].",
+  "team": "Reported team size: 1 [ev-001].",
+  "thesis": "Executor aims to be the open-source integration management layer for AI, enabling seamless connections between various services and AI agents [ev-001][ev-002].",
+  "why_now": "The increasing complexity and need for seamless integration between AI agents and various services create a timely opportunity for Executor [ev-001]."
+}

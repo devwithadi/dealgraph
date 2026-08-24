@@ -5,7 +5,6 @@ import os
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any
 from urllib.parse import urlsplit
 
 import litellm
@@ -16,7 +15,7 @@ litellm.drop_params = True
 litellm.set_verbose = False
 
 from app.core.errors import AppError
-from app.core.logging import current_request_id
+from app.core.logging import current_request_id, request_headers
 from app.core.urls import validate_public_url
 from app.domain.enums import AIProvider
 
@@ -45,7 +44,6 @@ class ProviderRuntimeConstants:
     application_name: str = "dealgraph"
     request_timeout_seconds: int = 60
     num_retries: int = 0
-    response_format_type: str = "json_object"
     drop_unsupported_parameters: bool = True
 
 
@@ -279,7 +277,6 @@ def _completion_kwargs(
             {"role": "user", "content": prompt},
         ],
         "max_tokens": max_tokens,
-        "response_format": {"type": PROVIDER_RUNTIME.response_format_type},
         "drop_params": PROVIDER_RUNTIME.drop_unsupported_parameters,
         "num_retries": PROVIDER_RUNTIME.num_retries,
         "timeout": PROVIDER_RUNTIME.request_timeout_seconds,
@@ -292,50 +289,10 @@ def _completion_kwargs(
         }
     else:
         kwargs["api_base"] = _provider_url(provider)
+        kwargs["extra_headers"] = request_headers()
         if key:
             kwargs["api_key"] = key
     return kwargs
-
-
-def create_bedrock_client():
-    """Create a runtime client using Boto3's bearer-token or IAM credential chain."""
-    try:
-        import boto3
-
-        return boto3.client(
-            "bedrock-runtime",
-            region_name=os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "us-east-1")),
-        )
-    except Exception:
-        return None
-
-
-def _bedrock_converse_json(
-    prompt: str,
-    model: str,
-    max_tokens: int,
-    stage: str,
-    client: Any,
-) -> dict:
-    try:
-        response = client.converse(
-            modelId=model,
-            system=[{"text": BEDROCK_SYSTEM_GUARD}],
-            messages=[{"role": "user", "content": [{"text": prompt}]}],
-            inferenceConfig={"maxTokens": max_tokens, "temperature": 0},
-            requestMetadata={
-                "application": PROVIDER_RUNTIME.application_name,
-                "request_id": current_request_id(),
-                "stage": stage,
-            },
-        )
-        blocks = response["output"]["message"]["content"]
-        text = next(block["text"] for block in blocks if "text" in block)
-        return _parse_json(text)
-    except AppError:
-        raise
-    except Exception as error:
-        raise AppError(f"Bedrock {stage} unavailable", exit_code=4) from error
 
 
 def model_json(
@@ -345,14 +302,10 @@ def model_json(
     model: str,
     max_tokens: int,
     stage: str,
-    client: Any = None,
-    bedrock_client: Any = None,
 ) -> Mapping[str, object]:
     config = PROVIDER_CONFIGS.get(provider)
     if not config:
         raise AppError(f"Unsupported provider: {provider}", exit_code=2)
-    if provider == AIProvider.BEDROCK and bedrock_client is not None and hasattr(bedrock_client, "converse"):
-        return _bedrock_converse_json(prompt, model, max_tokens, stage, bedrock_client)
     try:
         response = completion(
             **_completion_kwargs(

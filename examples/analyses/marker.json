@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant revenue growth or expansion into new market segments.",
+    "Demonstrated success in automating complex workflows beyond onboarding and QA."
+  ],
+  "company": "Marker",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Marker addresses significant pain points in manual workflows, offering automation that reduces costs and improves efficiency [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Marker claims to deploy the first AI agents within weeks, accelerating the time to value for clients [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The company's approach of embedding within clients and continuously deploying new agents suggests a compounding advantage through deeper integration and understanding of client operations [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Limited team size but with relevant prior experience in AI transformation at a major retailer [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Evidence of early traction with significant clients suggests a credible market and distribution approach [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "Targets SMBs and larger enterprises with complex workflows that could benefit from automation. Evidence of traction with a Fortune 500 retailer and an 8-figure prop-tech company [ev-001].",
+  "open_questions": [
+    "How does Marker ensure the scalability and reliability of its AI agents across different clients?"
+  ],
+  "product": "Marker's product involves embedding within companies to deploy custom AI agents that automate workflows, reducing manual work and speeding up processes like onboarding and QA [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "Dependency on client adoption and the effectiveness of AI agents in diverse operational contexts [ev-001]."
+  ],
+  "score": 67.5,
+  "summary": "Marker offers a compelling B2B AI solution that embeds within companies to automate workflows using custom AI agents, showing potential for quick value and operational efficiency [ev-001].",
+  "team": "The team comprises 3 members, with prior experience at Gap's Office of AI, suggesting relevant domain expertise [ev-001].",
+  "thesis": "Marker aims to replace frequent, expensive SMB workflows with AI agents, leveraging its deep understanding of client operations to deliver rapid, embedded transformations [ev-001].",
+  "why_now": "The increasing complexity and cost of manual workflows in businesses, coupled with the rising adoption of AI technologies, create a timely opportunity for Marker's solution [ev-001]."
+}

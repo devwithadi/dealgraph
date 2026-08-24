@@ -1,0 +1,54 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Infrastructure for recursive self-improvement hiloop helps teams train agents for tasks where general models are not good enough. Give us a task, your current agent or model, and an evaluation. hiloop runs an autoresearch campaign across data, SFT and other post-training methods, continual learning, prompts, tools, harnesses, and systems, then returns the best verified improvement. It runs hosted or in your cloud.\r\n\r\nWe provide the research system around models: persistent memory, full experiment lineage, compute orchestration, and statistical verification. We’re starting with agent and model training, continual learning, and optimization.\r\n\r\nReach out to us for early access at founders@hiloop.ai. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-07-29T18:01:34Z",
+    "retrieved_at": "2026-08-24T19:29:27.084616Z",
+    "source_title": "YC profile: hiloop",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/hiloop",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: hiloop: infrastructure for automated research",
+    "excerpt": "[CUSTOMER TESTIMONIALS & TRACTION]: \",\"op\":\"restore\",\"to\":\"01K6Z…\"}\n\nhiloop BlogDocsTalk to us Hi, we're hiloop Infrastructure for automated research. Autoresearch is agents proposing, running, and verifying experiments. hiloop gives them snapshottable, forkable compute where observability is built in. Bring your own harness, or use ours. Talk to the founders Read the quickstart Backed byY Combinator Trusted by What we build What autoresearch needs to run. Provision compute, keep every experiment reproducible, and see what happened across thousands of runs. Computesnapshot · fork · restoreAny harnessbring your own · or use oursObservabilityevery run · one trace mainfork Compute your agents provision themselves through the API. A fork branches the run tree and inherits the parent's filesystem from its snapshot: try an idea, abandon it, or restore any snapshot into a fresh sandbox. Secret values are write-only to callers and encrypted at rest, and sandbox bindings fail closed until proof-bound request-time delivery ships. $hiloop run -- claude -p \"explain this repo\" # → capturing run 01K6Z… · every event fork-tagged $hiloop run -- python my_eval.py # any agent command, yours or ours ✓ llm · tool · stdout, one trace A homegrown eval script or an off-the-shelf RL loop runs the same way: wrap any command with hiloop run, same provisioning, same traces, no SDK required. // run 01K72… · fork of 01K6Z… · claude code harness {\"signal\":\"llm\",\"text\":\"try a cosine lr schedule, warmup 2k\"} {\"signal\":\"exec\",\"cmd\":\"python train.py --lr cosine\",\"fork\":\"01K73…\"} {\"signal\":\"log\",\"stdout\":\"step 4000 · val_bpb 0.9021\"} {\"signal\":\"llm\",\"text\":\"worse than parent, restore parent snapshot\"} {\"signal\":\"snapshot\",\"op\":\"restore\",\"to\":\"01K6Z…\"} ✓ one trace per run · every event fork-tagged Every run is recorded as one trace, with tokens and estimated cost rolled up per model, queryable with SQL. Who it's for Built for teams where performance is the product. You're building autoresearch Agents propose, run, and verify experiments against a metric you choose. If you can measure it, an agent can climb it. You're training models Every point of accuracy and every dollar of compute counts, and reproducibility across runs is non-negotiable. Performance is the product Speed, latency, memory, cost: you iterate constantly, and every experiment needs a record you can trust. Get in touch Tell us what you're building. If you're running autoresearch, training models, or building anything where per",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:29:35.516802Z",
+    "source_title": "hiloop: infrastructure for automated research",
+    "source_type": "web_scraper",
+    "source_url": "https://hiloop.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Security]: Security | hiloop",
+    "excerpt": "[PRICING & TIERS]: On the self-serve tier we retain inputs, outputs, and logs for a limited window to operate, debug, and secure the service. Enterprise customers can contract for stricter handling, including custom retention and | We do not train models on enterprise customer data. Self-serve terms describe any default use; enterprise terms are no-training by default.\n\nhiloop BlogDocsTalk to us Security Last updated: July 17, 2026 We build infrastructure that runs research workloads and trains models on customer data, so security and isolation are core to the product, not an afterthought. This page summarizes our posture in plain language. It is a living document and will expand as our program matures. Data handling • Encryption in transit and at rest. All traffic is served over TLS 1.2+; data at rest is encrypted with AES-256 using managed keys with rotation. • Data minimization and retention. On the self-serve tier we retain inputs, outputs, and logs for a limited window to operate, debug, and secure the service. Enterprise customers can contract for stricter handling, including custom retention and zero data retention (ZDR). See our Privacy Policy and your order form for specifics. • No training on customer data without permission. We do not train models on enterprise customer data. Self-serve terms describe any default use; enterprise terms are no-training by default. Workload isolation Because our product can execute customer-provided code and run experiments on customer data, isolation is the center of our threat model: • Workloads run in cell-owned, identity-fenced sandbox pods. Isolation strength is explicit per profile; the platform does not describe ordinary Kubernetes isolation as a dedicated kernel. • Tenants are isolated at the data layer (scoped credentials, row-level security) with explicit tests for cross-tenant access. • Customer models are isolated per tenant and are never co-mingled. Infrastructure • Hosted on major cloud providers; production access is least-privilege and gated by SSO + MFA. • Audit logging is enabled across production systems. • Secrets are stored in a managed secrets manager, never in source code. Sub-processors We publish the third parties that may process customer data on our sub-processors page, with advance notice of changes. Compliance roadmap • SOC 2 (Security): in progress. • Additional frameworks will be scoped as customer needs require. Live compliance status and security documents are available in our trust",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:29:35.516883Z",
+    "source_title": "Security | hiloop",
+    "source_type": "web_scraper",
+    "source_url": "https://hiloop.ai/security",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Blog]: Blog | hiloop",
+    "excerpt": "hiloop BlogDocsTalk to us hiloop blog Notes on automated research. • research·July 2, 2026 Search is enough Two stock coding agents with 50 B200s ran 4,188 experiments on Karpathy's autoresearch benchmark and reached a confirmed 0.9016 val_bpb, past the published state of the art, with almost no scaffolding. Karan Brar • engineering·June 29, 2026 We don't know how to run autoresearch We don't know how you'll run autoresearch, and you don't fully know either until you're in it. So we didn't ship a fixed set of eval features. We shipped one primitive: user-defined annotations you attach to any point, range, or run, and query like any other telemetry. Thomas Boser & Karan Brar • engineering·June 26, 2026 Decouple, decouple, decouple What an autoresearch loop needs changes constantly. So we decouple the harness, the compute, and the data from one another, and couple exactly one thing: experiment state and observability. Thomas Boser • engineering·June 26, 2026 Telemetry and a query engine designed for autoresearch Agent harnesses change every week, so you can't pin a fixed schema or a fixed set of queries to a moving target. We capture low and reconstruct high: one raw record of everything an agent did, and a query engine that reshapes it into whatever the research needs. Thomas Boser • announcement·June 25, 2026 Why we're building hiloop Karpathy's autoresearch showed that an agent with a verifiable metric can improve a system on its own. We're building the infrastructure to do that at scale. Thomas Boser & Karan Brar hiloop DocsBlog[email protected] PrivacyTermsAcceptable useSecurityTrust centerSub-processors© 2026 hiloop",
+    "id": "ev-004",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:29:35.516921Z",
+    "source_title": "Blog | hiloop",
+    "source_type": "web_scraper",
+    "source_url": "https://hiloop.ai/blog",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

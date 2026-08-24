@@ -1,0 +1,54 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "The market behind AI hardware. Stoa provides pricing and trading infrastructure for AI hardware, live with an RFQ marketplace where companies buy and sell GPUs through vetted dealers real-time. Reported team size: 3.",
+    "id": "ev-001",
+    "published_at": "2026-07-29T23:30:11Z",
+    "retrieved_at": "2026-08-24T19:29:02.362771Z",
+    "source_title": "YC profile: Stoa",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/stoa",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Stoa | The market behind AI hardwareStoaStoaStoa",
+    "excerpt": "[PRICING & TIERS]: Contact our team | $9,490 | $25,860 | $33,850 | $43,860 | $67,400\n\nProductDataResearchAboutContact Log inSign up The market behind AI hardware Backed by Y Combinator Sign upContact our team Buy and sell GPUs with verified counterparties and price discovery. A100 80GB · $9,490 H100 SXM5 · $25,860 H200 SXM · $33,850 B200 · $43,860 GB200 NVL · $67,400 GPU supply has no shared price discovery layer. How Stoa works Supply is scattered OEM allocation, cloud capacity, brokers, operators, and secondary sellers each expose a different slice of the market. Price depends on context SKU, delivery timing, region, quantity, condition, financing, and urgency all change where GPUs actually clear. Signals are incomplete Buyers and sellers still rely on private quotes, stale lists, and partial broker color to see where hardware actually clears. Product Supply, pricing, and execution in one venue. Price GPU supply, discover clearing levels, and execute GPU transactions with verified counterparties. A100A100 80GBH100H100 SXM5H200H200 SXMB200B200B300B300 Servers 4 GPUs / node8 GPUs / node −8 nodes+ Condition A · NewB · RefurbC · Used Quantity64 GPUs Illustrative levels. Not live market data. Off-market comparison reflects typical private-channel premiums. Markets via $1.95MSaving $156kEst. total on Stoa$243,400 / node Off-market $2.10MEst. total off-market$262,900 / nodeRequest this quote - 8 nodes · H100 SXM5 · Grade A How it works From RFQ to settled trade. One structured path through the market - every step explicit, every step on record. • 01 Describe the trade Describe the hardware in plain language or attach a quote PDF. AI drafts the RFQ - you stay in control of every field. • 02 Review and send Terms, delivery, and deadlines are explicit before anything goes out. Accepting a quote creates a binding trade. • 03 Execute at a firm price Verified dealers respond with firm quotes. Accept, and the trade executes with grade, condition, and verification expectations on record. • 04 Settle step by step Settlement runs on a recorded timeline: confirmed, payment, shipped, delivered, inspected, settled, with evidence required along the way. GPU Market Built for every side of the GPU market. GPU Brokers & dealers Match supply with verified demand and see clearing levels. Data center operators Sell surplus, price hardware, and plan fleet rotations. AI labs & enterprises Find available GPUs and compare offers by SKU and region. Cloud & neoclouds Acquire capacity, p",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:29:09.592924Z",
+    "source_title": "Stoa | The market behind AI hardwareStoaStoaStoa",
+    "source_type": "web_scraper",
+    "source_url": "https://www.stoaexchange.com/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [About]: About | StoaStoaStoaStoa",
+    "excerpt": "[PRICING & TIERS]: Contact our team | Team\n[TEAM & FOUNDERS]: CEO • CTO\n\nProductDataResearchAboutContact Log inSign up The market layer for AI hardware. Sign upContact our team Stoa starts where GPUs actually trade: supply, demand, price, and trust. What Stoa is From hardware flow to market structure. GPUs are becoming balance-sheet assets before the market around them has fully formed. Stoa turns trading activity into the context institutions need to price, trade, and manage AI hardware. 01 Verified supply Inventory and demand signals move from private channels into a market view Stoa can route and price. Inventory and demand signals move from private channels into a market view Stoa can route and price. 02 Contextual pricing Clearing levels carry context: SKU, condition, location, timing, and counterparty quality. Clearing levels carry context: SKU, condition, location, timing, and counterparty quality. 03 Financeable collateral Readable hardware markets support financing, risk assessment, and liquidation planning. Readable hardware markets support financing, risk assessment, and liquidation planning. Product AI hardware is becoming a market before it becomes an asset class. Every GPU transaction carries signal: available supply, demand, clearing price, and counterparty performance. Today much of that signal stays in calls, spreadsheets, and private relationships. Captured all under one roof Stoa captures market context at the point of trade so participants can build better liquidity, financing, and reference pricing for AI hardware. Team Founders Stoa Markets brings fragmented GPU supply and demand together, so participants can find availability and compare offers. Berat Celik CEO Eren Berke Saglam CFO Kaan Yigit CTO Trade GPUs withverified counterparties. Sign upContact our team The institutional marketplace to buy and sell GPUs and AI hardware. Product • Markets • Data • Research Company • About • FAQ • Contact Legal • Privacy • Terms Phone+1 510 605 3844 General Inquiries[email protected] Media Inquiries[email protected] © 2026 Stoa Markets, Inc. All rights reserved.",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:29:09.593025Z",
+    "source_title": "About | StoaStoaStoaStoa",
+    "source_type": "web_scraper",
+    "source_url": "https://www.stoaexchange.com/about",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Security]: Vulnerability Disclosure | StoaStoaStoaStoa",
+    "excerpt": "[PRICING & TIERS]: Contact our team\n\nProductDataResearchAboutContact Log inSign up Vulnerability Disclosure Last Updated: August 9, 2026 Reporting If you believe you have found a security vulnerability in a Stoa system, email[email protected]. Include a technical description, the affected URL or endpoint, steps to reproduce, and any proof of concept. Ground rules • Act in good faith. Do not access, modify, or destroy data that does not belong to you. • Do not degrade service availability, and do not run high-volume automated scanning against production systems. • Do not use social engineering, phishing, or physical attacks against Stoa personnel or venue participants. • Allow a reasonable remediation period before any public disclosure. What to expect We review every report. Stoa does not offer monetary rewards for vulnerability reports. The machine-readable version of this policy is published at/.well-known/security.txt. Trade GPUs withverified counterparties. Sign upContact our team The institutional marketplace to buy and sell GPUs and AI hardware. Product • Markets • Data • Research Company • About • FAQ • Contact Legal • Privacy • Terms Phone+1 510 605 3844 General Inquiries[email protected] Media Inquiries[email protected] © 2026 Stoa Markets, Inc. All rights reserved.",
+    "id": "ev-004",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:29:09.593058Z",
+    "source_title": "Vulnerability Disclosure | StoaStoaStoaStoa",
+    "source_type": "web_scraper",
+    "source_url": "https://www.stoaexchange.com/security",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

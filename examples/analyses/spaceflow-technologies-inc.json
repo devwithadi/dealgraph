@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer adoption and revenue growth.",
+    "Detailed security audit results and customer testimonials."
+  ],
+  "company": "SpaceFlow Technologies, Inc.",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The product addresses frequent and costly supply chain workflows, offering automation and integration with existing systems [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The product claims to provide quick value through automation, but specific customer success stories are not disclosed [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The advantage lies in integration with existing systems and governance features, but the defensibility through data or distribution is not clear [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The team is small, and detailed execution evidence is not disclosed [ev-001].",
+      "score": 4.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market is credible, but detailed distribution motion and ICP clarity are not disclosed [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market is B2B, specifically targeting supply chain and logistics. The ICP is industrial and regulated enterprises looking to automate high-stakes operations without replacing existing systems [ev-001].",
+  "open_questions": [
+    "What is the traction and customer feedback on the product?"
+  ],
+  "product": "The product is a managed runtime for AI agents that automate supply chain workflows, integrating with ERPs, email, spreadsheets, documents, and supplier portals. It offers features like normalizing quotations, chasing suppliers, reconciling inventory, and aligning demand and supply [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "Security risks associated with AI agent access to sensitive enterprise data [ev-002]."
+  ],
+  "score": 60.0,
+  "summary": "SpaceFlow offers a managed runtime for AI agents that automate supply chain tasks across various enterprise systems, with a focus on security and governance [ev-001]. The company has a small team of 4 members and deploys its solution in customers' cloud or on-prem environments [ev-001].",
+  "team": "Team size is reported to be 4 members, but detailed execution evidence is not disclosed [ev-001].",
+  "thesis": "SpaceFlow Technologies, Inc. aims to replace frequent, expensive SMB supply chain workflows with AI agents that integrate with existing ERPs and tools, providing a governed context layer and reusable skills for operations [ev-001].",
+  "why_now": "The timing is driven by the increasing need for automation in supply chain operations and the growing adoption of AI in enterprise workflows [ev-001]."
+}

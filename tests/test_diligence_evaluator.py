@@ -1,6 +1,6 @@
 import json
+from types import SimpleNamespace
 
-import httpx
 import pytest
 from pydantic import ValidationError
 
@@ -62,7 +62,7 @@ def test_diligence_prompt_owns_evaluation_and_query_instructions() -> None:
     assert '"hop": 2' in prompt
 
 
-def test_evaluate_diligence_validates_structured_model_output() -> None:
+def test_evaluate_diligence_validates_structured_model_output(monkeypatch) -> None:
     payload = {
         "gaps": [
             {
@@ -85,20 +85,21 @@ def test_evaluate_diligence_validates_structured_model_output() -> None:
         ],
     }
 
-    class BedrockClient:
-        def converse(self, **kwargs):
-            assert kwargs["requestMetadata"]["stage"] == "diligence_evaluation"
-            return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+    def fake_completion(**kwargs):
+        assert kwargs["requestMetadata"]["stage"] == "diligence_evaluation"
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+        )
+
+    monkeypatch.setattr("app.analysis.providers.completion", fake_completion)
 
     result = evaluate_diligence(
         _candidate(),
         _evidence(),
         "AI agents",
         2,
-        httpx.Client(),
         provider=AIProvider.BEDROCK,
         model="test-model",
-        bedrock_client=BedrockClient(),
     )
 
     assert isinstance(result, DiligenceEvaluation)
@@ -106,7 +107,7 @@ def test_evaluate_diligence_validates_structured_model_output() -> None:
     assert result.followup_queries[0].pillar is DiligencePillar.UNIT_ECONOMICS
 
 
-def test_evaluate_diligence_rejects_duplicate_queries_for_a_pillar() -> None:
+def test_evaluate_diligence_rejects_duplicate_queries_for_a_pillar(monkeypatch) -> None:
     payload = {
         "gaps": [
             {
@@ -130,9 +131,12 @@ def test_evaluate_diligence_rejects_duplicate_queries_for_a_pillar() -> None:
         ],
     }
 
-    class BedrockClient:
-        def converse(self, **_kwargs):
-            return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+    def fake_completion(**_kwargs):
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+        )
+
+    monkeypatch.setattr("app.analysis.providers.completion", fake_completion)
 
     with pytest.raises(ValueError, match="one follow-up query per unresolved pillar"):
         evaluate_diligence(
@@ -140,8 +144,6 @@ def test_evaluate_diligence_rejects_duplicate_queries_for_a_pillar() -> None:
             _evidence(),
             "AI agents",
             2,
-            httpx.Client(),
             provider=AIProvider.BEDROCK,
             model="test-model",
-            bedrock_client=BedrockClient(),
         )

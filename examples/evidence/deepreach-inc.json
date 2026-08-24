@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Real-world data network for robots & world models Physical AI — robots and world models — is bottlenecked on one thing: diverse,\r\nreal-world data at massive scale showing how humans actually do work in the\r\nphysical world. It was never written down, and you can't buy it, because no one\r\nhas ever captured it. Only real local experts, the people who do this work every\r\nday, can produce data this authentic and valuable.\r\n\r\nDeepReach builds the network that reaches them. We design and manufacture\r\nwearable stereo capture devices, then place them with local data partners who\r\nrun collection as their own business — in warehouses, workshops, farms, kitchens\r\nand repair shops. They own the local relationships; we supply the hardware, the\r\nsoftware platform, the quality pipeline and the payments. Anyone can run a data\r\nbusiness.\r\n\r\nThat structure is what produces diversity. Instead of thousands of hours inside\r\none environment, we deliver hours spread across thousands of environments —\r\nwhich is what actually makes robot policies generalize.\r\n\r\n475 devices in the field and 100+ data partners are live across 7 countries, adding new\r\npartners every week. They've collected nearly 150,000 clips in the past three\r\nmonths, with volume roughly doubling month over month. Our data is in production\r\nwith multiple frontier model and robotics companies, and we're scaling to\r\n10,000+ devices across 50 countries. Reported team size: 6.",
+    "id": "ev-001",
+    "published_at": "2026-08-12T19:45:14Z",
+    "retrieved_at": "2026-08-24T19:24:00.352564Z",
+    "source_title": "YC profile: DeepReach Inc.",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/deepreach-inc",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Become a Data Partner | DeepReach",
+    "excerpt": "[PRICING & TIERS]: ~$7\n\nStart Your Data Business Today Join DeepReach as a Data Partner — collect real-world operation data with a wearable device and turn everyday work into earnings. Start now 3 Steps To Get Started 1 Input your info Tell us who you are and where you collect. Sign-up takes minutes. 2 Reserve your device Claim a collection device. We ship it to you ready to wear and record. 3 Access the platform and start earning Upload your captures from anywhere and get paid as your data is accepted. See What You Can Earn Illustrative rate ~$7 / qualified hour Payments are determined per task and vary based on task type, task availability, location, and accepted data quality. Examples shown are illustrative only and do not represent guaranteed earnings. Devices15 Approved hours / day4hrs Estimated monthly earnings $12,600 / month Illustrative example only. Actual earnings vary and are not guaranteed. Earnings depend on task availability, pricing, location, approved data quality, and approved hours. Calculation shown assumes15 devices, 4 approved hours/day, an illustrative rate of ~$7 per approved hour, over 30 days. Examples shown are for illustration only and do not represent typical or guaranteed earnings. Get started From Our Data Partners “DeepReach gave me more than a project — a way to turn local knowledge into global impact.” Mateo Acosta Quito, Ecuador “It’s more than a one-time project — it’s a chance to build a local AI infrastructure business.” Spencer Utah, USA “Working with DeepReach taught me so much about AI, robotics, and data collection.” Meenakshi Kanpur, India “I’m not doing one-off jobs — I’m building a local network and earnings that keep growing.” Boyd Poonyapat Bangkok, Thailand “What excites me is building local AI infrastructure — not just completing a one-time task.” Luciano Toronto, Canada “As a Hubber, I connect people and collect real-world data across many industries.” Hà Hải Sơn Ha Long, Vietnam Join The Global Network Data Partners in dozens of countries are already collecting real-world operation data with DeepReach. Ready to Start Your Data Business? Become a DeepReach Data Partner today — it only takes a few minutes to sign up. Become a Data Partner Contact Us • Email:info@deepreach.ai • Address: 2540 N First St #102, San Jose, CA 95131 Follow Us © 2026 DeepReach Inc. All rights reserved.",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:24:08.543923Z",
+    "source_title": "Become a Data Partner | DeepReach",
+    "source_type": "web_scraper",
+    "source_url": "http://www.deepreach.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

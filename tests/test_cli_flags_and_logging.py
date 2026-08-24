@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -216,6 +217,7 @@ def test_safe_stage_error_preserves_meaningful_messages() -> None:
 
 
 def test_pipeline_run_with_progress_callback_and_model_overrides(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "test-only")
     candidate_record = {
         "id": "agentdesk",
         "slug": "agentdesk",
@@ -248,60 +250,63 @@ def test_pipeline_run_with_progress_callback_and_model_overrides(tmp_path: Path,
 
     models_called: list[str] = []
 
-    class MockBedrockClient:
-        def converse(self, **kwargs):
-            models_called.append(kwargs["modelId"])
-            stage = kwargs["requestMetadata"]["stage"]
-            if stage == "screening":
-                payload = {
-                    "decisions": [
-                        {
-                            "slug": "agentdesk",
-                            "advance": True,
-                            "fit_score": 92.0,
-                            "rationale": "High thesis fit",
-                        }
-                    ]
-                }
-            elif stage == "diligence_evaluation":
-                payload = {
-                    "gaps": [
-                        {
-                            "pillar": pillar.value,
-                            "description": f"{pillar.value} covered by baseline evidence",
-                            "severity": "low",
-                            "resolved": True,
-                            "rationale": "Grounded in supplied evidence",
-                            "resolved_by_evidence_id": "ev-001",
-                        }
-                        for pillar in DiligencePillar.core()
-                    ],
-                    "followup_queries": [],
-                }
-            else:
-                payload = {
-                    "summary": "AgentDesk provides SMB agent automation. [ev-001]",
-                    "team": "Unknown",
-                    "product": "AgentDesk support automation platform. [ev-001]",
-                    "market": "SMB customer support market. [ev-002]",
-                    "why_now": "Rapid AI adoption. [ev-001]",
-                    "risks": ["Retention is not yet proven. [ev-002]"],
-                    "open_questions": ["What is SMB churn?"],
-                    "changes_mind": ["Verified retention metrics", "Customer reference calls"],
-                    "score": 90.0,
-                    "dimensions": _dimensions(),
-                    "confidence": 0.85,
-                    "recommendation": "Take a meeting",
-                    "citations": ["ev-001", "ev-002"],
-                }
-            return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+    def fake_completion(**kwargs):
+        models_called.append(kwargs["model"])
+        stage = kwargs["requestMetadata"]["stage"]
+        if stage == "screening":
+            payload = {
+                "decisions": [
+                    {
+                        "slug": "agentdesk",
+                        "advance": True,
+                        "fit_score": 92.0,
+                        "rationale": "High thesis fit",
+                    }
+                ]
+            }
+        elif stage == "diligence_evaluation":
+            payload = {
+                "gaps": [
+                    {
+                        "pillar": pillar.value,
+                        "description": f"{pillar.value} covered by baseline evidence",
+                        "severity": "low",
+                        "resolved": True,
+                        "rationale": "Grounded in supplied evidence",
+                        "resolved_by_evidence_id": "ev-001",
+                    }
+                    for pillar in DiligencePillar.core()
+                ],
+                "followup_queries": [],
+            }
+        else:
+            payload = {
+                "summary": "AgentDesk provides SMB agent automation. [ev-001]",
+                "team": "Unknown",
+                "product": "AgentDesk support automation platform. [ev-001]",
+                "market": "SMB customer support market. [ev-002]",
+                "why_now": "Rapid AI adoption. [ev-001]",
+                "risks": ["Retention is not yet proven. [ev-002]"],
+                "open_questions": ["What is SMB churn?"],
+                "changes_mind": ["Verified retention metrics", "Customer reference calls"],
+                "score": 90.0,
+                "dimensions": _dimensions(),
+                "confidence": 0.85,
+                "recommendation": "Take a meeting",
+                "citations": ["ev-001", "ev-002"],
+            }
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+        )
+
+    monkeypatch.setattr("app.analysis.providers.completion", fake_completion)
 
     events_received: list[tuple[str, dict]] = []
 
     def callback(event: str, data: dict) -> None:
         events_received.append((event, data))
 
-    pipeline = Pipeline(bedrock_client=MockBedrockClient())
+    pipeline = Pipeline()
     result = pipeline.run(
         topic="AI agents for SMBs",
         batch=None,
@@ -317,8 +322,10 @@ def test_pipeline_run_with_progress_callback_and_model_overrides(tmp_path: Path,
 
     assert result.succeeded == 1
     assert result.failed == 0
-    # Model IDs used directly
-    assert models_called == ["amazon.nova-micro-v1:0", "us.meta.llama3-3-70b-instruct-v1:0"]
+    assert models_called == [
+        "bedrock/amazon.nova-micro-v1:0",
+        "bedrock/us.meta.llama3-3-70b-instruct-v1:0",
+    ]
     assert (tmp_path / "run" / "agentdesk.pdf").exists()
 
     # Header event contains configured models
@@ -481,6 +488,7 @@ def test_console_reporter_deep_diligence_events(capsys) -> None:
 
 
 def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "test-only")
     candidate_record = {
         "id": "agentdesk",
         "slug": "agentdesk",
@@ -512,54 +520,57 @@ def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> N
         ],
     )
 
-    class MockBedrockClient:
-        def converse(self, **kwargs):
-            stage = kwargs["requestMetadata"]["stage"]
-            if stage == "screening":
-                payload = {
-                    "decisions": [
-                        {
-                            "slug": "agentdesk",
-                            "advance": True,
-                            "fit_score": 92.0,
-                            "rationale": "High thesis fit",
-                        }
-                    ]
-                }
-            elif stage == "diligence_evaluation":
-                payload = {
-                    "gaps": [
-                        {
-                            "pillar": pillar.value,
-                            "description": f"{pillar.value} covered by baseline evidence",
-                            "severity": "low",
-                            "resolved": True,
-                            "rationale": "Grounded in supplied evidence",
-                            "resolved_by_evidence_id": "ev-001",
-                        }
-                        for pillar in DiligencePillar.core()
-                    ],
-                    "followup_queries": [],
-                }
-            else:
-                payload = {
-                    "summary": "AgentDesk provides SMB agent automation. [ev-001]",
-                    "team": "Unknown",
-                    "product": "AgentDesk support automation platform. [ev-001]",
-                    "market": "SMB customer support market. [ev-002]",
-                    "why_now": "Rapid AI adoption. [ev-001]",
-                    "risks": ["Retention is not yet proven. [ev-002]"],
-                    "open_questions": ["What is SMB churn?"],
-                    "changes_mind": ["Verified retention metrics", "Customer reference calls"],
-                    "score": 90.0,
-                    "dimensions": _dimensions(),
-                    "confidence": 0.85,
-                    "recommendation": "Take a meeting",
-                    "citations": ["ev-001", "ev-002"],
-                }
-            return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+    def fake_completion(**kwargs):
+        stage = kwargs["requestMetadata"]["stage"]
+        if stage == "screening":
+            payload = {
+                "decisions": [
+                    {
+                        "slug": "agentdesk",
+                        "advance": True,
+                        "fit_score": 92.0,
+                        "rationale": "High thesis fit",
+                    }
+                ]
+            }
+        elif stage == "diligence_evaluation":
+            payload = {
+                "gaps": [
+                    {
+                        "pillar": pillar.value,
+                        "description": f"{pillar.value} covered by baseline evidence",
+                        "severity": "low",
+                        "resolved": True,
+                        "rationale": "Grounded in supplied evidence",
+                        "resolved_by_evidence_id": "ev-001",
+                    }
+                    for pillar in DiligencePillar.core()
+                ],
+                "followup_queries": [],
+            }
+        else:
+            payload = {
+                "summary": "AgentDesk provides SMB agent automation. [ev-001]",
+                "team": "Unknown",
+                "product": "AgentDesk support automation platform. [ev-001]",
+                "market": "SMB customer support market. [ev-002]",
+                "why_now": "Rapid AI adoption. [ev-001]",
+                "risks": ["Retention is not yet proven. [ev-002]"],
+                "open_questions": ["What is SMB churn?"],
+                "changes_mind": ["Verified retention metrics", "Customer reference calls"],
+                "score": 90.0,
+                "dimensions": _dimensions(),
+                "confidence": 0.85,
+                "recommendation": "Take a meeting",
+                "citations": ["ev-001", "ev-002"],
+            }
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+        )
 
-    pipeline = Pipeline(bedrock_client=MockBedrockClient())
+    monkeypatch.setattr("app.analysis.providers.completion", fake_completion)
+
+    pipeline = Pipeline()
     result = pipeline.run(
         topic="AI agents for SMBs",
         batch=None,

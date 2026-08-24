@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "New semiconductors that merge compute and vision We want to push machines to where humans cant go. \r\nPresidential early career award winning Duke Semiconductor ECE Faculty Tania Roy and her past student / VC Associate Sanjeev Chauhan are building a frontier semiconductor research lab. Their focus is on solving physical AI challenges from the semiconductor device level and building products around the moat of impossible to copy innovation. Their first work is on a new vision sensor that can run neural network filters right in the camera pixels and only collect data that machines care about. As physical AI develops, machines needs to understand the world around them if they aim to interact with them.\r\n Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-07-26T23:38:19Z",
+    "retrieved_at": "2026-08-24T19:31:25.650331Z",
+    "source_title": "YC profile: Synapse Semiconductor",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/synapse-semiconductor",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Synapse Semiconductor",
+    "excerpt": "[INTEGRATIONS & ECOSYSTEM]: Synapse Semiconductor is the first company\n                    to integrate all components of the computer vision stack into one substrate.\n\nWe push machines to explore where humans can’t go. Synapse SemiconductorContactfounders@synapsesemi.org We solve how machines see the world. We replace the disjoint architecture of a camera and a GPU with one chip: a compute substrate that acts as a sensor. Tap for sound Modern computer vision requires the complex orchestration of storage, compute, processing, and sensors, inherently limiting the flexibility of its applications. Synapse Semiconductor is the first company to integrate all components of the computer vision stack into one substrate. Camera optics + sensor Interconnect MIPI · PCIe HBM stacked memory GPU module Jetson-class The whole stack. One wafer. Scroll Synapse Semiconductor is a frontier semiconductor research lab building senses for physical AI. Synapse Semiconductor builds image sensors that process AI on the sensor itself. Each pixel captures light and runs neural-network computation in the same device, replacing the need for a GPU while cutting the power and latency of edge vision. Vision systems are already the core technology for self-driving cars, drones and humanoid robotics. Like the New World once was, space is the next great frontier to explore. In the future, drones will navigate using vision alone, robots will scout the Moon for the next colony, and satellites will perceive their environment and react in real time. At the foundation of it all will be Synapse Semiconductor. Manifestos Sanjeev Chauhan The innovation at the smallest scale yields the largest impact. Solving problems in the hardest domains creates results no nation can replicate. What the US needs is a semiconductor lab that imagines novel ideas for devices, transistors, compute, sensors, memory systems — the foundations of our society — and scales them all the way to a product. In house. That’s what Synapse Semiconductor is. The globalization of semiconductors was great. It lowered prices and increased the ubiquity of technology. However, it slowed the cycle of innovation. Fabless companies can innovate at the circuit design level with little friction, but what happens when that is not enough? New ideas are limited by the selection of PDKs a foundry has. So few can make new products where innovation is rooted in new transistor-like devices. So few can imagine where ideas are not constrained by the",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:31:30.459251Z",
+    "source_title": "Synapse Semiconductor",
+    "source_type": "web_scraper",
+    "source_url": "https://synapsesemi.org/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

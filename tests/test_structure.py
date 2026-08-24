@@ -1,7 +1,17 @@
 from pathlib import Path
+import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_bedrock_runtime_dependency_is_installed_with_litellm() -> None:
+    dependencies = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))[
+        "project"
+    ]["dependencies"]
+
+    assert any(dependency.startswith("litellm") for dependency in dependencies)
+    assert any(dependency.startswith("boto3") for dependency in dependencies)
 
 
 def test_prompts_are_segregated_by_llm_stage() -> None:
@@ -65,6 +75,6 @@ def test_readme_links_deep_architecture_diagrams() -> None:
     assert "app/pipeline/service.py" in architecture
     assert "Per-company failure isolation" in architecture
     assert "X-Kong-Request-ID" in data_flow
-    assert "Boto3 Converse" in data_flow
+    assert "LiteLLM" in data_flow
     assert "SSRF" in data_flow
     assert "atomic" in data_flow

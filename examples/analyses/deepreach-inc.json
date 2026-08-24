@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer traction and measurable value for AI and robotics companies.",
+    "Detailed financials and clear market sizing."
+  ],
+  "company": "DeepReach Inc.",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The problem of collecting diverse, real-world data for AI applications is significant, but the severity and cost to customers are not clearly defined [ev-001].",
+      "score": 6.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The company claims to have data in production with multiple frontier model and robotics companies, but specific customer outcomes and speed to value are not disclosed [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The scalable and distributed model for data collection could provide a compounding advantage through the diversity and volume of data collected [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The team size is reported, but specific execution evidence and credentials are not disclosed [ev-001].",
+      "score": 4.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market appears to be B2B, but the ICP and credible market size are not clearly defined [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market appears to be B2B, targeting frontier model and robotics companies. The ICP and credible market size are not clearly defined [ev-001].",
+  "open_questions": [
+    "What are the specific qualifications and past successes of the founding team?"
+  ],
+  "product": "The product involves wearable stereo capture devices for local data partners to collect real-world operation data. The company claims to have 475 devices in the field and 100+ data partners across 7 countries [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "The reliance on local data partners for data collection could introduce variability and quality control issues [ev-001]."
+  ],
+  "score": 55.0,
+  "summary": "DeepReach Inc. appears to have a novel approach to collecting real-world data for AI applications, with a growing network of data partners and devices in operation. However, key details such as team credentials, financials, and specific customer outcomes are not disclosed [ev-001].",
+  "team": "Reported team size is 6, but specific credentials and execution evidence are not disclosed [ev-001].",
+  "thesis": "DeepReach Inc. aims to build a real-world data network for robots and world models by capturing authentic, diverse data from local experts across various environments. The company designs and manufactures wearable devices for data collection, creating a scalable and distributed model that could provide valuable data to AI and robotics companies [ev-001].",
+  "why_now": "The company is scaling to 10,000+ devices across 50 countries, indicating a potential growth catalyst [ev-001]."
+}

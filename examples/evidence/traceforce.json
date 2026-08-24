@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Securing AI native apps directly on devices AI apps such as ChatGPT and Claude have become part of everyone's daily workflow, but they introduce new security risks that traditional security tools weren't built to handle. Security teams at companies from startups to Fortune 500s, are struggling to keep up.\r\n\r\nTraceforce gives a company’s security team visibility of how AI apps are being used across company’s devices, and the ability to detect and prevent security breaches and unsafe actions as early as possible. Reported team size: 2. YC marks the company as hiring.",
+    "id": "ev-001",
+    "published_at": "2026-07-25T21:40:08Z",
+    "retrieved_at": "2026-08-24T19:31:47.243968Z",
+    "source_title": "YC profile: Traceforce",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/traceforce",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Traceforce | AI Security & Control Platform for Devices",
+    "excerpt": "[PRICING & TIERS]: The team behind Traceforce. | Talk to our team. | Start a free trial\n[INTEGRATIONS & ECOSYSTEM]: Integrates with Jamf, JumpCloud, NinjaOne, and Iru—deploy via existing IT tools.\n\nProduct Platform Overview AI security and control platform. Docs Technical guides and references. Resources Customer Stories Real-world Traceforce success stories. Blogs Insights on AI security. Pricing Simple pricing that scales. Company About Us The team behind Traceforce. Legal Policies, terms, and compliance. Contact Us Talk to our team. Get started Get started Get Started Contact Us Get started Product Platform Overview AI security and control platform. Docs Technical guides and references. Resources Pricing Simple pricing that scales. Customer Stories Real-world Traceforce success stories. Blogs Insights on AI security. Company About Us The team behind Traceforce. Legal Policies, terms, and compliance. Contact Us Talk to our team. Get started Get started Get started Security Beyond the Browser Seeing Beneath the surface of every device. Get started Start a free trial Open-source MCP scanner Open-source MCP scanner Why Traceforce Built for the way AI is Actually Used AI apps have moved beyond the browser. Your security tools haven't. On-device, not on the wire Traceforce runs on the device, securing browser AI, desktop apps, and CLI agents with full visibility. 15-minute self-serve onboarding No complex integrations. Connect your MDM and secure your fleet in under 15 minutes. Stops Dangerous Actions Traceforce tracks every tool call from MCPs to CLIs and stops dangerous actions from being run. TraceGraph incident intelligence Legacy tools log processes—Traceforce reveals prompts, tool calls, reasoning, and outcomes. Automated remediation, no scripts No remediation scripts—Traceforce auto-patches AI packages on-device with policy and audit logs. Preferred MDM partner network Integrates with Jamf, JumpCloud, NinjaOne, and Iru—deploy via existing IT tools. Secure AI Infrastructure Running AI Without Blind Spots Trusted by companies that power the Fortune 500 Get started Start a free trial Compliance & Certifications Devices 1K+ Secure and monitor AI activity across your entire device fleet from day one. Secure and monitor AI activity across your entire device fleet from day one. Onboarding 15MIN Deploy quickly with automated setup and minimal IT involvement. Deploy quickly with automated setup and minimal IT involvement. MCPs Curated 1K+ Gain visibility and co",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:31:55.106315Z",
+    "source_title": "Traceforce | AI Security & Control Platform for Devices",
+    "source_type": "web_scraper",
+    "source_url": "https://www.traceforce.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Pricing]: Pricing Plans | Traceforce AI Security Platform",
+    "excerpt": "[PRICING & TIERS]: The team behind Traceforce. | Talk to our team. | Free Trial | $0 | features in Free Trial Include | Up to 10 devices for free\n[INTEGRATIONS & ECOSYSTEM]: API access to all telemetry\n\nProduct Platform Overview AI security and control platform. Docs Technical guides and references. Resources Customer Stories Real-world Traceforce success stories. Blogs Insights on AI security. Pricing Simple pricing that scales. Company About Us The team behind Traceforce. Legal Policies, terms, and compliance. Contact Us Talk to our team. Get started Get started Get Started Contact Us Get started Product Platform Overview AI security and control platform. Docs Technical guides and references. Resources Pricing Simple pricing that scales. Customer Stories Real-world Traceforce success stories. Blogs Insights on AI security. Company About Us The team behind Traceforce. Legal Policies, terms, and compliance. Contact Us Talk to our team. Get started Get started Get started Simple, Transparent Pricing Choose the plan that grows with your organization Monthly Annually Free Trial $0 10 devices, up to 30 days — no credit card required. features in Free Trial Include Risk assessment over 900+ AI apps and MCPs Sensitive data leakage detection in Claude , ChatGPT and Copilot Detect dangerous actions for Claude Code, Cursor and Codex API access to all telemetry Up to 10 devices for free Start free trial Start free trial Pro Plan Per device Billed monthly or yearly for flexibility All features in Free Trial, Plus Runtime control over Claude Cowork, ChatGPT desktop Admin controls for connectors MCP registry with security approval process Unlimited devices Get started with Pro Get started with Pro Get started with Pro Get started with Pro Enterprise Plan Custom Built for large orgs needing flexibility, scale, and governance All features in Pro, Plus Single sign-on (SSO) Multi-tenant support Dedicated support Onboarding services For additional or custom enterprise functionality, contact our team directly. Talk to us Talk to us Get Started Observe and Secure AI at the device layer Get started Get started Maps and Controls how AI takes action directly on devices ProductPlatform OverviewDocs ResourcesCustomer StoriesBlogs & Insight CompanyAbout UsLegalContact Us © 2026 Traceforce. All rights reserved.Privacy Policy",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:31:55.106395Z",
+    "source_title": "Pricing Plans | Traceforce AI Security Platform",
+    "source_type": "web_scraper",
+    "source_url": "https://www.traceforce.ai/pricing",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

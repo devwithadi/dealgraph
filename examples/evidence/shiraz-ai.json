@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Robots that learn on the job We deploy robots that learn new tasks from a single human demonstration in the factory. We're starting in contract manufacturing, where lines change every week and both traditional automation and today's VLAs fall over.\r\n\r\nOur founding team has 20+ years of experience in robotics. Navid was part of the core team that productized Spot at Boston Dynamics and led manipulation projects there. Before that, he was at Rethink Robotics. Mojtaba led whole-body control and manipulation efforts at Amazon Robotics and was a Research Assistant Professor at Northwestern University. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-08-12T06:59:50Z",
+    "retrieved_at": "2026-08-24T19:24:27.734471Z",
+    "source_title": "YC profile: Shiraz AI",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/shiraz-ai",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Shiraz AI — Robots that learn on the job",
+    "excerpt": "[PRICING & TIERS]: Team | Part of the team that commercialized Spot at Boston Dynamics, where he led manipulation projects. Previously Rethink Robotics.\n[TEAM & FOUNDERS]: Co-founder & CEO • Co-founder & CTO\n\nSkip to content What we doTeamCareersGet in touch Backed by Y Combinator Robots that learn on the job. Shiraz builds a robot foundation model that learns a new manufacturing task from a single human demonstration — delivered working on your line: hardware, model, and deployment. Watch the demo →Get in touch San Francisco, CA · 37.7749° N, 122.4194° W · YC S26 Fig. 00Rev. A4 × interlocking arms228 × 228 Sec. 01 Field demonstration Watch the demo Fig. 01Shiraz AI — YC S26 launch demo (2 min) Sec. 02 Operating principle What we do • 01Input Show A person demonstrates the task once, on video. No programming, no CAD, no teach pendant. • 02Adaptation Learn Our foundation model adapts in context from that single demonstration — no retraining, no data-collection campaign. • 03Deployment Work The robot runs the task on your line. We deliver the full stack: hardware, model, and on-site deployment. Note Why now High-mix manufacturing changes too fast for traditional automation. Factory owners tell us the same two things: they can’t hire enough people, and the automation they’ve bought is too rigid and too expensive — so it sits idle. We built Shiraz for lines that change every week. Status — operational Our robots are already operational at customer sites. Sec. 03 Personnel Team Two decades of combined experience shipping real robots. Navid Aghasadeghi Co-founder & CEO Part of the team that commercialized Spot at Boston Dynamics, where he led manipulation projects. Previously Rethink Robotics. Mojtaba Mozaffar Co-founder & CTO Led whole-body control and bimanual manipulation at Amazon Robotics. Formerly Research Assistant Professor at Northwestern University. Experience from Backed byY Combinator Sec. 04 Open positions We’re hiring world-class roboticists. Foundation models, manipulation, and real-world deployment. San Francisco, CA. founders@shiraz.ai Direct to the founders — no recruiters, no forms. Freedom to build. founders@shiraz.ai © 2026 Shiraz AI · San Francisco, CA37.7749° N, 122.4194° W",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:24:32.766422Z",
+    "source_title": "Shiraz AI — Robots that learn on the job",
+    "source_type": "web_scraper",
+    "source_url": "https://shiraz.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

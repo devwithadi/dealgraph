@@ -39,8 +39,8 @@ Dependencies point inward: CLI → pipeline → domain services → domain/core.
 
 - Write tests first for behavior changes and keep the full suite green.
 - Keep stdout concise. Human summaries or `--json` go to stdout; logs and errors go to stderr.
-- Propagate one validated request ID through every outbound request, manifest, and run summary. Use `X-Kong-Request-ID` for HTTP and Bedrock request metadata for Converse.
-- Bedrock is the default narrative provider. Use Boto3 `Converse`, preserve request metadata, and create clients lazily so offline mode never performs AWS credential or metadata discovery.
+- Propagate one validated request ID through every outbound request, manifest, and run summary. Use `X-Kong-Request-ID` for HTTP and Bedrock request metadata.
+- Bedrock is the default narrative provider. Route every model provider through LiteLLM, preserve Bedrock request metadata, and let credentials resolve only when a model call runs so offline mode never performs AWS credential or metadata discovery.
 - OpenAI-compatible endpoints come only from validated public HTTPS `OPENAI_BASE_URL` configuration on port 443; never log or persist API keys.
 - `--offline` must perform zero network requests, including OpenAI.
 - Preserve per-company failure isolation and return nonzero when any company fails.

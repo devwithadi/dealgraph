@@ -33,8 +33,9 @@ uv run --env-file .env dealgraph run \
 
 Bedrock is the default. It accepts an explicit Bedrock bearer token, AWS access-key pair, named AWS
 profile, web-identity role pair, or container credential URI. Other providers require their named API
-key. DealGraph fails before sourcing when the selected provider is not configured and never logs or
-persists credential values.
+key. LiteLLM provides the model transport for every provider; DealGraph keeps provider policy, URL
+validation, and structured-output prompts in the application. DealGraph fails before sourcing when
+the selected provider is not configured and never logs or persists credential values.
 
 Useful options:
 

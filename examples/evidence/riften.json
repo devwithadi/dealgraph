@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Earned intelligence for every company Intelligence will be the most valuable asset a company owns. Today, almost every company rents it.\r\n\r\nCompanies pay a handful of labs one token at a time. Each dollar buys an answer, not an asset. They spend more, but own nothing more.\r\n\r\nRiften reverses that.\r\n\r\nChange one environment variable and Riften becomes the gateway for a company's AI traffic. We route each request to the lowest-cost model that can do the job, serving most work on open-weight models we host. Customers save money immediately without rebuilding their products.\r\n\r\nThe gateway is the entry point. Over time, Riften turns the company's work into private models built on open weights and shaped around the business. What begins as cheaper inference becomes an intelligence stack the company owns, runs on infrastructure it controls, and uses to power its most important applications.\r\n\r\nWe call this earned intelligence. It is created by the company's own work, controlled by the company, and accumulated over time.\r\n\r\nThe next generation of companies will not rent their intelligence. They will earn it, own it, and compound it. Riften is how they get there. Reported team size: 0.",
+    "id": "ev-001",
+    "published_at": "2026-08-04T19:49:55Z",
+    "retrieved_at": "2026-08-24T19:27:18.101893Z",
+    "source_title": "YC profile: Riften",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/riften",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [About]: Riften",
+    "excerpt": "RiftenClose Model labs build intelligence every company can rent. Riften turns one company’s work into intelligence no other company can buy. It starts as an OpenAI-compatible gateway: change one environment variable and Riften sends each request to the least expensive model likely to complete it correctly. Open-weight models handle work that does not require frontier capacity, cutting the bill before a dataset is assembled or a training project begins. From there, one number matters: the share of production work completed by models the company controls. Within boundaries the customer sets, real task results improve routing and train private models on open weights around the company’s recurring work. As those models prove themselves, Riften moves more traffic off rented APIs and onto company-controlled weights. Frontier models remain where their added capability earns the cost. The same system can then extend into the applications where results are observed and work is completed. Over time, more of the company runs on models it owns, infrastructure it controls, and knowledge its competitors never see. That is earned intelligence. talent@riften.ai",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:27:26.444312Z",
+    "source_title": "Riften",
+    "source_type": "web_scraper",
+    "source_url": "https://riften.ai/about",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Home]: Riften",
+    "excerpt": "Riften Earned Intelligence for every company About Contact",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:27:26.444232Z",
+    "source_title": "Riften",
+    "source_type": "web_scraper",
+    "source_url": "https://riften.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

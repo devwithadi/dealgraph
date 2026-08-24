@@ -1,0 +1,15 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Automatic Diagnosis & Fix for Industrial Automation Cells VIM connects to the entire cell: PLCs, robots, CNC machines, sensors. When a cell faults, VIM finds the cause, stages the fix, and the operator approves with one click. When a part drifts, VIM catches it seconds after the cut, inside the machine, and recommends the correction. Recovery drops from 30 minutes to under two, saving more than $15,000 per fault in large factories. Reported team size: 2. YC marks the company as hiring.",
+    "id": "ev-001",
+    "published_at": "2026-08-08T01:01:13Z",
+    "retrieved_at": "2026-08-24T19:26:29.489579Z",
+    "source_title": "YC profile: Dawn Industries",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/dawn-industries",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  }
+]

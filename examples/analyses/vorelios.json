@@ -1,0 +1,79 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer adoption or partnerships.",
+    "Detailed financials and growth metrics."
+  ],
+  "company": "Vorelios",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Engineering simulations are costly and time-consuming, presenting a clear pain point [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Potential for quick value realization through faster simulations, though actual customer results are not disclosed [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Potential advantage through proprietary AI, but integrations and distribution strategies are not disclosed [ev-001].",
+      "score": 4.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Small team size raises concerns about execution capabilities [ev-001].",
+      "score": 3.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Market size and distribution strategy are not disclosed, limiting confidence in market reach [ev-001].",
+      "score": 2.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "Targets engineering workflows, but specific ICP, market size, and distribution strategy are not disclosed [ev-001].",
+  "open_questions": [
+    "What is the current level of adoption and customer feedback on the AI simulation product?"
+  ],
+  "product": "AI solution that simulates physics 1000x faster than traditional methods [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "Small team size may limit execution capabilities [ev-001].",
+    "Lack of disclosed traction or customer validation [ev-001]."
+  ],
+  "score": 48.5,
+  "summary": "Vorelios presents an innovative approach to a significant bottleneck in engineering by leveraging AI to drastically reduce simulation times and costs [ev-001]. However, the company is in its infancy with only two reported team members and lacks detailed information on traction, market, and financials.",
+  "team": "Team size reported as 2 [ev-001]. Execution evidence not disclosed.",
+  "thesis": "Vorelios aims to replace slow and costly engineering simulations with AI that performs the same tasks 1000x faster, potentially revolutionizing the engineering workflow [ev-001].",
+  "why_now": "The increasing complexity and cost of engineering simulations make this solution timely [ev-001]."
+}

@@ -1,0 +1,81 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer traction and positive feedback.",
+    "Demonstration of a larger, more experienced team."
+  ],
+  "company": "Covera",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The company addresses frequent, costly, and time-consuming administrative tasks for insurance brokers [ev-001][ev-002].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The AI agents are ready-to-use, suggesting a quick path to value for brokers [ev-001][ev-002].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The product integrates with various existing systems, but the defensibility through proprietary data or unique distribution is not clear [ev-002].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The small team size raises concerns about execution capacity [ev-001].",
+      "score": 4.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market for insurance brokers is credible, but specific market size and distribution motion are not disclosed [ev-001][ev-002].",
+      "score": 7.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market is the insurance brokerage sector, with a focus on SMBs that could benefit from automation of repetitive tasks [ev-001][ev-002].",
+  "open_questions": [
+    "What is the current customer adoption rate and feedback on the AI agents?"
+  ],
+  "product": "The product is an AI-driven system that automates several administrative tasks for insurance brokers, integrating with existing tools and systems [ev-001][ev-002].",
+  "recommendation": "Watch",
+  "risks": [
+    "The small team size may limit the company's ability to scale and execute quickly [ev-001]."
+  ],
+  "score": 66.0,
+  "summary": "Covera offers an AI-native operating system for insurance brokers, automating tasks such as submission intake, carrier quoting, quote comparison, claims handling, and past-due collections [ev-001][ev-002]. The company claims to integrate with various agency management systems and CRMs, enhancing its value proposition [ev-002].",
+  "team": "Reported team size is 2, and the company is marked as hiring by YC [ev-001].",
+  "thesis": "Covera aims to replace frequent and costly administrative tasks for insurance brokers with AI agents, allowing brokers to focus on client advising and selling [ev-001][ev-002].",
+  "why_now": "The increasing complexity and volume of insurance-related administrative tasks create a ripe opportunity for automation solutions [ev-001][ev-002]."
+}

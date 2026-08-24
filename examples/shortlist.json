@@ -1,0 +1,140 @@
+[
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 66.0,
+    "slug": "covera"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 67.5,
+    "slug": "marker"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Take a meeting",
+    "score": 71.5,
+    "slug": "lyon"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 61.5,
+    "slug": "waybill"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 55.0,
+    "slug": "deepreach-inc"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 60.5,
+    "slug": "shiraz-ai"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 64.0,
+    "slug": "hemlock"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 48.5,
+    "slug": "vorelios"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 48.5,
+    "slug": "enact"
+  },
+  {
+    "confidence": 0.25,
+    "recommendation": "Take a meeting",
+    "score": 72.0,
+    "slug": "dawn-industries"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 65.5,
+    "slug": "hebbian-robotics"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 60.5,
+    "slug": "riften"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 66.5,
+    "slug": "caution"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 60.0,
+    "slug": "spaceflow-technologies-inc"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 66.5,
+    "slug": "openvector"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 47.5,
+    "slug": "stoa"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 55.5,
+    "slug": "hiloop"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 52.0,
+    "slug": "executor"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 56.0,
+    "slug": "gitcafe"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 62.0,
+    "slug": "tracer"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 62.0,
+    "slug": "decawork"
+  },
+  {
+    "confidence": 0.5,
+    "recommendation": "Watch",
+    "score": 50.5,
+    "slug": "synapse-semiconductor"
+  },
+  {
+    "confidence": 0.65,
+    "recommendation": "Watch",
+    "score": 67.5,
+    "slug": "traceforce"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Managed procurement & inventory for hardware teams. Hardware teams burn weeks on procurement. An engineer needs a part. Someone emails five distributors, chases quotes, gets an approval, wires the money, tracks a shipment across three carriers, clears customs, and then nobody knows where the box is or what's actually on the shelf.\r\n\r\nWaybill runs that entire loop. Send us a part, a spec, or a BOM. We source it, pull quotes, route approvals, pay the supplier, handle freight and customs, track it to your dock, and keep your stock count updated. \r\n\r\nTake your supply chain for granted.\r\n\r\nBuilt by a team that's seen it at LAT Aerospace and WareIQ (YC S20). Reported team size: 5. YC marks the company as hiring.",
+    "id": "ev-001",
+    "published_at": "2026-08-14T07:02:16Z",
+    "retrieved_at": "2026-08-24T19:23:38.052702Z",
+    "source_title": "YC profile: Waybill",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/waybill",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Waybill — Procurement on autopilot",
+    "excerpt": "[PRICING & TIERS]: Your team · new request | Waybill maps every source licensed to sell your part, anywhere in the world: authorized distributors, franchised lines, and brokers we have vetted in person. Then it sends RFQs to all of them at once. What takes a team four days of email happens here in minutes. | Cleared and released, the order goes out for delivery. Waybill's voice agent calls the driver directly, confirms the dock, and briefs your receiving team before the truck turns in. It speaks whatever language the driver speaks, and the whole call is transcribed and archived to the order. | Waybill's voice agent calls the driver, confirms the dock, and briefs your receiving team, in whatever language the driver speaks. The whole call is transcribed. | The box arrives, your team scans the label, and Waybill knows exactly what's inside, because it has managed this order end to end. In the same moment: | The box arrives, your team scans the label, and Waybill knows exactly what's inside. Three things happen at once:\n[INTEGRATIONS & ECOSYSTEM]: Your team never opens a procurement portal. Ask from Slack or Gmail and the order starts in the thread. Save a revision in CAD and the BOM diff is already being quoted. • Slack • · via Slack\n\nSkip to content Requested→Sourced→Approved→In transit→Cleared→On shelf ManifestoBook a call ManifestoBook a call Backed by Y Combinator · S26 Procurement on autopilot. Say what you need. Approve the payment. Waybill does everything in between: sourcing, negotiation, freight, customs, delivery, inventory. Built for teams that build hardware.Say what you need. Approve the payment. Waybill does everything in between. Built for teams that build hardware. Book a call 00 / 09 · scroll to watch one order, start to finish00 / 09 · scroll to watch one order Watch the film · 2:36 One order, start to finish Today This is what buying one part looks like. RE: revised pricelist — valid till Friday New rates attached. The old quote is void. supplier · attachment · unread supplier portal · password expiredreset (again)log in ops · direct message hey, can you resend the PO? can't find the latest 31Forwarder call · moved againthird reschedule this week call the broker back before 5 RE: RE: RE: Quote request — still pending Can only do a bigger MOQ. Regards, S. supplier · tue · a long thread customs portal — session expiredsupplier portalsfreight quotes.xlsx #hardware · this morning any update on the parts? line down Thursday new Xvendor_compare_F",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:23:43.674638Z",
+    "source_title": "Waybill — Procurement on autopilot",
+    "source_type": "web_scraper",
+    "source_url": "https://www.waybill.to/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

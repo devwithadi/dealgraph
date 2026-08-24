@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of successful prototype testing in real-world applications.",
+    "Confirmation of partnerships with major players in the autonomous vehicle or robotics industries."
+  ],
+  "company": "Synapse Semiconductor",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Machine vision applications currently require complex and power-hungry setups, which Synapse Semiconductor aims to simplify and optimize [ev-001].",
+      "score": 6.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The company is in the early stages, and there is no evidence of customer adoption or measurable value yet [ev-001].",
+      "score": 4.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The integration of compute and vision into one substrate could provide a significant competitive advantage, especially if adopted by key industries [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The team has relevant academic and industry experience, but the small size and early stage suggest execution risks [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market potential is significant, but there is no disclosed evidence of a clear distribution strategy or ICP [ev-001].",
+      "score": 3.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market includes applications in self-driving cars, drones, humanoid robotics, and potentially space exploration. The company claims to be the first to integrate all components of the computer vision stack into one substrate [ev-001][ev-002].",
+  "open_questions": [
+    "How will Synapse Semiconductor scale its technology to meet the demands of various high-stakes applications?"
+  ],
+  "product": "The product is a new vision sensor that runs neural network filters directly in the camera pixels, collecting only data that machines care about. This technology aims to solve physical AI challenges at the semiconductor device level [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "The technology's complexity and novelty may pose significant development and commercialization risks [ev-001]."
+  ],
+  "score": 50.5,
+  "summary": "Synapse Semiconductor is a pre-seed stage company developing advanced semiconductors for machine vision. Their technology integrates all components of the computer vision stack into one substrate, aiming to reduce power consumption and latency in edge vision applications [ev-001][ev-002].",
+  "team": "The team comprises Tania Roy, a Presidential Early Career Award-winning Duke Semiconductor ECE Faculty, and Sanjeev Chauhan, her past student and VC Associate. Team size is reported as 2 [ev-001].",
+  "thesis": "Synapse Semiconductor aims to revolutionize machine vision by integrating compute and vision capabilities into a single semiconductor, potentially reducing the need for separate cameras and GPUs [ev-001].",
+  "why_now": "The increasing demand for advanced machine vision in various applications, such as autonomous vehicles and robotics, creates a timely opportunity for Synapse Semiconductor's innovative approach [ev-001]."
+}

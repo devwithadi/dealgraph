@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Hosting platform for software you don't want to have hacked Caution is a hosting platform for software you can't afford to get hacked. It simplifies and extends confidential compute, and lets developers deploy workloads to secure enclaves in minutes and give customers, auditors, and counterparties cryptographic proof that production is running the exact reviewed source code, build, configuration, and runtime - not an opaque binary controlled by a cloud operator or internal admin.\r\n\r\nConfidential computing hardware exists, but the tooling is too fragmented and incomplete for most teams to use well. Today, attestation often proves only that a binary has a certain hash; it does not prove what source code produced that binary. Building the missing deployment, reproducibility, and verification layer requires specialized security engineering and often locks teams into one cloud or hardware stack. Caution turns that into a simple git-based workflow that builds reproducible enclave images, provisions infrastructure, and lets anyone independently verify what is running.\r\n\r\nWe built Caution after years securing high-risk systems through Distrust, where we worked with hedge funds, custodians, blockchain teams, cloud platforms, and critical grid operators on systems responsible for more than $600B in assets. Again and again, the same problem showed up: teams running mission-critical infrastructure could not reliably prove what was executing in production.\r\n\r\nAs AI, fintech, healthcare, and regulated data collaboration move into the cloud, \"trust us\" is no longer enough. Caution is a general-purpose platform: if it runs on a server, it can run verifiably on Caution. We're starting where trust failures cost the most, but we believe verifiable compute will become the default way software runs, the same way HTTPS became the default way it's served. Infrastructure you can verify, not trust. Reported team size: 5.",
+    "id": "ev-001",
+    "published_at": "2026-08-03T01:15:03Z",
+    "retrieved_at": "2026-08-24T19:27:43.884806Z",
+    "source_title": "YC profile: Caution",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/caution",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Caution: Verifiable Compute Platform",
+    "excerpt": "[INTEGRATIONS & ECOSYSTEM]: AWS Nitro • Deploy on AWS Nitro Enclaves • Technical guides and API reference • Integrate with your existing CI/CD, infrastructure-as-code, and deployment tooling. Caution fits into what you already use rather than replacing it. • Caution runs across AWS Nitro today, with Intel TDX, AMD SEV-SNP, and\n\t\t\t\t\tTPM 2.0 attestations coming in 2026. • Caution currently supports deployments on AWS Nitro Enclaves, with additional attestation backends in active development.\n\nCaution is backed by Y Combinator. Learn more. Platform Platform tourWatch Caution in actionAWS NitroDeploy on AWS Nitro EnclavesFAQCommon questions answered Resources DocumentationTechnical guides and API referenceBlogEngineering insights and updatesSecurityTrust model, evidence, and framework alignmentCommunityJoin us on MatrixAboutPricing Log in Book a live demo Platform Platform tourAWS NitroFAQ Resources DocumentationBlogSecurityCommunityLegalAboutPricing Book a live demo Watch the 3-minute tour Verifiable compute Know what runs on a server Deploy sensitive workloads to secure enclaves in minutes, with cryptographic proof that production matches the reviewed source. Book a live demo Watch the 3-minute tour • Application • Runtime • OS / Kernel • Compiler / Toolchain • Application • Runtime • OS / Kernel • Compiler / Toolchain From engineers trusted by industry leaders Verifythelayersconfidentialcomputeleavesopaque Regular cloud Trust the operator. Production stays a black box. Confidential compute Trust the hardware. The software stack still stays opaque. • Application • Runtime • OS / Kernel • Hardware / TEE • Compiler / Toolchain Verifiable compute Don't trust. Verify every layer yourself, down to the compiler. • Application • Runtime • OS / Kernel • Compiler / Toolchain From engineers trusted by industry leaders What Caution does Stronger integrity guarantees Caution is a verifiable confidential compute platform that gives you cryptographic proof your enclaves run the exact code you reviewed. Prove what was deployedDetect tampering earlyDeploy to enclaves in minutesKeep your workflows Prove what was deployed Cryptographically link the code running in your enclave to the reviewed source code, build, and configuration that produced it. Verify the entire stack down to the kernel, not just the application layer, with full-source bootstrapping and reproducibility. Detect tampering early Surface unauthorised changes before they reach production. If a binary doesn't ma",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:27:50.001349Z",
+    "source_title": "Caution: Verifiable Compute Platform",
+    "source_type": "web_scraper",
+    "source_url": "https://caution.co/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]
