@@ -35,6 +35,15 @@ def test_all_model_aliases_are_mapped_correctly() -> None:
         # OpenAI
         "luna": "gpt-5-luna",
         "terra": "gpt-5-terra",
+        "sol": "gpt-5-sol",
+        "strawberry": "o1",
+        "o3-mini": "o3-mini",
+        "o1": "o1",
+        "o1-mini": "o1-mini",
+        "orion": "gpt-4.5-preview",
+        "gpt-4.5": "gpt-4.5-preview",
+        "gpt-4o": "gpt-4o",
+        "gpt-4o-mini": "gpt-4o-mini",
         # Qwen
         "qwen-2.5-72b": "qwen/qwen-2.5-72b-instruct",
         "qwen-2.5-32b": "qwen/qwen-2.5-32b-instruct",
