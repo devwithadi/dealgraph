@@ -24,7 +24,12 @@ from app.domain.enums import AIProvider, AnalysisMode, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, RunSummary, ScreeningDecision
 from app.reporting.memo import render_memo
 from app.reporting.pdf import render_pdf_memo
-from app.sourcing.candidates import load_candidates, lookback_days_from_env, select_candidates
+from app.sourcing.candidates import (
+    discover_candidates,
+    load_candidates,
+    lookback_days_from_env,
+    select_candidates,
+)
 from app.sourcing.evidence import agent_reach_evidence, yc_evidence
 from app.sourcing.registry import YC_URL, enabled_manifest_sources, source_enabled
 
@@ -158,19 +163,26 @@ class Pipeline:
         else:
             if not source_enabled("yc"):
                 raise AppError("YC source is disabled in SOURCE_REGISTRY", exit_code=3)
+            yc_records = None
             try:
                 response = self.client.get(YC_URL, headers=request_headers(), timeout=20)
                 response.raise_for_status()
-                candidates = select_candidates(
-                    response.json(),
-                    batch,
-                    lookback_days,
-                    now=effective_now,
-                    limit=limit,
-                )
+                yc_records = response.json()
             except (httpx.HTTPError, KeyError, TypeError, ValueError) as error:
-                raise AppError("Unable to load the YC candidate feed", exit_code=3) from error
-            source = YC_URL
+                LOGGER.warning("YC candidate feed error=%s; falling back to multi-source discovery", error)
+
+            candidates = discover_candidates(
+                topic=topic,
+                batch=batch,
+                lookback_days=lookback_days,
+                client=self.client,
+                yc_records=yc_records,
+                now=effective_now,
+                limit=limit,
+            )
+            if not candidates:
+                raise AppError("Unable to load candidate startups from sourcing channels", exit_code=3)
+            source = YC_URL if (yc_records and not source_enabled("hacker_news") and not source_enabled("agent_reach")) else "Multi-Source (YC Directory, Hacker News, Agent Reach)"
 
         _emit(
             progress_callback,

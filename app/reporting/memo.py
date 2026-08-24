@@ -57,8 +57,10 @@ def _build_evidence_map(evidence: list[Evidence]) -> dict[str, tuple[int, Eviden
         # Also map without leading zeros if any e.g. ev-1 -> ev-001
         m = re.match(r"^ev-0*(\d+)$", ev.id.lower())
         if m:
-            mapping[f"ev-{m.group(1)}"] = (idx, ev)
-            mapping[m.group(1)] = (idx, ev)
+            num = m.group(1)
+            mapping[f"ev-{num}"] = (idx, ev)
+            mapping[f"ev-{int(num):03d}"] = (idx, ev)
+            mapping[num] = (idx, ev)
         mapping[str(idx)] = (idx, ev)
         mapping[f"ev-{idx}"] = (idx, ev)
         mapping[f"ev-{idx:03d}"] = (idx, ev)
@@ -66,7 +68,17 @@ def _build_evidence_map(evidence: list[Evidence]) -> dict[str, tuple[int, Eviden
 
 
 def _resolve_evidence_entry(key: str, evidence_map: dict[str, Any]) -> tuple[int, Evidence] | None:
-    entry = evidence_map.get(key)
+    norm_key = key.lower().strip()
+    entry = evidence_map.get(norm_key)
+    if entry is None:
+        m = re.search(r"\d+", norm_key)
+        if m:
+            num_str = str(int(m.group(0)))
+            entry = (
+                evidence_map.get(num_str)
+                or evidence_map.get(f"ev-{num_str}")
+                or evidence_map.get(f"ev-{int(num_str):03d}")
+            )
     if entry is None:
         return None
     if isinstance(entry, tuple) and len(entry) == 2 and isinstance(entry[0], int) and isinstance(entry[1], Evidence):
@@ -79,12 +91,37 @@ def _resolve_evidence_entry(key: str, evidence_map: dict[str, Any]) -> tuple[int
 
 
 def transform_citations(text: str, evidence_map: dict[str, Any]) -> str:
-    """Transform raw [ev-XXX] citations into compact, clickable markdown citation links [[1] ↗](url)."""
+    """Transform raw [ev-XXX] or composite citations into compact, clickable markdown citation links [[1] ↗](url)."""
     if not text:
         return ""
 
-    def replace_citation(match: re.Match) -> str:
-        ev_id = match.group(1).lower()
+    def replace_bracket_citations(match: re.Match) -> str:
+        inner = match.group(1)
+        ev_ids = re.findall(r"ev-\d+", inner, flags=re.IGNORECASE)
+        if not ev_ids:
+            return match.group(0)
+
+        seen: set[str] = set()
+        unique_ev_ids: list[str] = []
+        for ev_id in ev_ids:
+            norm = ev_id.lower()
+            if norm not in seen:
+                seen.add(norm)
+                unique_ev_ids.append(ev_id)
+
+        rendered: list[str] = []
+        for ev_id in unique_ev_ids:
+            resolved = _resolve_evidence_entry(ev_id, evidence_map)
+            if resolved is not None:
+                idx, ev = resolved
+                url = ev.source_url if ev.source_url and ev.source_url.startswith(("http://", "https://")) else f"#source-{idx}"
+                rendered.append(f"[[{idx}] ↗]({url})")
+            else:
+                rendered.append(f"[[{ev_id.upper()}] ↗](#auditable-sources)")
+        return " ".join(rendered)
+
+    def replace_single_citation(match: re.Match) -> str:
+        ev_id = match.group(1)
         resolved = _resolve_evidence_entry(ev_id, evidence_map)
         if resolved is not None:
             idx, ev = resolved
@@ -92,11 +129,20 @@ def transform_citations(text: str, evidence_map: dict[str, Any]) -> str:
             return f"[[{idx}] ↗]({url})"
         return f"[[{ev_id.upper()}] ↗](#auditable-sources)"
 
-    return re.sub(r"\[(ev-\d+)\]", replace_citation, text, flags=re.IGNORECASE)
+    # Pass 1: Bracketed citations like [ev-001, ev-003, ev-005] or [ev-001]
+    res = re.sub(r"\[\s*([^\]]*\bev-\d+[^\]]*)\s*\]", replace_bracket_citations, text, flags=re.IGNORECASE)
+    # Pass 2: Parenthesized citations like (ev-001, ev-003) or (ev-001)
+    res = re.sub(r"\(\s*([^)]*\bev-\d+[^)]*)\s*\)", replace_bracket_citations, res, flags=re.IGNORECASE)
+    # Pass 3: Standalone unbracketed ev-XXX citations
+    res = re.sub(r"(?<![\[\w-])(ev-\d+)(?![\]\w-])", replace_single_citation, res, flags=re.IGNORECASE)
+    return res
 
 
 def _extract_pillar_summary(text: str, max_chars: int = 140) -> str:
-    cleaned = re.sub(r"\s+", " ", text).strip()
+    # Strip any citations (markdown links or raw [ev-XXX]) so scorecard table is clean and un-truncated
+    cleaned = re.sub(r"\[\[[^\]]+\]\s*↗\]\([^)]+\)", "", text)
+    cleaned = re.sub(r"\[\s*ev-\d+[^\]]*\]", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
     if len(cleaned) <= max_chars:
         return cleaned
     return cleaned[:max_chars].rsplit(" ", 1)[0] + "..."

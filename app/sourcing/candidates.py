@@ -1,14 +1,29 @@
+from __future__ import annotations
+
 import json
+import logging
 import os
 import re
+import subprocess
+from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Iterable
-from urllib.parse import urlsplit
 
-from app.domain.models import Candidate
+import httpx
+
 from app.core.errors import AppError
-from app.sourcing.registry import YC_URL
+from app.domain.models import Candidate
+from app.sourcing.discovery import (
+    deduplicate_and_merge_candidates,
+    fetch_hn_candidates,
+    make_candidate_slug,
+    normalize_domain,
+    parse_url_seed_candidates,
+    search_agent_reach_candidates,
+)
+from app.sourcing.registry import YC_URL, source_enabled
+
+LOGGER = logging.getLogger("dealgraph.sourcing.candidates")
 
 
 def _batch_name(batch: str | None) -> str:
@@ -32,19 +47,22 @@ def lookback_days_from_env() -> int:
 
 def _candidate(record: dict) -> Candidate:
     launched = record.get("launched_at")
+    raw_slug = str(record.get("slug") or record.get("id") or record.get("name") or "startup")
+    slug = make_candidate_slug(raw_slug)
+    website = str(record.get("website") or "")
     return Candidate(
-        slug=str(record.get("slug") or record["id"]),
+        slug=slug,
         name=str(record["name"]),
-        website=str(record.get("website") or ""),
+        website=website,
         one_liner=str(record.get("one_liner") or ""),
-        description=str(record.get("long_description") or ""),
+        description=str(record.get("long_description") or record.get("description") or ""),
         batch=str(record.get("batch") or ""),
         industry=str(record.get("subindustry") or record.get("industry") or ""),
         tags=[str(tag) for tag in record.get("tags") or []],
         team_size=record.get("team_size"),
         launched_at=datetime.fromtimestamp(int(launched), timezone.utc) if launched else None,
-        is_hiring=bool(record.get("isHiring")),
-        source_url=str(record.get("url") or YC_URL),
+        is_hiring=bool(record.get("isHiring") or record.get("is_hiring")),
+        source_url=str(record.get("url") or record.get("source_url") or YC_URL),
     )
 
 
@@ -56,6 +74,7 @@ def select_candidates(
     now: datetime | None = None,
     limit: int | None = None,
 ) -> list[Candidate]:
+    """Filter and select active candidate startups from structured records within lookback window."""
     if lookback_days < 1:
         raise ValueError("lookback_days must be positive")
     if limit is not None and limit < 1:
@@ -72,12 +91,12 @@ def select_candidates(
             continue
         if candidate.launched_at is None or candidate.launched_at < cutoff:
             continue
-        domain = (urlsplit(candidate.website).hostname or candidate.slug).lower()
+        domain = normalize_domain(candidate.website) or candidate.slug
         if domain in seen:
             continue
         seen.add(domain)
         selected.append(candidate)
-    selected.sort(key=lambda candidate: candidate.launched_at, reverse=True)
+    selected.sort(key=lambda candidate: candidate.launched_at or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
     return selected[:limit]
 
 
@@ -89,10 +108,67 @@ def load_candidates(
     now: datetime | None = None,
     limit: int | None = None,
 ) -> list[Candidate]:
-    return select_candidates(
-        json.loads(source_file.read_text()),
-        batch,
-        lookback_days,
-        now=now,
-        limit=limit,
-    )
+    """Load candidates from a JSON file (records or URL list) or plain text seed file."""
+    content = source_file.read_text(encoding="utf-8")
+    try:
+        data = json.loads(content)
+        if isinstance(data, list):
+            if data and isinstance(data[0], str):
+                candidates = parse_url_seed_candidates(data)
+                return deduplicate_and_merge_candidates(candidates, limit=limit)
+            return select_candidates(data, batch, lookback_days, now=now, limit=limit)
+        if isinstance(data, dict):
+            if "candidates" in data and isinstance(data["candidates"], list):
+                return select_candidates(data["candidates"], batch, lookback_days, now=now, limit=limit)
+            if "urls" in data and isinstance(data["urls"], list):
+                candidates = parse_url_seed_candidates(data["urls"])
+                return deduplicate_and_merge_candidates(candidates, limit=limit)
+            return select_candidates([data], batch, lookback_days, now=now, limit=limit)
+    except json.JSONDecodeError:
+        lines = [line.strip() for line in content.splitlines() if line.strip()]
+        candidates = parse_url_seed_candidates(lines)
+        return deduplicate_and_merge_candidates(candidates, limit=limit)
+
+    return []
+
+
+def discover_candidates(
+    topic: str,
+    batch: str | None = None,
+    lookback_days: int = 30,
+    *,
+    client: httpx.Client | None = None,
+    yc_records: Iterable[dict] | None = None,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    now: datetime | None = None,
+    limit: int | None = None,
+) -> list[Candidate]:
+    """Discover candidate startups across multiple sources: YC Directory, Hacker News, Product Hunt, and Agent Reach."""
+    all_candidates: list[Candidate] = []
+
+    # Source 1: YC Directory
+    if yc_records is not None:
+        try:
+            yc_cands = select_candidates(yc_records, batch, lookback_days, now=now)
+            all_candidates.extend(yc_cands)
+            LOGGER.info("added %d candidates from YC Directory", len(yc_cands))
+        except Exception as error:
+            LOGGER.warning("failed to select YC candidates error=%s", error)
+
+    # Source 2: Hacker News (Show HN)
+    try:
+        hn_cands = fetch_hn_candidates(topic, client=client, limit=15)
+        all_candidates.extend(hn_cands)
+    except Exception as error:
+        LOGGER.warning("failed to fetch HN candidates error=%s", error)
+
+    # Source 3: Agent Reach / Exa Multi-Source Discovery (Product Hunt, TechCrunch, GitHub)
+    try:
+        reach_cands = search_agent_reach_candidates(topic, runner=runner, limit=15)
+        all_candidates.extend(reach_cands)
+    except Exception as error:
+        LOGGER.warning("failed to search Agent Reach candidates error=%s", error)
+
+    deduped = deduplicate_and_merge_candidates(all_candidates, limit=limit)
+    LOGGER.info("discovered total %d unique candidates across sources for topic=%r", len(deduped), topic)
+    return deduped

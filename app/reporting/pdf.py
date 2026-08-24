@@ -103,24 +103,80 @@ def _clean_for_xml(text: str) -> str:
 
 
 def _transform_citations_for_pdf(text: str, evidence_map: dict[str, Any]) -> str:
-    """Transform raw [ev-XXX] citations into compact, clickable ReportLab HTML/XML links."""
+    """Transform raw [ev-XXX] or composite citations into compact, clickable ReportLab HTML/XML links."""
     if not text:
         return ""
 
-    escaped = html.escape(text)
+    replacements: dict[str, str] = {}
+    counter = 0
 
-    def replace_citation(match: re.Match) -> str:
-        ev_id = match.group(1).lower()
+    def make_token() -> str:
+        nonlocal counter
+        token = f"__CITETOKEN_{counter}__"
+        counter += 1
+        return token
+
+    def replace_bracket_citations(match: re.Match) -> str:
+        inner = match.group(1)
+        ev_ids = re.findall(r"ev-\d+", inner, flags=re.IGNORECASE)
+        if not ev_ids:
+            return match.group(0)
+
+        seen: set[str] = set()
+        unique_ev_ids: list[str] = []
+        for ev_id in ev_ids:
+            norm = ev_id.lower()
+            if norm not in seen:
+                seen.add(norm)
+                unique_ev_ids.append(ev_id)
+
+        rendered: list[str] = []
+        for ev_id in unique_ev_ids:
+            resolved = _resolve_evidence_entry(ev_id, evidence_map)
+            if resolved is not None:
+                idx, ev = resolved
+                url = html.escape(ev.source_url) if ev.source_url and ev.source_url.startswith(("http://", "https://")) else ""
+                if url:
+                    rendered.append(f'<a href="{url}" color="#2563EB"><b>[{idx}] &#8599;</b></a>')
+                else:
+                    rendered.append(f'<font color="#2563EB"><b>[{idx}] &#8599;</b></font>')
+            else:
+                rendered.append(f'<font color="#64748B"><b>[{ev_id.upper()}]</b></font>')
+        token = make_token()
+        replacements[token] = " ".join(rendered)
+        return token
+
+    def replace_single_citation(match: re.Match) -> str:
+        ev_id = match.group(1)
         resolved = _resolve_evidence_entry(ev_id, evidence_map)
         if resolved is not None:
             idx, ev = resolved
             url = html.escape(ev.source_url) if ev.source_url and ev.source_url.startswith(("http://", "https://")) else ""
             if url:
-                return f'<a href="{url}" color="#2563EB"><b>[{idx}] ↗</b></a>'
-            return f'<font color="#2563EB"><b>[{idx}] ↗</b></font>'
-        return f'<font color="#64748B"><b>[{ev_id.upper()}]</b></font>'
+                rendered = f'<a href="{url}" color="#2563EB"><b>[{idx}] &#8599;</b></a>'
+            else:
+                rendered = f'<font color="#2563EB"><b>[{idx}] &#8599;</b></font>'
+        else:
+            rendered = f'<font color="#64748B"><b>[{ev_id.upper()}]</b></font>'
+        token = make_token()
+        replacements[token] = rendered
+        return token
 
-    return re.sub(r"\[(ev-\d+)\]", replace_citation, escaped, flags=re.IGNORECASE)
+    # Pass 1: Bracketed citations like [ev-001, ev-003, ev-005] or [ev-001]
+    st = re.sub(r"\[\s*([^\]]*\bev-\d+[^\]]*)\s*\]", replace_bracket_citations, text, flags=re.IGNORECASE)
+    # Pass 2: Parenthesized citations like (ev-001, ev-003) or (ev-001)
+    st = re.sub(r"\(\s*([^)]*\bev-\d+[^)]*)\s*\)", replace_bracket_citations, st, flags=re.IGNORECASE)
+    # Pass 3: Standalone unbracketed ev-XXX citations
+    st = re.sub(r"(?<![\[\w-])(ev-\d+)(?![\]\w-])", replace_single_citation, st, flags=re.IGNORECASE)
+
+    # HTML escape surrounding text
+    escaped = html.escape(st)
+
+    # Restore tokens
+    for token, xml_chunk in replacements.items():
+        escaped = escaped.replace(token, xml_chunk)
+
+    return escaped
 
 
 def render_pdf_memo(
@@ -509,11 +565,11 @@ def render_pdf_memo(
         tag_para = Paragraph(f'<font color="{tag_color}"><b>{tag_label}</b></font>', style_source_text)
 
         raw_title = item.source_title.strip() or item.claim.strip() or f"Source {idx}"
-        clean_title = raw_title.rstrip(" ↗").strip()
+        clean_title = re.sub(r"\s*[↗&#8599;]+\s*$", "", raw_title).strip()
         source_title_clean = _clean_for_xml(clean_title)
         if item.source_url and item.source_url.startswith(("http://", "https://")):
             url_clean = html.escape(item.source_url)
-            link_para = Paragraph(f'<a href="{url_clean}" color="#2563EB"><b>{source_title_clean} ↗</b></a>', style_source_text)
+            link_para = Paragraph(f'<a href="{url_clean}" color="#2563EB"><b>{source_title_clean} &#8599;</b></a>', style_source_text)
         else:
             link_para = Paragraph(f"<b>{source_title_clean}</b>", style_source_text)
 
