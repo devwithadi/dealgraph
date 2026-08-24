@@ -66,11 +66,25 @@ results/
 
 The JSON files contain public evidence, decisions, safe model provenance, request ID, and failure
 gaps. They never contain credentials, authorization headers, prompts, or raw model responses.
+Deep diligence uses the configured screening model to evaluate the four evidence pillars and return
+typed gaps and follow-up queries; Python validates that structured result before any search runs.
 If independent search is rate-limited, the run stops repeated quota-bound calls, completes from the
 available evidence, and records a sanitized `Research availability` gap instead of hiding the outage.
 
 A committed example run is available under `examples/ai-agents-smb/`, so reviewers can inspect the
 output without credentials or another paid run.
+
+## Architecture diagrams
+
+The documentation includes two complementary views of the live implementation:
+
+| Diagram | What it answers |
+| --- | --- |
+| [High-level system architecture](doc/system-architecture.html) | How the CLI, pipeline, sourcing, screening, diligence, scoring, providers, and artifacts fit together |
+| [Technical pipeline data flow](doc/pipeline-data-flow.html) | How payloads, request identity, provider calls, trust controls, failure isolation, and atomic outputs move through one run |
+
+The [technical guide](doc/README.md) maps each diagram back to its owning Python modules and runtime
+contract.
 
 ## Case-study requirement coverage
 
@@ -111,13 +125,14 @@ and extracted financial facts. First-party claims alone cannot create high confi
 ## Sources and safety
 
 Candidate discovery uses the enabled YC and Agent Reach/Exa channels. Finalist research uses the
-enabled company-website source for first-party claims plus three focused searches for team,
-traction/funding/freshness, and competition/differentiation. First-party results stay labeled
+enabled company-website source for first-party claims, then lets the diligence evaluation prompt
+return structured follow-up gaps and searches per pillar. First-party results stay labeled
 `CLAIMED`; independent and official evidence ranks above them.
 
-PitchBook, Crunchbase, and LinkedIn are not scraped. Public URL validation, redirect checks, response
-limits, fixed subprocess arguments, request-ID propagation, and per-company failure isolation remain
-enforced.
+Agent Reach discovery may retain PitchBook, Crunchbase, and LinkedIn company profiles as attributed
+directory sources. They remain unverified directory claims and are never substituted for an official
+company website. Public URL validation, redirect checks, response limits, fixed subprocess arguments,
+request-ID propagation, and per-company failure isolation remain enforced.
 
 ## How this was built with AI
 

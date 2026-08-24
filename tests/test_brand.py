@@ -27,7 +27,7 @@ def test_agent_guide_documents_project_specific_workflow() -> None:
     assert "DealGraph" in guide
     assert "uv run pytest" in guide
     assert "X-Kong-Request-ID" in guide
-    assert "PitchBook" in guide
+    assert "Validate all external data" in guide
     assert "80%" in guide
     assert "Mandatory ECC harness" in guide
     assert "$ponytail" in guide

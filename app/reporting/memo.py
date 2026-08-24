@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from app.analysis.diligence.evaluator import PILLAR_KEYWORDS
 from app.domain.models import Candidate, Evidence
 
 

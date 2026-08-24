@@ -7,6 +7,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from app.analysis.diligence.models import DiligencePillar
 from app.cli.main import build_parser, main
 from app.cli.reporter import ConsoleReporter, FinalistReportItem
 from app.domain.enums import AIProvider, AnalysisMode, Recommendation
@@ -262,6 +263,21 @@ def test_pipeline_run_with_progress_callback_and_model_overrides(tmp_path: Path,
                         }
                     ]
                 }
+            elif stage == "diligence_evaluation":
+                payload = {
+                    "gaps": [
+                        {
+                            "pillar": pillar.value,
+                            "description": f"{pillar.value} covered by baseline evidence",
+                            "severity": "low",
+                            "resolved": True,
+                            "rationale": "Grounded in supplied evidence",
+                            "resolved_by_evidence_id": "ev-001",
+                        }
+                        for pillar in DiligencePillar.core()
+                    ],
+                    "followup_queries": [],
+                }
             else:
                 payload = {
                     "summary": "AgentDesk provides SMB agent automation. [ev-001]",
@@ -509,6 +525,21 @@ def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> N
                             "rationale": "High thesis fit",
                         }
                     ]
+                }
+            elif stage == "diligence_evaluation":
+                payload = {
+                    "gaps": [
+                        {
+                            "pillar": pillar.value,
+                            "description": f"{pillar.value} covered by baseline evidence",
+                            "severity": "low",
+                            "resolved": True,
+                            "rationale": "Grounded in supplied evidence",
+                            "resolved_by_evidence_id": "ev-001",
+                        }
+                        for pillar in DiligencePillar.core()
+                    ],
+                    "followup_queries": [],
                 }
             else:
                 payload = {

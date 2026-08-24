@@ -8,11 +8,13 @@ import subprocess
 from collections.abc import Callable
 from urllib.parse import urlsplit
 
+from app.analysis.diligence.constants import DILIGENCE
 from app.analysis.diligence.models import SearchQuery
 from app.core.logging import current_request_id
 from app.core.urls import resolve_host
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
+from app.sourcing.constants import AGENT_REACH, DIRECTORY_HOSTS
 from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 LOGGER = logging.getLogger("dealgraph.diligence.search")
@@ -41,11 +43,18 @@ def _company_domain(url: str, company_website: str) -> bool:
     return bool(company_host and (host == company_host or host.endswith(f".{company_host}")))
 
 
+def _directory_domain(url: str) -> bool:
+    host = (urlsplit(url).hostname or "").lower().removeprefix("www.")
+    return any(host == domain or host.endswith(f".{domain}") for domain in DIRECTORY_HOSTS)
+
+
 def _resolve_status_for_url(url: str, company_website: str = "") -> CitationTag:
     parsed = urlsplit(url)
     host = (parsed.hostname or "").lower()
     if any(host == d or host.endswith(f".{d}") for d in VERIFIED_DOMAINS):
         return CitationTag.VERIFIED
+    if _directory_domain(url):
+        return CitationTag.CLAIMED
     if _company_domain(url, company_website):
         return CitationTag.CLAIMED
     return CitationTag.TRUSTED
@@ -78,8 +87,12 @@ def _parse_search_output(
                 source_url=url,
                 source_title=title,
                 source_type="deep_diligence_search",
-                trust_tier="first_party" if status == CitationTag.CLAIMED else "multi_hop_web",
-                verification="multi_hop_search",
+                trust_tier=(
+                    "commercial_directory"
+                    if _directory_domain(url)
+                    else "first_party" if status == CitationTag.CLAIMED else "multi_hop_web"
+                ),
+                verification="directory_profile" if _directory_domain(url) else "multi_hop_search",
                 status=status,
             )
         )
@@ -104,7 +117,7 @@ class SearchTool:
         query_item: SearchQuery,
         start_id: int,
         *,
-        num_results: int = 5,
+        num_results: int = DILIGENCE.search_results_per_query,
     ) -> list[Evidence]:
         """Execute search for a candidate query across diligence pillars."""
         if self.custom_search_fn is not None:
@@ -119,7 +132,7 @@ class SearchTool:
             "--output",
             "text",
             "--timeout",
-            "30000",
+            str(AGENT_REACH.mcporter_timeout_milliseconds),
         ]
         allowed_env = {
             key: os.environ[key]
@@ -133,7 +146,7 @@ class SearchTool:
                 command,
                 capture_output=True,
                 text=True,
-                timeout=35,
+                timeout=AGENT_REACH.subprocess_timeout_seconds,
                 check=False,
                 env=allowed_env,
             )
@@ -146,7 +159,7 @@ class SearchTool:
             if "429" in stderr or "rate limit" in stderr or "quota" in stderr:
                 raise SourcePolicyError("Independent search rate limited")
             return []
-        if len(completed.stdout.encode("utf-8")) > 200_000:
+        if len(completed.stdout.encode("utf-8")) > AGENT_REACH.max_output_bytes:
             return []
 
         return _parse_search_output(

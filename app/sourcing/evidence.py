@@ -9,6 +9,7 @@ from app.core.logging import current_request_id
 from app.core.urls import resolve_host
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
+from app.sourcing.constants import AGENT_REACH, DIRECTORY_HOSTS
 from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 
@@ -87,6 +88,11 @@ def _allowed_research_url(
     return True
 
 
+def _directory_source(url: str) -> bool:
+    host = (urlsplit(url).hostname or "").lower().removeprefix("www.")
+    return any(host == domain or host.endswith(f".{domain}") for domain in DIRECTORY_HOSTS)
+
+
 def agent_reach_evidence(
     candidate: Candidate,
     topic: str,
@@ -105,11 +111,11 @@ def agent_reach_evidence(
         "call",
         "exa.web_search_exa",
         "--args",
-        json.dumps({"query": query, "numResults": 5}),
+        json.dumps({"query": query, "numResults": AGENT_REACH.research_result_limit}),
         "--output",
         "text",
         "--timeout",
-        "30000",
+        str(AGENT_REACH.mcporter_timeout_milliseconds),
     ]
     allowed_env = {
         key: os.environ[key]
@@ -122,7 +128,7 @@ def agent_reach_evidence(
             command,
             capture_output=True,
             text=True,
-            timeout=35,
+            timeout=AGENT_REACH.subprocess_timeout_seconds,
             check=False,
             env=allowed_env,
         )
@@ -130,7 +136,7 @@ def agent_reach_evidence(
         raise SourcePolicyError("Agent Reach research unavailable") from error
     if completed.returncode != 0:
         raise SourcePolicyError("Agent Reach research failed")
-    if len(completed.stdout.encode("utf-8")) > 200_000:
+    if len(completed.stdout.encode("utf-8")) > AGENT_REACH.max_output_bytes:
         raise SourcePolicyError("Agent Reach output exceeded 200 KB")
 
     evidence: list[Evidence] = []
@@ -140,6 +146,7 @@ def agent_reach_evidence(
         highlights = block.partition("Highlights:")[2].strip()
         if not title or not url or not highlights or not _allowed_research_url(url.group(1), resolver):
             continue
+        is_directory = _directory_source(url.group(1))
         evidence.append(
             Evidence(
                 id=f"ev-{start + len(evidence):03d}",
@@ -148,9 +155,9 @@ def agent_reach_evidence(
                 source_url=url.group(1),
                 source_title=title.group(1).strip(),
                 source_type="agent_reach",
-                trust_tier="open_web",
-                verification="third_party_search",
-                status=CitationTag.TRUSTED,
+                trust_tier="commercial_directory" if is_directory else "open_web",
+                verification="directory_profile" if is_directory else "third_party_search",
+                status=CitationTag.CLAIMED if is_directory else CitationTag.TRUSTED,
             )
         )
     if not evidence:

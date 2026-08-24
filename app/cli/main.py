@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
+from app.analysis.diligence.constants import DILIGENCE
 from app.cli.reporter import ConsoleReporter
 from app.core.errors import AppError, report_cli_error
 from app.core.logging import bind_request_id, configure_logging, new_request_id
@@ -34,7 +35,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=True,
         help="enable multi-hop 4-pillar deep diligence research (default: enabled, use --no-deep-diligence to opt out)",
     )
-    run.add_argument("--max-hops", type=_positive_int, default=2, help="maximum research hops for deep diligence (default: 2)")
+    run.add_argument(
+        "--max-hops",
+        type=_positive_int,
+        default=DILIGENCE.default_max_hops,
+        help=(
+            "maximum research hops for deep diligence "
+            f"(default: {DILIGENCE.default_max_hops})"
+        ),
+    )
     run.add_argument("--json", action="store_true", help="print the machine-readable run summary")
     run.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
     run.add_argument("--request-id", help="reuse an upstream request ID for end-to-end tracking")
