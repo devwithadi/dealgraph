@@ -26,7 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--topic", required=True)
     run.add_argument("--batch")
     run.add_argument("--limit", type=_positive_int, help="optional emergency cap after date filtering")
-    run.add_argument("--output", type=Path, default=Path("data/runs/latest"))
+    run.add_argument("--output", type=Path, default=Path("results"))
     run.add_argument("--source-file", type=Path)
     run.add_argument("--offline", action="store_true", help="replay source data without web enrichment")
     run.add_argument(
@@ -52,13 +52,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     replay = subparsers.add_parser(
         "replay",
-        help="re-generate markdown and PDF memos from stored run artifacts without network or LLM calls",
+        help="re-generate PDF memos from stored run artifacts without network or LLM calls",
     )
     replay.add_argument(
         "--run-dir",
         type=Path,
-        default=Path("data/runs/latest"),
-        help="directory containing stored run artifacts (default: data/runs/latest)",
+        default=Path("results"),
+        help="directory containing stored run artifacts (default: results)",
     )
     replay.add_argument("--json", action="store_true", help="print the machine-readable run summary")
     replay.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
@@ -107,17 +107,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(result.model_dump(), indent=2))
     else:
-        memos_dir = Path(result.output) / "memos"
+        output_dir = Path(result.output)
         print(
             f"Screened {result.screened}/{result.candidates} companies; "
             f"created {result.succeeded}/{result.finalists} finalist memos; "
             f"selected {result.selected}."
         )
-        print(f"Memos: {memos_dir}")
+        print(f"PDF Memos: {output_dir}")
         print(f"Request ID: {result.request_id}")
         if result.succeeded > 0:
             print(f"\nTo open generated PDF investment memos:")
-            print(f"  open {memos_dir}/*.pdf")
+            print(f"  open {output_dir}/*.pdf")
     return 0 if result.failed == 0 else 1
 
 

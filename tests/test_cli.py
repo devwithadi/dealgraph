@@ -28,8 +28,12 @@ def test_cli_defaults_to_bedrock_without_a_company_cap() -> None:
 
     assert default.provider is AIProvider.BEDROCK
     assert default.limit is None
+    assert default.output == Path("results")
     assert openai.provider is AIProvider.OPENAI
     assert capped.limit == 50
+
+    replay_default = build_parser().parse_args(["replay"])
+    assert replay_default.run_dir == Path("results")
 
 
 def test_cli_reports_screening_and_finalist_counts(monkeypatch, tmp_path: Path, capsys) -> None:
@@ -39,7 +43,8 @@ def test_cli_reports_screening_and_finalist_counts(monkeypatch, tmp_path: Path, 
     assert main(["run", "--topic", "AI"]) == 0
     output = capsys.readouterr().out
     assert "Screened 25/25 companies; created 3/3 finalist memos; selected 2." in output
-    assert f"Memos: {tmp_path / 'memos'}" in output
+    assert f"PDF Memos: {tmp_path}" in output
+    assert f"open {tmp_path}/*.pdf" in output
 
 
 def test_cli_json_output_contains_stage_counts(monkeypatch, tmp_path: Path, capsys) -> None:
@@ -86,7 +91,8 @@ def test_cli_replay_subcommand_invokes_pipeline_replay(monkeypatch, tmp_path: Pa
     assert main(["replay", "--run-dir", str(tmp_path)]) == 0
     output = capsys.readouterr().out
     assert "Screened 25/25 companies; created 3/3 finalist memos; selected 2." in output
-    assert f"Memos: {tmp_path / 'memos'}" in output
+    assert f"PDF Memos: {tmp_path}" in output
+    assert f"open {tmp_path}/*.pdf" in output
 
 
 def test_cli_replay_json_output(monkeypatch, tmp_path: Path, capsys) -> None:
@@ -98,4 +104,3 @@ def test_cli_replay_json_output(monkeypatch, tmp_path: Path, capsys) -> None:
     assert payload["screened"] == 25
     assert payload["finalists"] == 3
     assert payload["succeeded"] == 3
-

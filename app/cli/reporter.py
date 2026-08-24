@@ -11,7 +11,6 @@ class FinalistReportItem:
     decision: str
     score: float | None
     confidence: float | None
-    memo_path: str
     pdf_memo_path: str = ""
     error: str | None = None
 
@@ -139,15 +138,13 @@ class ConsoleReporter:
             decision = data.get("decision", "")
             score = data.get("score", 0.0)
             confidence = data.get("confidence", 0.0)
-            memo_path = data.get("memo_path", "")
             pdf_memo_path = data.get("pdf_memo_path", "")
             score_str = f"{score:.1f}" if isinstance(score, float) else f"{score}"
             conf_str = f"{confidence:.2f}" if isinstance(confidence, float) else f"{confidence}"
             print(f"  - Result: Decision: {decision} | Score: {score_str}/100 | Confidence: {conf_str}")
-            print(f"  - Markdown Memo: {memo_path}")
             if pdf_memo_path:
-                print(f"  - PDF Memo:      {pdf_memo_path}")
-                print(f"    View command:  open {pdf_memo_path}")
+                print(f"  - PDF Memo:     {pdf_memo_path}")
+                print(f"    View command: open {pdf_memo_path}")
             self._finalist_items.append(
                 FinalistReportItem(
                     name=str(data.get("name", "")),
@@ -155,7 +152,6 @@ class ConsoleReporter:
                     decision=str(decision),
                     score=score if isinstance(score, (int, float)) else None,
                     confidence=confidence if isinstance(confidence, (int, float)) else None,
-                    memo_path=str(memo_path),
                     pdf_memo_path=str(pdf_memo_path),
                 )
             )
@@ -169,7 +165,6 @@ class ConsoleReporter:
                     decision="Failed",
                     score=None,
                     confidence=None,
-                    memo_path="N/A",
                     pdf_memo_path="N/A",
                     error=error,
                 )
@@ -212,14 +207,14 @@ class ConsoleReporter:
             print(f"{divider}\n")
             return
 
-        header = f"{'Company':<20} {'Decision':<16} {'Score':<8} {'Confidence':<12} {'Memo (MD)':<22} {'Memo (PDF)'}"
+        header = f"{'Company':<24} {'Decision':<18} {'Score':<8} {'Confidence':<12} {'PDF Memo'}"
         print(header)
         print(thin_divider)
         for item in self._finalist_items:
             score_str = f"{item.score:.1f}" if item.score is not None else "N/A"
             conf_str = f"{item.confidence:.2f}" if item.confidence is not None else "N/A"
             pdf_str = item.pdf_memo_path if item.pdf_memo_path else "N/A"
-            print(f"{item.name:<20} {item.decision:<16} {score_str:<8} {conf_str:<12} {item.memo_path:<22} {pdf_str}")
+            print(f"{item.name:<24} {item.decision:<18} {score_str:<8} {conf_str:<12} {pdf_str}")
         print(f"{divider}")
 
         pdf_items = [item for item in self._finalist_items if item.pdf_memo_path and item.pdf_memo_path != "N/A"]

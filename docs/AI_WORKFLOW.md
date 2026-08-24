@@ -33,7 +33,7 @@ Modern AI workflows often suffer from architectural bloat—incorporating distri
 │  [ReportLab PDF] ◄── [Main LLM Synthesis] ◄── [Agent Reach / Exa Diligence]│
 │         │                                                                   │
 │         ▼                                                                   │
-│  [Auditable Run Directory] (candidates.json, evidence/, analyses/, memos/) │
+│  [Results Output Directory] (<slug>.pdf vector memos)                      │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -220,7 +220,7 @@ Real-world deployment of LLM pipelines reveals subtle edge-case failures. DealGr
 
 #### 5. Offline Replay Mode
 - **Issue:** Re-generating PDF and Markdown memos with styling updates or new scoring rubrics previously required re-running network queries and LLM inference.
-- **Defensive Guardrail:** First-class `dealgraph replay [--run-dir DIR]` subcommand reads immutable stored run artifacts (`candidates.json`, `evidence/`, `analyses/`) and re-renders both `.md` and `.pdf` memos with zero network or LLM dependencies.
+- **Defensive Guardrail:** First-class `dealgraph replay [--run-dir DIR]` subcommand reads stored run artifacts (`candidates.json`, `evidence/`, `analyses/`) and re-renders vector `.pdf` memos with zero network or LLM dependencies.
 
 ---
 
