@@ -168,3 +168,85 @@ def test_bedrock_json_error_handling() -> None:
             bedrock_client=FailingBedrockClient(),
         )
 
+
+def test_openai_model_aliases_luna_and_terra() -> None:
+    assert resolve_model_id("luna", DEFAULT_OPENAI_SCREENING_MODEL) == "gpt-5-luna"
+    assert resolve_model_id("LUNA", DEFAULT_OPENAI_SCREENING_MODEL) == "gpt-5-luna"
+    assert resolve_model_id("  luna  ", DEFAULT_OPENAI_SCREENING_MODEL) == "gpt-5-luna"
+
+    assert resolve_model_id("terra", DEFAULT_OPENAI_MODEL) == "gpt-5-terra"
+    assert resolve_model_id("TERRA", DEFAULT_OPENAI_MODEL) == "gpt-5-terra"
+    assert resolve_model_id("  terra  ", DEFAULT_OPENAI_MODEL) == "gpt-5-terra"
+
+
+def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None:
+    import json
+    import httpx
+    from app.analysis.providers import model_json
+
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    monkeypatch.delenv("OPENAI_REASONING_EFFORT", raising=False)
+
+    captured_payloads: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content.decode("utf-8"))
+        captured_payloads.append(body)
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": '{"analysis": "complete"}'}}]},
+            request=request,
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+
+    # Test luna (screening stage) -> max_completion_tokens, temperature 0.1, no reasoning_effort
+    model_json(
+        "screening prompt",
+        provider=AIProvider.OPENAI,
+        model="gpt-5-luna",
+        max_tokens=600,
+        stage="screening",
+        client=client,
+    )
+    luna_req = captured_payloads[-1]
+    assert luna_req["model"] == "gpt-5-luna"
+    assert luna_req["max_completion_tokens"] == 600
+    assert "max_tokens" not in luna_req
+    assert luna_req["temperature"] == 0.1
+    assert "reasoning_effort" not in luna_req
+
+    # Test terra (synthesis stage) -> max_completion_tokens, reasoning_effort "low", no temperature
+    model_json(
+        "synthesis prompt",
+        provider=AIProvider.OPENAI,
+        model="gpt-5-terra",
+        max_tokens=4096,
+        stage="synthesis",
+        client=client,
+    )
+    terra_req = captured_payloads[-1]
+    assert terra_req["model"] == "gpt-5-terra"
+    assert terra_req["max_completion_tokens"] == 4096
+    assert "max_tokens" not in terra_req
+    assert terra_req["reasoning_effort"] == "low"
+    assert "temperature" not in terra_req
+
+    # Test o3-mini (reasoning model) with custom OPENAI_REASONING_EFFORT
+    monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
+    model_json(
+        "reasoning prompt",
+        provider=AIProvider.OPENAI,
+        model="o3-mini",
+        max_tokens=2048,
+        stage="synthesis",
+        client=client,
+    )
+    o3_req = captured_payloads[-1]
+    assert o3_req["model"] == "o3-mini"
+    assert o3_req["max_completion_tokens"] == 2048
+    assert o3_req["reasoning_effort"] == "high"
+    assert "temperature" not in o3_req
+
+

@@ -32,6 +32,9 @@ from app.domain.enums import AIProvider
 
 def test_all_model_aliases_are_mapped_correctly() -> None:
     expected_aliases = {
+        # OpenAI
+        "luna": "gpt-5-luna",
+        "terra": "gpt-5-terra",
         # Qwen
         "qwen-2.5-72b": "qwen/qwen-2.5-72b-instruct",
         "qwen-2.5-32b": "qwen/qwen-2.5-32b-instruct",
@@ -265,4 +268,73 @@ def test_invalid_base_urls_and_unknown_provider_handling(monkeypatch) -> None:
 def test_fenced_json_without_language_tag() -> None:
     raw = "```\n{\n  \"status\": \"ok\"\n}\n```"
     assert _parse_json(raw) == {"status": "ok"}
+
+
+def test_openai_luna_and_terra_reasoning_effort(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    monkeypatch.delenv("OPENAI_REASONING_EFFORT", raising=False)
+
+    captured_requests: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        import json
+        body = json.loads(request.content.decode("utf-8"))
+        captured_requests.append(body)
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": '{"status": "ok"}'}}]},
+            request=request,
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+
+    # 1. Luna (Screening - fast non-reasoning model)
+    res_luna = model_json(
+        "Screen candidate",
+        provider=AIProvider.OPENAI,
+        model=resolve_model_id("luna", "default"),
+        max_tokens=300,
+        stage="screening",
+        client=client,
+    )
+    assert res_luna == {"status": "ok"}
+    req_luna = captured_requests[-1]
+    assert req_luna["model"] == "gpt-5-luna"
+    assert req_luna["max_completion_tokens"] == 300
+    assert "max_tokens" not in req_luna
+    assert req_luna["temperature"] == 0.1
+    assert "reasoning_effort" not in req_luna
+
+    # 2. Terra (Synthesis - reasoning model with default low effort)
+    res_terra = model_json(
+        "Synthesize memo",
+        provider=AIProvider.OPENAI,
+        model=resolve_model_id("terra", "default"),
+        max_tokens=4096,
+        stage="synthesis",
+        client=client,
+    )
+    assert res_terra == {"status": "ok"}
+    req_terra = captured_requests[-1]
+    assert req_terra["model"] == "gpt-5-terra"
+    assert req_terra["max_completion_tokens"] == 4096
+    assert "max_tokens" not in req_terra
+    assert "temperature" not in req_terra
+    assert req_terra["reasoning_effort"] == "low"
+
+    # 3. Terra with custom OPENAI_REASONING_EFFORT
+    monkeypatch.setenv("OPENAI_REASONING_EFFORT", "medium")
+    res_terra_custom = model_json(
+        "Synthesize memo custom",
+        provider=AIProvider.OPENAI,
+        model=resolve_model_id("terra", "default"),
+        max_tokens=4096,
+        stage="synthesis",
+        client=client,
+    )
+    assert res_terra_custom == {"status": "ok"}
+    req_terra_custom = captured_requests[-1]
+    assert req_terra_custom["reasoning_effort"] == "medium"
+
 
