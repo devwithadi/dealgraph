@@ -12,8 +12,13 @@ from app.domain.models import Candidate, Evidence
 from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 
-def candidate_evidence(candidate: Candidate) -> list[Evidence]:
+def candidate_evidence(
+    candidate: Candidate,
+    *,
+    resolver: Callable[[str], list[str]] = resolve_host,
+) -> list[Evidence]:
     """Build baseline evidence without upgrading a non-YC source to YC-verified."""
+    validate_public_url(candidate.source_url, resolver=resolver)
     facts = [candidate.one_liner, candidate.description]
     if candidate.team_size is not None:
         facts.append(f"Reported team size: {candidate.team_size}.")
@@ -28,7 +33,11 @@ def candidate_evidence(candidate: Candidate) -> list[Evidence]:
             "third_party",
             CitationTag.TRUSTED,
         )
-    elif source_host == "ycombinator.com" or source_host.endswith(".ycombinator.com"):
+    elif (
+        source_host == "ycombinator.com"
+        or source_host.endswith(".ycombinator.com")
+        or source_host == "yc-oss.github.io"
+    ):
         source_name, source_type, trust_tier, verification, status = (
             "YC profile",
             "yc_directory",

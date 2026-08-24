@@ -84,7 +84,10 @@ def _find_matching_evidence(
 ) -> Evidence | None:
     keywords = PILLAR_KEYWORDS.get(pillar, [])
     for item in evidence:
-        if independent and item.status != CitationTag.TRUSTED:
+        if independent and not (
+            item.status == CitationTag.TRUSTED
+            or (item.status == CitationTag.VERIFIED and item.source_type == "regulatory")
+        ):
             continue
         text = f"{item.claim} {item.excerpt} {item.source_title}".lower()
         if any(re.search(rf"\b{re.escape(kw)}\b", text) or (kw == "$" and "$" in text) for kw in keywords):
