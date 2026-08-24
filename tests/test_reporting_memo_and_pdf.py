@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+import re
+
 import pytest
 
 from app.domain.enums import AIProvider, AnalysisMode, CitationTag, EvidenceStatus, Recommendation
@@ -197,6 +199,7 @@ def test_render_pdf_memo_creates_valid_pdf(
     # Verify PDF header magic bytes (%PDF-)
     content = pdf_out.read_bytes()
     assert content.startswith(b"%PDF-")
+    assert len(re.findall(rb"/Type\s*/Page\b", content)) == 1
 
 
 def test_render_pdf_memo_with_various_recommendations(
