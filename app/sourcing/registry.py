@@ -42,6 +42,13 @@ SOURCE_REGISTRY = {
         "evidence_type": "agent_reach",
         "manifest": "Agent Reach / Exa web search",
     },
+    "deep_diligence": {
+        "access": "multi_hop_exa_via_mcporter",
+        "trust": "open_web",
+        "enabled": True,
+        "evidence_type": "deep_diligence",
+        "manifest": "Deep Diligence multi-hop research",
+    },
     "pitchbook": {"access": "licensed_api_only", "trust": "licensed_vendor", "enabled": False},
 }
 

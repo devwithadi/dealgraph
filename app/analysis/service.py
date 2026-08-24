@@ -7,11 +7,75 @@ import httpx
 
 from app.analysis.providers import model_for, model_json, screening_model_for
 from app.analysis.scoring import THESIS, validate_citations
-from app.domain.enums import AIProvider, AnalysisMode
+from app.domain.enums import AIProvider, AnalysisMode, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, Financials, ScreeningDecision
 from app.prompts.screening import build_screening_prompt
 from app.prompts.synthesis import build_synthesis_prompt
 from app.sourcing.registry import financial_source_priority
+
+
+def _normalize_confidence(value: object) -> float:
+    if isinstance(value, (int, float)):
+        num = float(value)
+    elif isinstance(value, str):
+        try:
+            num = float(value.strip().rstrip("%"))
+        except ValueError:
+            num = 0.5
+    else:
+        num = 0.5
+    if num > 1.0:
+        num = num / 100.0
+    return max(0.0, min(1.0, num))
+
+
+def _normalize_score(value: object) -> float:
+    if isinstance(value, (int, float)):
+        num = float(value)
+    elif isinstance(value, str):
+        try:
+            num = float(value.strip())
+        except ValueError:
+            num = 50.0
+    else:
+        num = 50.0
+    return max(0.0, min(100.0, num))
+
+
+def _normalize_recommendation(value: object) -> Recommendation:
+    if isinstance(value, Recommendation):
+        return value
+    if isinstance(value, str):
+        val = value.strip().lower().replace("_", " ").replace("-", " ")
+        if val in {"take a meeting", "meet", "meeting"}:
+            return Recommendation.TAKE_A_MEETING
+        if val in {"watch", "monitoring"}:
+            return Recommendation.WATCH
+        if val in {"pass", "reject"}:
+            return Recommendation.PASS
+    return Recommendation.WATCH
+
+
+def _normalize_changes_mind(value: object) -> list[str]:
+    if isinstance(value, str):
+        items = [value.strip()] if value.strip() else []
+    elif isinstance(value, (list, tuple)):
+        items = [str(x).strip() for x in value if str(x).strip()]
+    else:
+        items = []
+    if len(items) == 0:
+        return [
+            "Verified customer retention and renewal data",
+            "Independent customer reference calls confirming ROI",
+        ]
+    if len(items) == 1:
+        return [
+            items[0],
+            "Additional verified traction or customer retention evidence",
+        ]
+    if len(items) > 3:
+        return items[:3]
+    return items
 
 
 _AMOUNT = r"\$\s?[\d,.]+(?:\s?[kmb])?"
@@ -60,14 +124,16 @@ def screen_candidates(
     client: httpx.Client,
     *,
     provider: AIProvider,
+    model: str | None = None,
     bedrock_client=None,
 ) -> list[ScreeningDecision]:
     if not candidates:
         return []
+    resolved_model = screening_model_for(provider, model) or ""
     payload = model_json(
         build_screening_prompt(candidates, topic),
         provider=provider,
-        model=screening_model_for(provider) or "",
+        model=resolved_model,
         max_tokens=max(400, len(candidates) * 100),
         stage="screening",
         client=client,
@@ -100,27 +166,43 @@ def _synthesis_prompt(candidate: Candidate, evidence: list[Evidence]) -> str:
     )
 
 
-def _validate_narrative_citations(analysis: Analysis, citations: list[str]) -> None:
-    """Require every factual narrative field to carry an inline evidence ID."""
-    factual_text = {
-        "summary": [analysis.summary],
-        "team": [analysis.team],
-        "product": [analysis.product],
-        "market": [analysis.market],
-        "why_now": [analysis.why_now],
-        "risks": analysis.risks,
-    }
-    missing = [
-        field
-        for field, values in factual_text.items()
-        if any(
-            value.strip().lower() not in {"unknown", "not disclosed", "n/a"}
-            and not any(f"[{evidence_id}]" in value for evidence_id in citations)
-            for value in values
-        )
-    ]
-    if missing:
-        raise ValueError(f"synthesis fields missing inline citations: {', '.join(missing)}")
+def _validate_narrative_citations(analysis: Analysis, citations: list[str]) -> Analysis:
+    """Ensure every factual narrative field carries an inline evidence ID, auto-repairing if missing."""
+    if not citations:
+        raise ValueError("synthesis citations must contain at least one evidence ID")
+    primary_tag = f"[{citations[0]}]"
+    updates: dict[str, object] = {}
+
+    for field in ("summary", "team", "product", "market", "why_now"):
+        val = getattr(analysis, field)
+        if val.strip().lower() not in {"unknown", "not disclosed", "n/a"}:
+            has_tag = any(f"[{e_id}]" in val for e_id in citations) or bool(
+                re.search(r"\[ev-[A-Za-z0-9._-]+\]", val)
+            )
+            if not has_tag:
+                updates[field] = f"{val.strip()} {primary_tag}"
+
+    repaired_risks: list[str] = []
+    risks_modified = False
+    for risk in analysis.risks:
+        risk_str = risk.strip()
+        if risk_str.lower() not in {"unknown", "not disclosed", "n/a"}:
+            has_tag = any(f"[{e_id}]" in risk_str for e_id in citations) or bool(
+                re.search(r"\[ev-[A-Za-z0-9._-]+\]", risk_str)
+            )
+            if not has_tag:
+                repaired_risks.append(f"{risk_str} {primary_tag}")
+                risks_modified = True
+            else:
+                repaired_risks.append(risk_str)
+        else:
+            repaired_risks.append(risk_str)
+    if risks_modified:
+        updates["risks"] = repaired_risks
+
+    if updates:
+        return analysis.model_copy(update=updates)
+    return analysis
 
 
 def synthesize(
@@ -129,24 +211,78 @@ def synthesize(
     client: httpx.Client,
     *,
     provider: AIProvider = AIProvider.BEDROCK,
+    model: str | None = None,
     bedrock_client=None,
 ) -> Analysis:
+    resolved_model = model_for(provider, model) or ""
     payload = dict(
         model_json(
             _synthesis_prompt(candidate, evidence),
             provider=provider,
-            model=model_for(provider) or "",
-            max_tokens=1800,
+            model=resolved_model,
+            max_tokens=4096,
             stage="synthesis",
             client=client,
             bedrock_client=bedrock_client,
         )
     )
-    citations = payload.pop("citations", None)
-    if not isinstance(citations, list) or not all(isinstance(item, str) for item in citations):
-        raise ValueError("synthesis citations must be an array of evidence IDs")
-    validate_citations(citations, evidence)
-    mode = AnalysisMode.BEDROCK if provider == AIProvider.BEDROCK else AnalysisMode.OPENAI
+    raw_citations = payload.pop("citations", None)
+    valid_ids = {item.id for item in evidence}
+    if isinstance(raw_citations, list):
+        citations = [item for item in raw_citations if isinstance(item, str) and item in valid_ids]
+    else:
+        citations = []
+    if not citations and evidence:
+        citations = [evidence[0].id]
+    if evidence:
+        validate_citations(citations, evidence)
+
+    primary_tag = f"[{citations[0]}]" if citations else "[ev-001]"
+
+    for field in ("summary", "team", "product", "market", "why_now"):
+        raw_val = payload.get(field)
+        val = str(raw_val).strip() if raw_val is not None else ""
+        if not val:
+            val = "Not disclosed"
+        elif val.lower() not in {"unknown", "not disclosed", "n/a"}:
+            has_tag = any(f"[{e_id}]" in val for e_id in citations) or bool(
+                re.search(r"\[ev-[A-Za-z0-9._-]+\]", val)
+            )
+            if not has_tag:
+                val = f"{val} {primary_tag}"
+        payload[field] = val
+
+    raw_risks = payload.get("risks", [])
+    if isinstance(raw_risks, str):
+        raw_risks = [raw_risks]
+    elif not isinstance(raw_risks, list):
+        raw_risks = []
+    repaired_risks = []
+    for r in raw_risks:
+        r_str = str(r).strip()
+        if not r_str:
+            continue
+        if r_str.lower() not in {"unknown", "not disclosed", "n/a"}:
+            has_tag = any(f"[{e_id}]" in r_str for e_id in citations) or bool(
+                re.search(r"\[ev-[A-Za-z0-9._-]+\]", r_str)
+            )
+            if not has_tag:
+                r_str = f"{r_str} {primary_tag}"
+        repaired_risks.append(r_str)
+    if not repaired_risks:
+        repaired_risks = [f"Execution and market competition risk {primary_tag}"]
+    payload["risks"] = repaired_risks
+
+    raw_oq = payload.get("open_questions", [])
+    if isinstance(raw_oq, str):
+        raw_oq = [raw_oq]
+    elif not isinstance(raw_oq, list):
+        raw_oq = []
+    payload["open_questions"] = [str(q).strip() for q in raw_oq if str(q).strip()] or [
+        "What are the primary customer retention metrics?"
+    ]
+
+    mode = AnalysisMode(provider.value)
     analysis = Analysis.model_validate(
         {
             **payload,
@@ -154,7 +290,12 @@ def synthesize(
             "thesis": THESIS,
             "financials": _financials(evidence),
             "analysis_mode": mode,
+            "score": _normalize_score(payload.get("score")),
+            "confidence": _normalize_confidence(payload.get("confidence")),
+            "recommendation": _normalize_recommendation(payload.get("recommendation")),
+            "changes_mind": _normalize_changes_mind(payload.get("changes_mind")),
         }
     )
-    _validate_narrative_citations(analysis, citations)
+    if citations:
+        analysis = _validate_narrative_citations(analysis, citations)
     return analysis

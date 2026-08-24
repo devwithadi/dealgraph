@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
+from app.cli.reporter import ConsoleReporter
 from app.core.errors import AppError, report_cli_error
 from app.core.logging import bind_request_id, configure_logging, new_request_id
 from app.domain.enums import AIProvider
@@ -28,6 +29,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--output", type=Path, default=Path("data/runs/latest"))
     run.add_argument("--source-file", type=Path)
     run.add_argument("--offline", action="store_true", help="replay source data without web enrichment")
+    run.add_argument("--deep-diligence", action="store_true", help="enable multi-hop 4-pillar deep diligence research")
+    run.add_argument("--max-hops", type=_positive_int, default=2, help="maximum research hops for deep diligence (default: 2)")
     run.add_argument("--json", action="store_true", help="print the machine-readable run summary")
     run.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
     run.add_argument("--request-id", help="reuse an upstream request ID for end-to-end tracking")
@@ -38,6 +41,23 @@ def build_parser() -> argparse.ArgumentParser:
         default=AIProvider.BEDROCK,
         help="narrative provider (default: bedrock)",
     )
+    run.add_argument("--model", help="default LLM model ID or alias for both screening and synthesis")
+    run.add_argument("--screening-model", help="override LLM model ID or alias for screening")
+    run.add_argument("--synthesis-model", help="override LLM model ID or alias for synthesis")
+
+    replay = subparsers.add_parser(
+        "replay",
+        help="re-generate markdown and PDF memos from stored run artifacts without network or LLM calls",
+    )
+    replay.add_argument(
+        "--run-dir",
+        type=Path,
+        default=Path("data/runs/latest"),
+        help="directory containing stored run artifacts (default: data/runs/latest)",
+    )
+    replay.add_argument("--json", action="store_true", help="print the machine-readable run summary")
+    replay.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
+    replay.add_argument("--request-id", help="reuse an upstream request ID for end-to-end tracking")
     return parser
 
 
@@ -48,18 +68,35 @@ def main(argv: list[str] | None = None) -> int:
     request_id = "unbound"
     try:
         request_id = bind_request_id(args.request_id or new_request_id())
-        if args.source_file and not args.source_file.is_file():
-            raise AppError(f"source file not found: {args.source_file}", exit_code=2)
-        result = Pipeline().run(
-            topic=args.topic,
-            batch=args.batch,
-            limit=args.limit,
-            output=args.output,
-            source_file=args.source_file,
-            offline=args.offline,
-            request_id=request_id,
-            provider=args.provider,
-        )
+        reporter = None if args.json else ConsoleReporter()
+        if args.command == "replay":
+            result = Pipeline().replay(
+                run_dir=args.run_dir,
+                progress_callback=reporter,
+                request_id=request_id,
+            )
+        elif args.command == "run":
+            if args.source_file and not args.source_file.is_file():
+                raise AppError(f"source file not found: {args.source_file}", exit_code=2)
+            screening_model = args.screening_model or args.model
+            synthesis_model = args.synthesis_model or args.model
+            result = Pipeline().run(
+                topic=args.topic,
+                batch=args.batch,
+                limit=args.limit,
+                output=args.output,
+                source_file=args.source_file,
+                offline=args.offline,
+                deep_diligence=args.deep_diligence,
+                max_hops=args.max_hops,
+                request_id=request_id,
+                provider=args.provider,
+                screening_model=screening_model,
+                synthesis_model=synthesis_model,
+                progress_callback=reporter,
+            )
+        else:
+            raise AppError(f"unknown command: {args.command}", exit_code=2)
     except Exception as error:
         return report_cli_error(error, request_id)
     if args.json:

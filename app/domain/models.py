@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
+from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.domain.enums import AnalysisMode, Recommendation
+from app.domain.enums import AnalysisMode, CitationTag, Recommendation
 
 
 class FrozenModel(BaseModel):
@@ -32,6 +33,7 @@ class Evidence(FrozenModel):
     source_type: str
     trust_tier: str
     verification: str
+    status: CitationTag = CitationTag.CLAIMED
     published_at: datetime | None = None
     retrieved_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -68,6 +70,7 @@ class Analysis(FrozenModel):
     confidence: float = Field(ge=0, le=1)
     recommendation: Recommendation
     analysis_mode: AnalysisMode
+    dimensions: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class RunSummary(FrozenModel):

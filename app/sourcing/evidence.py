@@ -7,6 +7,7 @@ from collections.abc import Callable
 from urllib.parse import urlsplit
 
 from app.core.logging import current_request_id
+from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
 from app.sourcing.policy import BLOCKED_HOSTS, SourcePolicyError
 
@@ -27,6 +28,7 @@ def yc_evidence(candidate: Candidate) -> list[Evidence]:
             source_type="yc_directory",
             trust_tier="curated_directory",
             verification="third_party",
+            status=CitationTag.VERIFIED,
             published_at=candidate.launched_at,
         )
     ]
@@ -112,6 +114,7 @@ def agent_reach_evidence(
                 source_type="agent_reach",
                 trust_tier="open_web",
                 verification="third_party_search",
+                status=CitationTag.TRUSTED,
             )
         )
     if not evidence:

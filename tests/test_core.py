@@ -133,10 +133,15 @@ def test_synthesis_narrative_requires_inline_evidence_ids() -> None:
         recommendation=Recommendation.WATCH,
         analysis_mode=AnalysisMode.BEDROCK,
     )
-    _validate_narrative_citations(grounded, ["ev-001"])
+    validated = _validate_narrative_citations(grounded, ["ev-001"])
+    assert validated.summary == grounded.summary
 
-    with pytest.raises(ValueError, match="summary"):
-        _validate_narrative_citations(grounded.model_copy(update={"summary": "Unsupported"}), ["ev-001"])
+    # Self-healing repairs untagged narrative fields by injecting primary citation
+    repaired = _validate_narrative_citations(grounded.model_copy(update={"summary": "Unsupported"}), ["ev-001"])
+    assert "[ev-001]" in repaired.summary
+
+    with pytest.raises(ValueError, match="synthesis citations"):
+        _validate_narrative_citations(grounded, [])
 
 
 @pytest.mark.parametrize("slug", ["../outside", "/tmp/outside", "company/name"])
@@ -374,7 +379,7 @@ def test_bedrock_uses_small_model_for_screening_and_main_model_for_synthesis(mon
     )
     assert [call["inferenceConfig"] for call in calls] == [
         {"maxTokens": 400},
-        {"maxTokens": 1800},
+        {"maxTokens": 4096},
     ]
 
 

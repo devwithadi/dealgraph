@@ -122,8 +122,11 @@ def test_pipeline_runs_two_stage_flow_and_writes_auditable_artifacts(
     assert manifest["synthesis_prompt_version"] == "synthesis-v4"
     assert manifest["evidence_sources"] == [YC_URL, "Agent Reach / Exa web search"]
     memo = (run / "memos" / "agentdesk.md").read_text()
-    assert "**Decision:** Watch" in memo
+    assert "WATCH" in memo
+    assert "[INVESTMENT COMMITTEE MEMO]" in memo
     assert "https://news.example/agentdesk" in memo
+    assert (run / "memos" / "agentdesk.pdf").exists()
+    assert (run / "memos" / "agentdesk.pdf").stat().st_size > 0
 
 
 def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypatch) -> None:
@@ -166,3 +169,114 @@ def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypat
 
 def test_mixed_provider_results_are_reported_as_mixed() -> None:
     assert _summarize_modes({AnalysisMode.BEDROCK, AnalysisMode.OPENAI}) == AnalysisMode.MIXED
+
+
+def test_pipeline_replay_regenerates_markdown_and_pdf_without_llm_or_network(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source = tmp_path / "yc.json"
+    source.write_text(json.dumps([record()]), encoding="utf-8")
+
+    monkeypatch.setattr(
+        "app.pipeline.service.agent_reach_evidence",
+        lambda *_args: [
+            Evidence(
+                id="ev-002",
+                claim="Agent Reach result",
+                excerpt="A customer pilot was announced.",
+                source_url="https://news.example/agentdesk",
+                source_title="Customer pilot",
+                source_type="agent_reach",
+                trust_tier="open_web",
+                verification="third_party_search",
+            )
+        ],
+    )
+    client = BedrockClient()
+    run_dir = tmp_path / "run"
+    result = Pipeline(bedrock_client=client).run(
+        topic="AI agents for SMBs",
+        batch=None,
+        limit=None,
+        output=run_dir,
+        source_file=source,
+        request_id="req-first-run",
+        now=NOW,
+    )
+    assert result.succeeded == 1
+
+    # Remove the rendered memos to verify replay re-generates them
+    memo_md = run_dir / "memos" / "agentdesk.md"
+    memo_pdf = run_dir / "memos" / "agentdesk.pdf"
+    assert memo_md.exists()
+    assert memo_pdf.exists()
+    memo_md.unlink()
+    memo_pdf.unlink()
+    assert not memo_md.exists()
+    assert not memo_pdf.exists()
+
+    # Any LLM or network call during replay must raise an error
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("replay must not make any LLM or network calls")
+
+    monkeypatch.setattr("app.pipeline.service.screen_candidates", forbidden)
+    monkeypatch.setattr("app.pipeline.service.agent_reach_evidence", forbidden)
+    monkeypatch.setattr("app.pipeline.service.synthesize", forbidden)
+
+    replay_summary = Pipeline(
+        client=httpx.Client(transport=httpx.MockTransport(forbidden)),
+        bedrock_client=None,
+    ).replay(run_dir, request_id="req-replay")
+
+    assert replay_summary.succeeded == 1
+    assert replay_summary.failed == 0
+    assert replay_summary.selected == 1
+    assert memo_md.exists()
+    assert memo_pdf.exists()
+    assert memo_pdf.stat().st_size > 0
+    assert "[INVESTMENT COMMITTEE MEMO]" in memo_md.read_text(encoding="utf-8")
+
+
+def test_pipeline_run_offline_invokes_replay_when_run_artifacts_exist(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source = tmp_path / "yc.json"
+    source.write_text(json.dumps([record()]), encoding="utf-8")
+
+    monkeypatch.setattr(
+        "app.pipeline.service.agent_reach_evidence",
+        lambda *_args: [
+            Evidence(
+                id="ev-002",
+                claim="Agent Reach result",
+                excerpt="A customer pilot was announced.",
+                source_url="https://news.example/agentdesk",
+                source_title="Customer pilot",
+                source_type="agent_reach",
+                trust_tier="open_web",
+                verification="third_party_search",
+            )
+        ],
+    )
+    run_dir = tmp_path / "run"
+    Pipeline(bedrock_client=BedrockClient()).run(
+        topic="AI agents for SMBs",
+        batch=None,
+        limit=None,
+        output=run_dir,
+        source_file=source,
+        request_id="req-first-run",
+        now=NOW,
+    )
+
+    # Calling run with offline=True on existing run directory should succeed via replay
+    result = Pipeline().run(
+        topic="AI agents for SMBs",
+        batch=None,
+        limit=None,
+        output=run_dir,
+        offline=True,
+    )
+    assert result.succeeded == 1
+    assert result.failed == 0
+
