@@ -305,3 +305,75 @@ def test_render_pdf_memo_with_various_recommendations(
         render_pdf_memo(sample_candidate, test_analysis, sample_evidence, pdf_out)
         assert pdf_out.exists()
         assert pdf_out.stat().st_size > 1000
+
+
+def test_render_pdf_memo_with_multi_paragraph_and_bullets(
+    sample_candidate: Candidate,
+    sample_evidence: list[Evidence],
+    tmp_path: Path,
+) -> None:
+    multi_para_analysis = Analysis(
+        company="Vortex AI",
+        thesis="First paragraph of the thesis [ev-001].\n\nSecond paragraph of thesis with deeper reasoning [ev-002].",
+        summary="Paragraph 1 of executive summary [ev-001].\n\nParagraph 2 with quantitative traction [ev-002].\n\n• Bullet item one [ev-001]\n• Bullet item two [ev-002]",
+        team="### Leadership Background\n\nCEO was previously Staff Engineer at Stripe [ev-001].\n\nCTO holds PhD from Stanford in Distributed Systems [ev-002].",
+        product="Core streaming engine processes 2.5M events/sec [ev-002].\n\nArchitecture details:\n• In-memory vector index\n• Real-time graph partitioner",
+        market="Bottoms-up TAM sizing reaches $38B [ev-001].\n\nCompetitor comparison indicates strong advantage against legacy batch systems.",
+        why_now="FedNow and instant payment mandates [ev-001].\n\nMacro regulatory pressure accelerates compliance timeline.",
+        financials=Financials(
+            revenue="$1.2M ARR [ev-003]",
+            burn="$65k / month",
+            runway="18 months",
+            funding="$3.2M Seed",
+            pricing="Starter: $2,500/mo | Pro: $5,000/mo | Enterprise: Custom [ev-003]",
+            evidence_ids=["ev-001", "ev-002", "ev-003"],
+        ),
+        risks=[
+            "Failure scenario 1: High cloud compute cost [ev-002].",
+            "Failure scenario 2: Extended banking sales cycles.",
+        ],
+        open_questions=[
+            "What is the net expansion rate across tier-1 pilots?",
+        ],
+        changes_mind=[
+            "Conversion of 2 enterprise pilots.",
+            "Key engineering retention milestone.",
+        ],
+        score=85.0,
+        confidence=0.8,
+        recommendation=Recommendation.TAKE_A_MEETING,
+        analysis_mode=AnalysisMode.BEDROCK,
+    )
+    pdf_out = tmp_path / "multipara_memo.pdf"
+    render_pdf_memo(sample_candidate, multi_para_analysis, sample_evidence, pdf_out)
+    assert pdf_out.exists()
+    assert pdf_out.stat().st_size > 1000
+
+
+def test_render_pdf_memo_with_empty_and_minimal_fields(
+    sample_candidate: Candidate,
+    sample_evidence: list[Evidence],
+    tmp_path: Path,
+) -> None:
+    empty_analysis = Analysis(
+        company="Vortex AI",
+        thesis="",
+        summary="",
+        team="",
+        product="",
+        market="",
+        why_now="",
+        financials=Financials(),
+        risks=["No critical risks evaluated."],
+        open_questions=[],
+        changes_mind=["Action item 1", "Action item 2"],
+        score=40.0,
+        confidence=0.2,
+        recommendation=Recommendation.PASS,
+        analysis_mode=AnalysisMode.BEDROCK,
+    )
+    pdf_out = tmp_path / "empty_memo.pdf"
+    render_pdf_memo(sample_candidate, empty_analysis, sample_evidence, pdf_out)
+    assert pdf_out.exists()
+    assert pdf_out.stat().st_size > 1000
+

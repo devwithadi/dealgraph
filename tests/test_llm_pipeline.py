@@ -173,3 +173,36 @@ def test_offline_llm_pipeline_fails_before_any_network(tmp_path: Path, monkeypat
             source_file=source,
             offline=True,
         )
+
+
+def test_build_synthesis_prompt_includes_exhaustive_vc_instructions() -> None:
+    from app.prompts.synthesis import build_synthesis_prompt
+
+    inputs = {
+        "company_name": "Acme AI",
+        "sector": "Enterprise Infrastructure",
+        "stage": "Seed",
+        "requested_valuation": "USD 20m",
+        "dealgraph_thesis": "Autonomous database indexing",
+        "analysis_date": "2026-08-24",
+        "external_evidence": [
+            {
+                "id": "ev-001",
+                "claim": "YC profile",
+                "excerpt": "Acme AI raises $4M seed.",
+                "source_url": "https://ycombinator.com/companies/acme",
+            }
+        ],
+    }
+    prompt = build_synthesis_prompt(inputs)
+
+    assert "Acme AI" in prompt
+    assert "Bottom-Up TAM / SAM Breakdown" in prompt
+    assert "Biographical Audit" in prompt
+    assert "Technical Architecture Deep-Dive" in prompt
+    assert "Comprehensive Pricing Breakdown" in prompt
+    assert "Critical Failure Scenarios" in prompt
+    assert "Crown Jewel Strategic Assessment" in prompt
+    assert "The Inverse Case" in prompt
+    assert "multi-paragraph" in prompt
+

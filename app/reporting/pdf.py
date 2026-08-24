@@ -179,6 +179,44 @@ def _transform_citations_for_pdf(text: str, evidence_map: dict[str, Any]) -> str
     return escaped
 
 
+def _add_narrative_flowables(
+    flowables: list[Any],
+    text: str,
+    evidence_map: dict[str, Any],
+    body_style: ParagraphStyle,
+    bullet_style: ParagraphStyle,
+    subheading_style: ParagraphStyle | None = None,
+) -> None:
+    """Split multi-paragraph text into clean ReportLab flowables with proper leading and spacing."""
+    if not text or not text.strip():
+        flowables.append(Paragraph("Not disclosed", body_style))
+        return
+
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+    for p in paragraphs:
+        if any(line.strip().startswith(("•", "-", "*")) for line in p.splitlines()):
+            lines = p.splitlines()
+            for line in lines:
+                clean_line = line.strip()
+                if not clean_line:
+                    continue
+                if clean_line.startswith(("•", "-", "*")):
+                    bullet_text = clean_line.lstrip("•-* ").strip()
+                    transformed = _transform_citations_for_pdf(bullet_text, evidence_map)
+                    flowables.append(Paragraph(f"• {transformed}", bullet_style))
+                else:
+                    transformed = _transform_citations_for_pdf(clean_line, evidence_map)
+                    flowables.append(Paragraph(transformed, body_style))
+        else:
+            if p.startswith("### ") and subheading_style:
+                sub_title = p.lstrip("# ").strip()
+                transformed = _transform_citations_for_pdf(sub_title, evidence_map)
+                flowables.append(Paragraph(transformed, subheading_style))
+            else:
+                transformed = _transform_citations_for_pdf(p, evidence_map)
+                flowables.append(Paragraph(transformed, body_style))
+
+
 def render_pdf_memo(
     candidate: Candidate,
     analysis: Analysis,
@@ -205,11 +243,11 @@ def render_pdf_memo(
         "PDF_H1",
         parent=styles["Heading1"],
         fontName="Helvetica-Bold",
-        fontSize=13,
-        leading=16,
+        fontSize=12.5,
+        leading=15.5,
         textColor=COLOR_SLATE_DARK,
         spaceBefore=14,
-        spaceAfter=6,
+        spaceAfter=5,
         keepWithNext=True,
     )
 
@@ -217,8 +255,8 @@ def render_pdf_memo(
         "PDF_H2",
         parent=styles["Heading2"],
         fontName="Helvetica-Bold",
-        fontSize=10.5,
-        leading=14,
+        fontSize=10,
+        leading=13.5,
         textColor=COLOR_SLATE_MID,
         spaceBefore=8,
         spaceAfter=4,
@@ -229,10 +267,10 @@ def render_pdf_memo(
         "PDF_Body",
         parent=styles["BodyText"],
         fontName="Helvetica",
-        fontSize=9,
-        leading=13,
+        fontSize=8.5,
+        leading=12.5,
         textColor=COLOR_SLATE_MID,
-        spaceBefore=3,
+        spaceBefore=2,
         spaceAfter=5,
     )
 
@@ -248,7 +286,7 @@ def render_pdf_memo(
     style_card_title = ParagraphStyle(
         "PDF_CardTitle",
         fontName="Helvetica-Bold",
-        fontSize=9.5,
+        fontSize=9,
         leading=12,
         textColor=COLOR_SLATE_DARK,
         spaceAfter=3,
@@ -289,7 +327,7 @@ def render_pdf_memo(
     title_para = Paragraph(
         f'<font color="#FFFFFF"><b>{_clean_for_xml(candidate.name)}</b></font><br/>'
         f'<font color="#94A3B8" size="8.5">INVESTMENT COMMITTEE MEMO · DEALGRAPH DILIGENCE ENGINE</font>',
-        ParagraphStyle("BannerTitle", fontName="Helvetica-Bold", fontSize=16, leading=19),
+        ParagraphStyle("BannerTitle", fontName="Helvetica-Bold", fontSize=15, leading=18),
     )
 
     score_label = f"Score: {analysis.score:.1f}/100"
@@ -327,10 +365,10 @@ def render_pdf_memo(
     banner_table.setStyle(
         TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), COLOR_SLATE_DARK),
-            ("TOPPADDING", (0, 0), (-1, -1), 10),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-            ("LEFTPADDING", (0, 0), (-1, -1), 14),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 14),
+            ("TOPPADDING", (0, 0), (-1, -1), 9),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 9),
+            ("LEFTPADDING", (0, 0), (-1, -1), 12),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 12),
         ])
     )
     flowables.append(banner_table)
@@ -473,24 +511,26 @@ def render_pdf_memo(
     flowables.append(inverse_table)
     flowables.append(Spacer(1, 8))
 
-    # 5. Narrative Sections
+    # 5. Narrative Sections with Multi-Paragraph Support
     flowables.append(Paragraph("1. Executive Summary & Investment Thesis", style_h1))
-    flowables.append(Paragraph(_transform_citations_for_pdf(analysis.summary, ev_map), style_body))
+    _add_narrative_flowables(flowables, analysis.summary, ev_map, style_body, style_bullet, style_h2)
+
     flowables.append(Paragraph("Investment Thesis", style_h2))
-    flowables.append(Paragraph(_transform_citations_for_pdf(analysis.thesis, ev_map), style_body))
+    _add_narrative_flowables(flowables, analysis.thesis, ev_map, style_body, style_bullet, style_h2)
 
     flowables.append(Paragraph("2. Team & Founder Capability", style_h1))
-    flowables.append(Paragraph(_transform_citations_for_pdf(analysis.team, ev_map), style_body))
+    _add_narrative_flowables(flowables, analysis.team, ev_map, style_body, style_bullet, style_h2)
 
     flowables.append(Paragraph("3. Product Architecture & TRL", style_h1))
-    flowables.append(Paragraph(_transform_citations_for_pdf(analysis.product, ev_map), style_body))
+    _add_narrative_flowables(flowables, analysis.product, ev_map, style_body, style_bullet, style_h2)
 
     flowables.append(Paragraph("4. Market Dynamics & Why Now", style_h1))
-    flowables.append(Paragraph(_transform_citations_for_pdf(analysis.market, ev_map), style_body))
-    flowables.append(Paragraph("Why Now Catalyst", style_h2))
-    flowables.append(Paragraph(_transform_citations_for_pdf(analysis.why_now, ev_map), style_body))
+    _add_narrative_flowables(flowables, analysis.market, ev_map, style_body, style_bullet, style_h2)
 
-    # 6. Financials
+    flowables.append(Paragraph("Why Now Catalyst", style_h2))
+    _add_narrative_flowables(flowables, analysis.why_now, ev_map, style_body, style_bullet, style_h2)
+
+    # 6. Financials Grid with Full-Width Pricing Span
     flowables.append(Paragraph("5. Financials & Unit Economics", style_h1))
     financial_data = [
         [
@@ -499,10 +539,10 @@ def render_pdf_memo(
         ],
         [
             Paragraph("<b>Runway:</b> " + _transform_citations_for_pdf(analysis.financials.runway or "Undisclosed", ev_map), style_body),
-            Paragraph("<b>Funding:</b> " + _transform_citations_for_pdf(analysis.financials.funding or "Undisclosed", ev_map), style_body),
+            Paragraph("<b>Total Funding:</b> " + _transform_citations_for_pdf(analysis.financials.funding or "Undisclosed", ev_map), style_body),
         ],
         [
-            Paragraph("<b>Pricing:</b> " + _transform_citations_for_pdf(analysis.financials.pricing or "Undisclosed", ev_map), style_body),
+            Paragraph("<b>Pricing Model & Tiers:</b> " + _transform_citations_for_pdf(analysis.financials.pricing or "Undisclosed", ev_map), style_body),
             Paragraph("", style_body),
         ],
     ]
@@ -510,12 +550,14 @@ def render_pdf_memo(
     fin_table.setStyle(
         TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), COLOR_SLATE_LIGHT),
+            ("SPAN", (0, 2), (1, 2)),
             ("BOX", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
             ("INNERGRID", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
             ("TOPPADDING", (0, 0), (-1, -1), 4),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
             ("LEFTPADDING", (0, 0), (-1, -1), 8),
             ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ])
     )
     flowables.append(fin_table)
@@ -577,13 +619,13 @@ def render_pdf_memo(
         category_para = Paragraph(f"<b>{category}</b>", style_source_text)
 
         snippet_clean = _clean_for_xml(re.sub(r"\s+", " ", item.excerpt).strip())
-        if len(snippet_clean) > 200:
-            snippet_clean = snippet_clean[:197].rsplit(" ", 1)[0] + "..."
+        if len(snippet_clean) > 220:
+            snippet_clean = snippet_clean[:217].rsplit(" ", 1)[0] + "..."
         snippet_para = Paragraph(f'<i>"{snippet_clean}"</i>', style_source_text)
 
         sources_data.append([num_para, tag_para, link_para, category_para, snippet_para])
 
-    sources_table = Table(sources_data, colWidths=[28, 56, 150, 96, 210])
+    sources_table = Table(sources_data, colWidths=[28, 56, 140, 96, 220])
     sources_table.setStyle(
         TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_MID),

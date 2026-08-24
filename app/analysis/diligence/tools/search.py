@@ -67,7 +67,7 @@ def _parse_search_output(stdout: str, query_item: SearchQuery, start_id: int) ->
             Evidence(
                 id=f"ev-{start_id + len(evidence):03d}",
                 claim=f"[{query_item.pillar}] {title}",
-                excerpt=" ".join(highlights.split())[:1200],
+                excerpt=" ".join(highlights.split())[:2500],
                 source_url=url,
                 source_title=title,
                 source_type="deep_diligence_search",

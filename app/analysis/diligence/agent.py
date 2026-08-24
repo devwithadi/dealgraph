@@ -130,7 +130,7 @@ class DeepDiligenceAgent:
 
         # Phase 1: Direct multi-page candidate website scraping
         if candidate.website and candidate.website.strip():
-            subpages_list = ["/", "/pricing", "/about", "/product", "/docs", "/security"]
+            subpages_list = ["/", "/pricing", "/about", "/product", "/docs", "/security", "/faq", "/blog"]
             self._emit(
                 "diligence_scrape_start",
                 {
