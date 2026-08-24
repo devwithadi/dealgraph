@@ -70,5 +70,41 @@
     "resolved": true,
     "resolved_by_evidence_id": "ev-002",
     "severity": "low"
+  },
+  {
+    "candidate": "lantern-ai",
+    "description": "Commercial and market demand evidence identified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "Found commercial evidence in ev-001.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-001",
+    "severity": "low"
+  },
+  {
+    "candidate": "lantern-ai",
+    "description": "No verified pricing structure, revenue milestones, funding rounds, or burn figures for Lantern AI.",
+    "pillar": "Unit Economics",
+    "rationale": "No financial or unit economics data points extracted.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "lantern-ai",
+    "description": "Lack of technical deep-dive into proprietary architecture, data defensibility, or IP moat for Lantern AI.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "Current profile lacks technical depth beyond high-level product description.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "lantern-ai",
+    "description": "Unassessed execution, regulatory compliance, platform dependency, or churn risks for Lantern AI.",
+    "pillar": "Risk / ESG",
+    "rationale": "No critical risk evaluation or regulatory analysis in current corpus.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
   }
 ]

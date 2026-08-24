@@ -1,8 +1,8 @@
 {
   "analysis_mode": "bedrock",
   "changes_mind": [
-    "Evidence of significant customer acquisition or partnership with a major insurance brokerage would be compelling.",
-    "Demonstrable impact on broker efficiency and client satisfaction metrics."
+    "Evidence of significant traction with large insurance agencies.",
+    "Demonstrated ROI for brokers using Covera's services."
   ],
   "company": "Covera",
   "confidence": 0.7,
@@ -12,7 +12,7 @@
         "ev-001"
       ],
       "name": "workflow_pain",
-      "rationale": "The problem of frequent, tedious administrative tasks in insurance brokerage is well-documented and costly [ev-001].",
+      "rationale": "Insurance brokers face frequent, costly workflows that Covera aims to automate, reducing administrative burdens [ev-001].",
       "score": 8.0,
       "weight": 25
     },
@@ -21,7 +21,7 @@
         "ev-001"
       ],
       "name": "speed_to_value",
-      "rationale": "The AI agents are designed to quickly take over day-to-day servicing work, allowing brokers to focus on higher-value activities [ev-001].",
+      "rationale": "The product is designed to provide immediate value by automating day-to-day tasks, allowing brokers to focus on client interactions [ev-001].",
       "score": 7.0,
       "weight": 20
     },
@@ -30,7 +30,7 @@
         "ev-001"
       ],
       "name": "compounding_advantage",
-      "rationale": "The product integrates with existing tools, but the defensibility through proprietary data or unique distribution is not yet clear [ev-001].",
+      "rationale": "The product integrates with existing agency management systems and CRMs, which could provide a compounding advantage through data and workflow integration [ev-001].",
       "score": 6.0,
       "weight": 20
     },
@@ -39,7 +39,7 @@
         "ev-001"
       ],
       "name": "team_execution",
-      "rationale": "With a reported team size of 2, execution capacity is a concern, though the company is hiring [ev-001].",
+      "rationale": "With a reported team size of 2 and the company marked as hiring, there is limited evidence of execution capability [ev-001].",
       "score": 4.0,
       "weight": 15
     },
@@ -48,7 +48,7 @@
         "ev-001"
       ],
       "name": "market_distribution",
-      "rationale": "The market for insurance brokerage automation is credible, but Covera's specific route to customers and market size are not detailed [ev-001].",
+      "rationale": "The market is well-defined as the insurance broker segment, and the product's integration with common broker tools suggests a clear distribution motion [ev-001].",
       "score": 7.0,
       "weight": 20
     }
@@ -61,18 +61,18 @@
     "revenue": null,
     "runway": null
   },
-  "market": "The market is the insurance brokerage sector, with Covera targeting agencies of all sizes. The company claims integration with popular agency management systems and CRMs [ev-001].",
+  "market": "The market is the insurance broker segment, with a focus on agencies of all sizes. The distribution motion is through direct integration with tools commonly used by brokers [ev-001].",
   "open_questions": [
-    "What is the current traction and customer feedback on the product?"
+    "What is the customer acquisition cost and lifetime value of a broker using Covera?"
   ],
-  "product": "The product is an AI-native OS for insurance brokers, offering AI agents to automate tasks like submission intake, carrier quoting, quote comparison, claims handling, and collections [ev-001].",
+  "product": "The product is an AI-native OS with ready-to-use agents for various insurance broker tasks, integrating with existing tools like Applied Epic, AMS360, EZLynx, HawkSoft, Salesforce, and HubSpot [ev-001].",
   "recommendation": "Watch",
   "risks": [
-    "The small team size may pose execution risks [ev-001]."
+    "The small team size and early stage of the company pose execution risks [ev-001]."
   ],
   "score": 66.0,
-  "summary": "Covera, a Y Combinator company, offers AI agents designed to handle various administrative tasks for insurance brokers, integrating with existing tools and systems. The company is in its early stages with a small team and is actively hiring [ev-001].",
-  "team": "Team size is reported to be 2, with the company marked as hiring by Y Combinator [ev-001].",
-  "thesis": "Covera aims to replace frequent, expensive workflows for insurance brokers with AI agents, potentially increasing efficiency and allowing brokers to focus more on client advising and selling [ev-001].",
-  "why_now": "The increasing complexity and volume of insurance-related tasks may drive demand for automation solutions like Covera's AI agents [ev-001]."
+  "summary": "Covera, a YC-backed company, offers an AI-native OS for insurance brokers with agents designed to automate day-to-day servicing tasks. The company claims integration with popular agency management systems and CRMs, aiming to reduce administrative burdens and increase broker efficiency [ev-001].",
+  "team": "Team size is reported as 2, and the company is marked as hiring by YC [ev-001].",
+  "thesis": "Covera aims to replace frequent, costly workflows for insurance brokers by providing AI agents that handle tasks like submission intake, carrier quoting, and claims handling, allowing brokers to focus on client advising and selling [ev-001].",
+  "why_now": "The increasing complexity and volume of insurance broker workflows, coupled with the rising cost of data entry and administrative tasks, make now an opportune time for automation solutions like Covera [ev-001]."
 }
