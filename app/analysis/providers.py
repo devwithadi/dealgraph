@@ -8,7 +8,12 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlsplit
 
+import litellm
 from litellm import completion
+
+litellm.suppress_debug_info = True
+litellm.drop_params = True
+litellm.set_verbose = False
 
 from app.core.errors import AppError
 from app.core.logging import current_request_id
@@ -164,7 +169,15 @@ def _parse_json(text: str) -> dict:
             payload = match.group(1).strip()
         elif payload.startswith("```") and payload.endswith("```"):
             payload = "\n".join(payload.splitlines()[1:-1]).strip()
-    result = json.loads(payload)
+    try:
+        result = json.loads(payload)
+    except json.JSONDecodeError:
+        start = payload.find("{")
+        end = payload.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            result = json.loads(payload[start : end + 1])
+        else:
+            raise
     if not isinstance(result, dict):
         raise ValueError("model response must be a JSON object")
     return result

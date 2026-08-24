@@ -131,7 +131,18 @@ def screen_candidates(
     raw_decisions = payload.get("decisions")
     if not isinstance(raw_decisions, list):
         raise ValueError("screening response must contain a decisions array")
-    decisions = [ScreeningDecision.model_validate(item) for item in raw_decisions]
+    slug_lookup = {candidate.slug.strip().lower(): candidate.slug for candidate in candidates}
+    normalized_items: list[dict[str, Any]] = []
+    for item in raw_decisions:
+        if isinstance(item, dict) and "slug" in item:
+            raw_slug = str(item["slug"]).strip().lower()
+            if raw_slug in slug_lookup:
+                normalized_items.append({**item, "slug": slug_lookup[raw_slug]})
+            else:
+                normalized_items.append(item)
+        else:
+            normalized_items.append(item)
+    decisions = [ScreeningDecision.model_validate(item) for item in normalized_items]
     expected = {candidate.slug for candidate in candidates}
     returned = [decision.slug for decision in decisions]
     if len(returned) != len(set(returned)) or set(returned) != expected:

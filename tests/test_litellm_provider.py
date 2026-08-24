@@ -120,3 +120,109 @@ def test_litellm_errors_are_sanitized(monkeypatch) -> None:
         )
 
     assert "secret-key" not in str(caught.value)
+
+
+def test_litellm_global_flags_configured() -> None:
+    import litellm
+
+    assert litellm.suppress_debug_info is True
+    assert litellm.drop_params is True
+    assert litellm.set_verbose is False
+
+
+def test_parse_json_handles_conversational_wrapping() -> None:
+    text = (
+        "Sure, here is the requested JSON screening evaluation:\n"
+        "{\n"
+        '  "decisions": [\n'
+        '    {"slug": "acme", "advance": true, "fit_score": 90, "rationale": "High fit"}\n'
+        "  ]\n"
+        "}\n"
+        "Let me know if you need anything else!"
+    )
+    result = providers._parse_json(text)
+    assert result == {
+        "decisions": [
+            {"slug": "acme", "advance": True, "fit_score": 90, "rationale": "High fit"}
+        ]
+    }
+
+
+def test_screen_candidates_with_litellm_mock(monkeypatch) -> None:
+    from app.analysis.service import screen_candidates
+    from app.domain.models import Candidate
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test-key")
+
+    candidate = Candidate(
+        slug="ai-agents",
+        name="AI Agents Co",
+        website="https://aiagents.example",
+        one_liner="Next-gen agents",
+        source_url="https://news.example/aiagents",
+    )
+
+    def fake_completion(**kwargs):
+        assert kwargs["model"] == "openai/gpt-4.1-mini"
+        assert kwargs["drop_params"] is True
+        return _response(
+            '{"decisions": [{"slug": "ai-agents", "advance": true, "fit_score": 85, "rationale": "Strong fit"}]}'
+        )
+
+    monkeypatch.setattr(providers, "completion", fake_completion)
+
+    decisions = screen_candidates(
+        [candidate],
+        "AI Agents",
+        provider=AIProvider.OPENAI,
+    )
+
+    assert len(decisions) == 1
+    assert decisions[0].slug == "ai-agents"
+    assert decisions[0].advance is True
+    assert decisions[0].fit_score == 85
+
+
+def test_screen_candidates_slug_normalization_with_whitespace_and_case(monkeypatch) -> None:
+    from app.analysis.service import screen_candidates
+    from app.domain.models import Candidate
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-deepseek")
+
+    c1 = Candidate(
+        slug="alpha-corp",
+        name="Alpha Corp",
+        website="https://alpha.example",
+        one_liner="AI tools",
+        source_url="https://news.example/alpha",
+    )
+    c2 = Candidate(
+        slug="beta-labs",
+        name="Beta Labs",
+        website="https://beta.example",
+        one_liner="Automation platform",
+        source_url="https://news.example/beta",
+    )
+
+    def fake_completion(**_kwargs):
+        return _response(
+            '{"decisions": ['
+            '{"slug": " Alpha-Corp ", "advance": true, "fit_score": 90, "rationale": "Leading tech"},'
+            '{"slug": "BETA-LABS", "advance": false, "fit_score": 40, "rationale": "Early stage"}'
+            ']}'
+        )
+
+    monkeypatch.setattr(providers, "completion", fake_completion)
+
+    decisions = screen_candidates(
+        [c1, c2],
+        "AI tools",
+        provider=AIProvider.DEEPSEEK,
+    )
+
+    assert len(decisions) == 2
+    assert decisions[0].slug == "alpha-corp"
+    assert decisions[0].advance is True
+    assert decisions[1].slug == "beta-labs"
+    assert decisions[1].advance is False
+
