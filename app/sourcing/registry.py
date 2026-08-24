@@ -37,7 +37,7 @@ SOURCE_REGISTRY = {
     "company_website": {
         "access": "public_html",
         "trust": "first_party_self_reported",
-        "enabled": False,
+        "enabled": True,
         "evidence_type": "company_website",
         "financial_priority": 1,
         "manifest": "company public websites",
