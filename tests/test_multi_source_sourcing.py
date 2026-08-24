@@ -243,7 +243,7 @@ def test_load_candidates_from_url_seed_file(tmp_path: Path) -> None:
     assert len(cands2) == 3
 
 
-def test_discover_candidates_multi_source_orchestration() -> None:
+def test_discover_candidates_uses_only_enabled_sources() -> None:
     yc_records = [
         {
             "id": "yc-dock",
@@ -298,6 +298,6 @@ Highlights: Marker AI (https://marker.ai) automatically reviews PRs. Raised $2M.
         limit=10,
     )
 
-    assert len(cands) == 3
+    assert len(cands) == 2
     domains = {normalize_domain(c.website) for c in cands}
-    assert domains == {"trydock.ai", "gini.ai", "marker.ai"}
+    assert domains == {"trydock.ai", "marker.ai"}
