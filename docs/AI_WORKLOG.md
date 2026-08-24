@@ -117,3 +117,23 @@ or rejected trade-offs.
 - `a055ec5` → `fdcbc11`: RED/GREEN — the registry now truthfully enables the company-website source
   already used for labeled first-party evidence.
 - Final automated checkpoint: 154 tests passed before the full coverage and packaging gates.
+
+## 2026-08-24 — 20-candidate reliability hardening
+
+- Repeated the live workflow with 20 current candidates and used the artifacts, not model claims, to
+  measure coverage, citation integrity, decision stability, and evidence depth.
+- `dc1a810` → `aa52ec8`: RED/GREEN — model sampling is deterministic where supported, baseline
+  evidence preserves its real source identity, commercial gaps require independent evidence, and
+  confidence is computed from evidence coverage instead of model self-rating.
+- `277537f` → `cf8b85a`: RED/GREEN — Exa quota degradation is sanitized, stops repeated calls, keeps
+  the memo pipeline alive, and appears as a reviewer-visible research-availability gap.
+- `bcc3b22`, `05cddea` → `131c489`: RED/GREEN — baseline citation URLs must be public, verified
+  regulatory evidence resolves commercial gaps, and evidence collected before a later quota failure
+  is preserved.
+- `5b9b6fb` → `ce88651`: RED/GREEN — confidence is capped at 65% without an independent source,
+  even when many pages from the same company are available.
+- Final live result: 20/20 candidates screened, four finalists analyzed, four one-page PDFs, and zero
+  company failures. All four memos passed citation-ID and visual-layout checks. Exa was rate-limited,
+  so all four memos explicitly disclose partial research; no independent-search result was invented.
+- Final automated checkpoint: 158 tests passed with 91.87% total coverage; dependency and diff checks
+  passed. Independent code and security reviews reported no remaining high or medium findings.

@@ -1,0 +1,82 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant revenue growth or a large-scale client win.",
+    "Detailed case studies or testimonials from current clients."
+  ],
+  "company": "Marker",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Marker addresses frequent, expensive workflows in SMBs, which are ripe for automation [ev-001][ev-002].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Claims of deploying AI agents in weeks and reducing manual work by 80% suggest quick value realization [ev-001][ev-002].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The platform's ability to learn and deploy agents faster over time could provide a compounding advantage [ev-001][ev-002].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "A small team with relevant experience, but the size may impact execution [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "market_distribution",
+      "rationale": "Targeting SMBs with a direct embedding strategy, but market size and ICP clarity are not fully disclosed [ev-001][ev-002].",
+      "score": 7.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market is B2B, targeting SMBs with frequent, expensive workflows that can be automated. The distribution motion involves direct embedding within companies [ev-001][ev-002].",
+  "open_questions": [
+    "What is the retention rate of clients post-implementation?"
+  ],
+  "product": "Marker's product is a platform for creating and deploying custom AI agents that integrate with existing company systems to automate workflows [ev-001][ev-002].",
+  "recommendation": "Watch",
+  "risks": [
+    "The small team size may limit scalability and execution speed [ev-001]."
+  ],
+  "score": 67.5,
+  "summary": "Marker offers a platform for embedding AI agents within companies to automate workflows, claiming significant reductions in manual work and onboarding times. The company is backed by Y Combinator and has a small team of three [ev-001][ev-002].",
+  "team": "The team consists of three members, with prior experience embedding AI within a Fortune 500 retailer [ev-001].",
+  "thesis": "Marker aims to replace frequent, expensive SMB workflows with AI agents, embedding within companies to understand and automate operations, with a focus on quick deployment and compounding advantages through custom AI solutions [ev-001][ev-002].",
+  "why_now": "The increasing availability and sophistication of AI technologies make it an opportune time for Marker to offer embedded AI solutions that can quickly deliver value to SMBs [ev-001][ev-002]."
+}

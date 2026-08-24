@@ -1,20 +1,20 @@
 [
   {
-    "confidence": 0.7,
+    "confidence": 0.5,
     "recommendation": "Watch",
-    "score": 66.0,
+    "score": 65.5,
     "slug": "covera"
   },
   {
-    "confidence": 0.7,
+    "confidence": 0.65,
     "recommendation": "Watch",
-    "score": 60.0,
+    "score": 68.5,
     "slug": "gini"
   },
   {
-    "confidence": 0.6,
+    "confidence": 0.5,
     "recommendation": "Watch",
-    "score": 65.5,
-    "slug": "lantern-ai"
+    "score": 67.5,
+    "slug": "marker"
   }
 ]

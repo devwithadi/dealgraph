@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant user adoption or partnerships with major app platforms.",
+    "Demonstrated financial viability or a clear path to monetization."
+  ],
+  "company": "Touchy",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The problem of cumbersome, analog workflows is acknowledged, but the severity and cost are not quantified [ev-002].",
+      "score": 5.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The product is in public beta, suggesting a slow path to value realization [ev-001].",
+      "score": 3.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Potential advantage through app integrations, but no evidence of proprietary data or distribution channels [ev-001].",
+      "score": 4.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Limited team information and no evidence of execution capabilities [ev-001].",
+      "score": 3.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "market_distribution",
+      "rationale": "Broad market definition without specific ICP or distribution strategy [ev-002].",
+      "score": 2.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market is broadly defined as consumers, but specific ICP, market size, or distribution strategy is not disclosed [ev-002].",
+  "open_questions": [
+    "What specific problems has Touchy solved for beta users, and how has it demonstrated value?"
+  ],
+  "product": "The product is an AI voice assistant designed to understand and act upon the user's environment, integrating with over 1,000 apps [ev-001]. However, the product is still in public beta, and specific use cases or customer testimonials are not provided [ev-002].",
+  "recommendation": "Pass",
+  "risks": [
+    "The product's reliance on advanced AI capabilities that are not yet proven [ev-002]."
+  ],
+  "score": 35.0,
+  "summary": "Touchy presents an ambitious vision for a consumer-facing AI assistant that could redefine how individuals interact with technology. However, the evidence provided is largely conceptual and lacks concrete metrics or traction data [ev-001][ev-002].",
+  "team": "Reported team size is 3, but no further details on execution capabilities or relevant experience are disclosed [ev-001].",
+  "thesis": "Touchy aims to replace the cumbersome, analog workflows of consumers with a seamless, AI-driven personal assistant that integrates with their digital and physical environments [ev-002].",
+  "why_now": "The thesis suggests that by 2029, the cost of running advanced AI will be low, making it feasible for widespread consumer adoption [ev-002]. However, this is a future-looking claim without current market validation."
+}

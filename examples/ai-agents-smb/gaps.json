@@ -1,12 +1,12 @@
 [
   {
     "candidate": "covera",
-    "description": "Commercial and market demand evidence identified.",
+    "description": "Missing independent validation of TAM, customer acquisition, or competitor traction for Covera.",
     "pillar": "Commercial / TAM",
-    "rationale": "Found commercial evidence in ev-002.",
-    "resolved": true,
-    "resolved_by_evidence_id": "ev-002",
-    "severity": "low"
+    "rationale": "No verified commercial or customer demand signals found in current evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
   },
   {
     "candidate": "covera",
@@ -36,13 +36,22 @@
     "severity": "low"
   },
   {
+    "candidate": "covera",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
     "candidate": "gini",
-    "description": "Commercial and market demand evidence identified.",
+    "description": "Missing independent validation of TAM, customer acquisition, or competitor traction for Gini.",
     "pillar": "Commercial / TAM",
-    "rationale": "Found commercial evidence in ev-002.",
-    "resolved": true,
-    "resolved_by_evidence_id": "ev-002",
-    "severity": "low"
+    "rationale": "No verified commercial or customer demand signals found in current evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
   },
   {
     "candidate": "gini",
@@ -72,17 +81,26 @@
     "severity": "low"
   },
   {
-    "candidate": "lantern-ai",
-    "description": "Commercial and market demand evidence identified.",
-    "pillar": "Commercial / TAM",
-    "rationale": "Found commercial evidence in ev-001.",
-    "resolved": true,
-    "resolved_by_evidence_id": "ev-001",
-    "severity": "low"
+    "candidate": "gini",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
   },
   {
-    "candidate": "lantern-ai",
-    "description": "No verified pricing structure, revenue milestones, funding rounds, or burn figures for Lantern AI.",
+    "candidate": "marker",
+    "description": "Missing independent validation of TAM, customer acquisition, or competitor traction for Marker.",
+    "pillar": "Commercial / TAM",
+    "rationale": "No verified commercial or customer demand signals found in current evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "marker",
+    "description": "No verified pricing structure, revenue milestones, funding rounds, or burn figures for Marker.",
     "pillar": "Unit Economics",
     "rationale": "No financial or unit economics data points extracted.",
     "resolved": false,
@@ -90,21 +108,75 @@
     "severity": "high"
   },
   {
-    "candidate": "lantern-ai",
-    "description": "Lack of technical deep-dive into proprietary architecture, data defensibility, or IP moat for Lantern AI.",
+    "candidate": "marker",
+    "description": "Technical architecture and defensibility evidence identified.",
     "pillar": "Tech / IP Defensibility",
-    "rationale": "Current profile lacks technical depth beyond high-level product description.",
-    "resolved": false,
-    "resolved_by_evidence_id": null,
-    "severity": "medium"
+    "rationale": "Found technical evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
   },
   {
-    "candidate": "lantern-ai",
-    "description": "Unassessed execution, regulatory compliance, platform dependency, or churn risks for Lantern AI.",
+    "candidate": "marker",
+    "description": "Unassessed execution, regulatory compliance, platform dependency, or churn risks for Marker.",
     "pillar": "Risk / ESG",
     "rationale": "No critical risk evaluation or regulatory analysis in current corpus.",
     "resolved": false,
     "resolved_by_evidence_id": null,
     "severity": "medium"
+  },
+  {
+    "candidate": "marker",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "touchy",
+    "description": "Missing independent validation of TAM, customer acquisition, or competitor traction for Touchy.",
+    "pillar": "Commercial / TAM",
+    "rationale": "No verified commercial or customer demand signals found in current evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "touchy",
+    "description": "No verified pricing structure, revenue milestones, funding rounds, or burn figures for Touchy.",
+    "pillar": "Unit Economics",
+    "rationale": "No financial or unit economics data points extracted.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "touchy",
+    "description": "Technical architecture and defensibility evidence identified.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "Found technical evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
+  },
+  {
+    "candidate": "touchy",
+    "description": "Unassessed execution, regulatory compliance, platform dependency, or churn risks for Touchy.",
+    "pillar": "Risk / ESG",
+    "rationale": "No critical risk evaluation or regulatory analysis in current corpus.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "touchy",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
   }
 ]
