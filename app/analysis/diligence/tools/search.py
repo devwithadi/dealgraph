@@ -95,7 +95,7 @@ class SearchTool:
         query_item: SearchQuery,
         start_id: int,
         *,
-        num_results: int = 3,
+        num_results: int = 5,
     ) -> list[Evidence]:
         """Execute search for a candidate query across diligence pillars."""
         if self.custom_search_fn is not None:

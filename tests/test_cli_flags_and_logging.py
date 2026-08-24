@@ -315,7 +315,13 @@ def test_cli_parser_deep_diligence_and_provider_flags() -> None:
         args = parser.parse_args(["run", "--topic", "AI", "--provider", prov.value])
         assert args.provider == prov
 
-    # Test deep diligence and max hops flags
+    # Test deep diligence default and flags
+    args_default = parser.parse_args(["run", "--topic", "AI"])
+    assert args_default.deep_diligence is True
+
+    args_opt_out = parser.parse_args(["run", "--topic", "AI", "--no-deep-diligence"])
+    assert args_opt_out.deep_diligence is False
+
     args_diligence = parser.parse_args([
         "run",
         "--topic", "AI",
@@ -379,20 +385,70 @@ def test_console_reporter_deep_diligence_events(capsys) -> None:
         "candidate": "Nexus AI",
         "hop": 2,
     })
+    reporter("diligence_scrape_start", {
+        "candidate": "Nexus AI",
+        "slug": "nexus-ai",
+        "website": "https://nexus.example.com",
+        "subpages": ["/", "/pricing", "/product"],
+    })
+    reporter("diligence_scrape_page", {
+        "candidate": "Nexus AI",
+        "slug": "nexus-ai",
+        "subpage": "/pricing",
+        "title": "Nexus Pricing",
+        "length": 450,
+    })
+    reporter("diligence_scrape_complete", {
+        "candidate": "Nexus AI",
+        "slug": "nexus-ai",
+        "scraped_count": 3,
+        "total_evidence_count": 4,
+    })
+    reporter("diligence_query_start", {
+        "candidate": "Nexus AI",
+        "slug": "nexus-ai",
+        "query": "Nexus AI pricing tiers",
+        "pillar": "Unit Economics",
+        "hop": 1,
+    })
+    reporter("diligence_evidence_collected", {
+        "candidate": "Nexus AI",
+        "id": "ev-005",
+        "title": "Nexus Pricing Page",
+        "url": "https://nexus.example.com/pricing",
+        "pillar": "Unit Economics",
+        "status": "claimed",
+    })
     reporter("diligence_offline_complete", {
         "candidate": "Nexus AI",
         "slug": "nexus-ai",
         "evidence_count": 1,
         "gaps_count": 4,
     })
+    reporter("finalist_success", {
+        "name": "Nexus AI",
+        "slug": "nexus-ai",
+        "decision": "Take a meeting",
+        "score": 88.5,
+        "confidence": 0.82,
+        "memo_path": "/tmp/memos/nexus-ai.md",
+        "pdf_memo_path": "/tmp/memos/nexus-ai.pdf",
+    })
+    reporter("summary_table", {})
 
     output = capsys.readouterr().out
     assert "Diligence Plan: Generated 4 research queries across 4 pillars for Nexus AI." in output
+    assert "Diligence Scraping: Scraping candidate website https://nexus.example.com" in output
+    assert "Scraped [/pricing]: Nexus Pricing (450 chars)" in output
+    assert "Direct scraping complete: 3 subpage(s) captured" in output
     assert "Diligence [Hop 1/2]: Executing 2 research queries" in output
-    assert "Search: Nexus AI market traction" in output
+    assert "Search [Unit Economics]: Nexus AI pricing tiers" in output
+    assert "[ev-005] [claimed] Nexus Pricing Page" in output
     assert "Diligence [Hop 1 Complete]: +2 new evidence (3 total) | Gaps: 2 resolved, 2 pending" in output
     assert "All 4-pillar information gaps resolved for Nexus AI in hop 2." in output
     assert "Diligence (Offline): Evaluated 1 local evidence items for Nexus AI (4 gaps)." in output
+    assert "PDF Memo:      /tmp/memos/nexus-ai.pdf" in output
+    assert "open /tmp/memos/nexus-ai.pdf" in output
 
 
 def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> None:

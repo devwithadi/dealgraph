@@ -16,10 +16,10 @@ from app.core.logging import current_request_id, request_headers
 from app.core.urls import validate_public_url
 from app.domain.enums import AIProvider
 
-DEFAULT_BEDROCK_SCREENING_MODEL = "amazon.nova-micro-v1:0"
-DEFAULT_BEDROCK_MODEL = "amazon.nova-lite-v1:0"
-DEFAULT_OPENAI_SCREENING_MODEL = "gpt-4.1-nano"
-DEFAULT_OPENAI_MODEL = "gpt-4.1-mini"
+DEFAULT_BEDROCK_SCREENING_MODEL = "amazon.nova-lite-v1:0"
+DEFAULT_BEDROCK_MODEL = "amazon.nova-pro-v1:0"
+DEFAULT_OPENAI_SCREENING_MODEL = "gpt-4.1-mini"
+DEFAULT_OPENAI_MODEL = "gpt-4.1"
 DEFAULT_OPENROUTER_SCREENING_MODEL = "qwen/qwen-2.5-72b-instruct"
 DEFAULT_OPENROUTER_MODEL = "qwen/qwen-2.5-72b-instruct"
 DEFAULT_DEEPSEEK_SCREENING_MODEL = "deepseek-chat"

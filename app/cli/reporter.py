@@ -80,6 +80,20 @@ class ConsoleReporter:
             queries_count = data.get("queries_count", 0)
             candidate = data.get("candidate", "")
             print(f"  - Diligence Plan: Generated {queries_count} research queries across 4 pillars for {candidate}.")
+        elif event == "diligence_scrape_start":
+            website = data.get("website", "")
+            subpages = data.get("subpages", [])
+            subpages_str = f" ({', '.join(subpages)})" if subpages else ""
+            print(f"  - Diligence Scraping: Scraping candidate website {website}{subpages_str}...")
+        elif event == "diligence_scrape_page":
+            subpage = data.get("subpage", "")
+            title = data.get("title", "")
+            length = data.get("length", 0)
+            print(f"    * Scraped [{subpage}]: {title} ({length} chars)")
+        elif event == "diligence_scrape_complete":
+            scraped_count = data.get("scraped_count", 0)
+            total_count = data.get("total_evidence_count", 0)
+            print(f"    Direct scraping complete: {scraped_count} subpage(s) captured ({total_count} total evidence).")
         elif event == "diligence_hop_start":
             hop = data.get("hop", 1)
             max_hops = data.get("max_hops", 1)
@@ -89,6 +103,16 @@ class ConsoleReporter:
             print(f"  - Diligence [Hop {hop}/{max_hops}]: Executing {len(queries)} research queries{pillars_str}...")
             for query in queries:
                 print(f"    * Search: {query}")
+        elif event == "diligence_query_start":
+            pillar = data.get("pillar", "")
+            query = data.get("query", "")
+            print(f"    * Search [{pillar}]: {query}")
+        elif event == "diligence_evidence_collected":
+            id_ = data.get("id", "")
+            status = data.get("status", "")
+            title = data.get("title", "")
+            url = data.get("url", "")
+            print(f"      + [{id_}] [{status}] {title} ({url})")
         elif event == "diligence_hop_complete":
             hop = data.get("hop", 1)
             new_ev = data.get("new_evidence_count", 0)
@@ -120,9 +144,10 @@ class ConsoleReporter:
             score_str = f"{score:.1f}" if isinstance(score, float) else f"{score}"
             conf_str = f"{confidence:.2f}" if isinstance(confidence, float) else f"{confidence}"
             print(f"  - Result: Decision: {decision} | Score: {score_str}/100 | Confidence: {conf_str}")
-            print(f"  - Memo: {memo_path}")
+            print(f"  - Markdown Memo: {memo_path}")
             if pdf_memo_path:
-                print(f"  - PDF:  {pdf_memo_path}")
+                print(f"  - PDF Memo:      {pdf_memo_path}")
+                print(f"    View command:  open {pdf_memo_path}")
             self._finalist_items.append(
                 FinalistReportItem(
                     name=str(data.get("name", "")),
@@ -195,4 +220,12 @@ class ConsoleReporter:
             conf_str = f"{item.confidence:.2f}" if item.confidence is not None else "N/A"
             pdf_str = item.pdf_memo_path if item.pdf_memo_path else "N/A"
             print(f"{item.name:<20} {item.decision:<16} {score_str:<8} {conf_str:<12} {item.memo_path:<22} {pdf_str}")
-        print(f"{divider}\n")
+        print(f"{divider}")
+
+        pdf_items = [item for item in self._finalist_items if item.pdf_memo_path and item.pdf_memo_path != "N/A"]
+        if pdf_items:
+            print("\nGenerated PDF Investment Memos:")
+            for item in pdf_items:
+                print(f"  PDF Memo:     {item.pdf_memo_path}")
+                print(f"  View command: open {item.pdf_memo_path}")
+        print()

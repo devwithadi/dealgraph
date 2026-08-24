@@ -4,6 +4,8 @@ import subprocess
 from datetime import datetime, timezone
 import pytest
 
+import httpx
+
 from app.analysis.diligence import (
     DeepDiligenceAgent,
     DiligencePillar,
@@ -15,6 +17,7 @@ from app.analysis.diligence import (
     generate_diligence_plan,
     generate_followup_queries,
 )
+from app.analysis.diligence.tools.scraper import WebFetchTool
 from app.analysis.diligence.agent import default_live_search
 from app.domain.models import Candidate, Evidence
 
@@ -59,8 +62,8 @@ def test_planner_generates_four_pillar_queries(mock_candidate: Candidate) -> Non
     assert plan.candidate_slug == "nexus-ai"
     assert plan.candidate_name == "Nexus AI"
     assert plan.topic == "Enterprise AI Agents"
-    assert len(plan.queries) == 4
-    assert len(plan.focus_areas) == 4
+    assert len(plan.queries) == 5
+    assert len(plan.focus_areas) == 5
 
     pillars = {q.pillar for q in plan.queries}
     expected_pillars = {
@@ -247,10 +250,16 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
             ]
         return []
 
+    mock_scraper = WebFetchTool(
+        client=httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(404, request=req))),
+        url_validator=lambda u: u,
+    )
+
     agent = DeepDiligenceAgent(
         max_hops=2,
         offline=False,
         search_fn=mock_search,
+        scraper_tool=mock_scraper,
         progress_callback=callback,
     )
     state = agent.run(mock_candidate, "Enterprise AI Agents", initial_evidence=mock_initial_evidence)
@@ -259,10 +268,11 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
     assert state.current_hop == 2
     # Initial 1 + Hop 1 (2) + Hop 2 (2) = 5 evidence items
     assert len(state.evidence) == 5
-    assert len(state.queries_executed) == 6  # 4 in hop 1 + 2 followups in hop 2
+    assert len(state.queries_executed) == 7  # 5 in hop 1 + 2 followups in hop 2
 
     event_names = [e[0] for e in events]
     assert "diligence_plan_generated" in event_names
+    assert "diligence_scrape_start" in event_names
     assert "diligence_hop_start" in event_names
     assert "diligence_hop_complete" in event_names
     assert "diligence_all_gaps_resolved" in event_names
