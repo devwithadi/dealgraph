@@ -83,6 +83,25 @@ Highlights: LinkedIn employee directory.
     assert "sec.gov" in ev_list[1].source_url
 
 
+def test_search_results_from_company_domain_are_claimed(test_candidate: Candidate) -> None:
+    sample_stdout = """Title: Strata Data Customer Results
+URL: https://www.stratadata.example.com/customers
+Highlights: Strata Data says customers reduced indexing time by 80 percent.
+"""
+    query = SearchQuery(query="Strata Data traction", pillar=DiligencePillar.COMMERCIAL_TAM.value)
+
+    evidence = _parse_search_output(
+        sample_stdout,
+        query,
+        start_id=1,
+        company_website=test_candidate.website,
+    )
+
+    assert evidence[0].status == CitationTag.CLAIMED
+    assert evidence[0].trust_tier == "first_party"
+    assert EvidenceRanker().rank_and_reorder(evidence)[0].status == CitationTag.CLAIMED
+
+
 def test_search_tool_execution_with_custom_fn(test_candidate: Candidate) -> None:
     query = SearchQuery(query="test query", pillar=DiligencePillar.TECH_IP.value)
 
@@ -322,6 +341,36 @@ def test_evidence_ranker_deduplication_and_tagging() -> None:
     assert ranked[0].status == CitationTag.VERIFIED
     assert ranked[1].status == CitationTag.VERIFIED
     assert ranked[2].status == CitationTag.CLAIMED
+
+
+def test_evidence_ranker_surfaces_diverse_independent_sources_before_repeats() -> None:
+    def evidence(evidence_id: str, url: str, excerpt: str) -> Evidence:
+        return Evidence(
+            id=evidence_id,
+            claim="Independent reporting",
+            excerpt=excerpt,
+            source_url=url,
+            source_title="Independent source",
+            source_type="news",
+            trust_tier="open_web",
+            verification="third_party_search",
+            status=CitationTag.TRUSTED,
+        )
+
+    ranked = EvidenceRanker().rank_and_reorder(
+        [
+            evidence("ev-001", "https://news.example/a", "funding traction customer revenue " * 20),
+            evidence("ev-002", "https://news.example/b", "funding traction customer " * 15),
+            evidence("ev-003", "https://analyst.example/report", "competitor differentiation"),
+        ],
+        topic="customer traction",
+    )
+
+    assert [item.source_url for item in ranked] == [
+        "https://news.example/a",
+        "https://analyst.example/report",
+        "https://news.example/b",
+    ]
 
 
 def test_normalize_url_helper() -> None:

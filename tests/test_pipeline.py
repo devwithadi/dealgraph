@@ -70,6 +70,7 @@ class BedrockClient:
 def test_pipeline_runs_two_stage_flow_and_writes_complete_run_artifacts(
     tmp_path: Path, monkeypatch
 ) -> None:
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "test-only")
     source = tmp_path / "yc.json"
     source.write_text(json.dumps([record()]), encoding="utf-8")
 

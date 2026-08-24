@@ -36,7 +36,6 @@ class DeepDiligenceAgent:
         self,
         *,
         max_hops: int = 2,
-        offline: bool = False,
         search_fn: Callable[[Candidate, SearchQuery, int], list[Evidence]] | None = None,
         runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
         search_tool: SearchTool | None = None,
@@ -45,7 +44,6 @@ class DeepDiligenceAgent:
         progress_callback: Callable[[str, dict[str, Any]], None] | None = None,
     ) -> None:
         self.max_hops = max(1, max_hops)
-        self.offline = offline
         self.runner = runner
         self.search_fn = search_fn
         self.search_tool = search_tool or SearchTool(runner=runner, custom_search_fn=search_fn)
@@ -77,7 +75,6 @@ class DeepDiligenceAgent:
                 "slug": candidate.slug,
                 "focus_areas": plan.focus_areas,
                 "queries_count": len(plan.queries),
-                "offline": self.offline,
             },
         )
 
@@ -94,32 +91,6 @@ class DeepDiligenceAgent:
             is_complete=False,
             notes=[f"Diligence initialized with {len(base_evidence)} baseline evidence items."],
         )
-
-        if self.offline:
-            # Offline mode: rank and deduplicate local evidence without network calls
-            ranked_evidence = self.ranker.rank_and_reorder(base_evidence, topic)
-            final_gaps = evaluate_evidence_gaps(candidate, ranked_evidence, topic)
-            self._emit(
-                "diligence_offline_complete",
-                {
-                    "candidate": candidate.name,
-                    "slug": candidate.slug,
-                    "evidence_count": len(ranked_evidence),
-                    "gaps_count": len([g for g in final_gaps if not g.resolved]),
-                },
-            )
-            return DiligenceState(
-                candidate=state.candidate,
-                topic=state.topic,
-                current_hop=0,
-                max_hops=self.max_hops,
-                plan=state.plan,
-                evidence=ranked_evidence,
-                gaps=final_gaps,
-                queries_executed=[],
-                is_complete=True,
-                notes=state.notes + ["Offline mode diligence completed."],
-            )
 
         # Multi-hop iterative search loop
         current_evidence = list(base_evidence)

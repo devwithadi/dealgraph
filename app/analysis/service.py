@@ -6,7 +6,7 @@ from datetime import date
 import httpx
 
 from app.analysis.providers import model_for, model_json, screening_model_for
-from app.analysis.scoring import THESIS, validate_citations
+from app.analysis.scoring import THESIS, normalize_dimensions, validate_citations
 from app.domain.enums import AIProvider, AnalysisMode, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, Financials, ScreeningDecision
 from app.prompts.screening import build_screening_prompt
@@ -173,7 +173,7 @@ def _validate_narrative_citations(analysis: Analysis, citations: list[str]) -> A
     primary_tag = f"[{citations[0]}]"
     updates: dict[str, object] = {}
 
-    for field in ("summary", "team", "product", "market", "why_now"):
+    for field in ("thesis", "summary", "team", "product", "market", "why_now"):
         val = getattr(analysis, field)
         if val.strip().lower() not in {"unknown", "not disclosed", "n/a"}:
             has_tag = any(f"[{e_id}]" in val for e_id in citations) or bool(
@@ -239,7 +239,7 @@ def synthesize(
 
     primary_tag = f"[{citations[0]}]" if citations else "[ev-001]"
 
-    for field in ("summary", "team", "product", "market", "why_now"):
+    for field in ("thesis", "summary", "team", "product", "market", "why_now"):
         raw_val = payload.get(field)
         val = str(raw_val).strip() if raw_val is not None else ""
         if not val:
@@ -282,18 +282,27 @@ def synthesize(
         "What are the primary customer retention metrics?"
     ]
 
+    dimension_result = normalize_dimensions(payload.get("dimensions"), evidence)
+    if dimension_result:
+        dimensions, score, recommendation = dimension_result
+    else:
+        dimensions = []
+        score = _normalize_score(payload.get("score"))
+        recommendation = _normalize_recommendation(payload.get("recommendation"))
+
     mode = AnalysisMode(provider.value)
     analysis = Analysis.model_validate(
         {
             **payload,
             "company": candidate.name,
-            "thesis": THESIS,
+            "thesis": payload["thesis"],
             "financials": _financials(evidence),
             "analysis_mode": mode,
-            "score": _normalize_score(payload.get("score")),
+            "score": score,
             "confidence": _normalize_confidence(payload.get("confidence")),
-            "recommendation": _normalize_recommendation(payload.get("recommendation")),
+            "recommendation": recommendation,
             "changes_mind": _normalize_changes_mind(payload.get("changes_mind")),
+            "dimensions": dimensions,
         }
     )
     if citations:

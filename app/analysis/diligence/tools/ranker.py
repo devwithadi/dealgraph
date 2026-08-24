@@ -45,7 +45,11 @@ class EvidenceRanker:
         if any(host == d or host.endswith(f".{d}") for d in self.verified_domains):
             return CitationTag.VERIFIED
 
-        if item.source_type in {"web_scraper", "landing_page", "self_reported"}:
+        if item.trust_tier == "first_party" or item.source_type in {
+            "web_scraper",
+            "landing_page",
+            "self_reported",
+        }:
             return CitationTag.CLAIMED
 
         if item.trust_tier in {"curated_directory", "government_registry", "audit"}:
@@ -140,7 +144,21 @@ class EvidenceRanker:
             relevance = self.score_relevance(item, topic)
             return (tag_priority, -relevance)
 
-        ranked = sorted(deduped, key=sort_key)
+        scored = sorted(deduped, key=sort_key)
+        ranked: list[Evidence] = []
+        for priority in range(4):
+            remaining = [item for item in scored if sort_key(item)[0] == priority]
+            while remaining:
+                seen_hosts: set[str] = set()
+                deferred: list[Evidence] = []
+                for item in remaining:
+                    host = (urlsplit(item.source_url).hostname or item.source_url).lower().removeprefix("www.")
+                    if host in seen_hosts:
+                        deferred.append(item)
+                    else:
+                        seen_hosts.add(host)
+                        ranked.append(item)
+                remaining = deferred
 
         # Renumber sequentially starting from ev-001
         renumbered: list[Evidence] = []

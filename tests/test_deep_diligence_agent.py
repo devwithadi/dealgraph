@@ -56,23 +56,26 @@ def mock_initial_evidence() -> list[Evidence]:
     ]
 
 
-def test_planner_generates_four_pillar_queries(mock_candidate: Candidate) -> None:
+def test_planner_generates_three_focused_queries(mock_candidate: Candidate) -> None:
     plan = generate_diligence_plan(mock_candidate, "Enterprise AI Agents")
 
     assert plan.candidate_slug == "nexus-ai"
     assert plan.candidate_name == "Nexus AI"
     assert plan.topic == "Enterprise AI Agents"
-    assert len(plan.queries) == 5
-    assert len(plan.focus_areas) == 5
+    assert len(plan.queries) == 3
+    assert len(plan.focus_areas) == 3
 
     pillars = {q.pillar for q in plan.queries}
     expected_pillars = {
         DiligencePillar.COMMERCIAL_TAM.value,
         DiligencePillar.UNIT_ECONOMICS.value,
         DiligencePillar.TECH_IP.value,
-        DiligencePillar.RISK_ESG.value,
     }
     assert pillars == expected_pillars
+    queries = " ".join(q.query.lower() for q in plan.queries)
+    assert "founder" in queries and "team" in queries
+    assert "traction" in queries and "funding" in queries and "latest" in queries
+    assert "competitor" in queries and "differentiation" in queries
 
     for q in plan.queries:
         assert "Nexus AI" in q.query
@@ -157,33 +160,6 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
     assert len(no_followups) == 0
 
 
-def test_deep_diligence_agent_offline_replay_mode(
-    mock_candidate: Candidate,
-    mock_initial_evidence: list[Evidence],
-) -> None:
-    events: list[tuple[str, dict]] = []
-
-    def callback(event: str, data: dict) -> None:
-        events.append((event, data))
-
-    agent = DeepDiligenceAgent(
-        max_hops=2,
-        offline=True,
-        progress_callback=callback,
-    )
-    state = agent.run(mock_candidate, "Enterprise AI Agents", initial_evidence=mock_initial_evidence)
-
-    assert state.is_complete
-    assert state.current_hop == 0
-    assert len(state.evidence) == 1
-    assert len(state.queries_executed) == 0
-    assert "Offline mode diligence completed." in state.notes
-
-    event_names = [e[0] for e in events]
-    assert "diligence_plan_generated" in event_names
-    assert "diligence_offline_complete" in event_names
-
-
 def test_deep_diligence_agent_multi_hop_live_search_loop(
     mock_candidate: Candidate,
     mock_initial_evidence: list[Evidence],
@@ -257,7 +233,6 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
 
     agent = DeepDiligenceAgent(
         max_hops=2,
-        offline=False,
         search_fn=mock_search,
         scraper_tool=mock_scraper,
         progress_callback=callback,
@@ -268,7 +243,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
     assert state.current_hop == 2
     # Initial 1 + Hop 1 (2) + Hop 2 (2) = 5 evidence items
     assert len(state.evidence) == 5
-    assert len(state.queries_executed) == 7  # 5 in hop 1 + 2 followups in hop 2
+    assert len(state.queries_executed) == 5  # 3 in hop 1 + 2 followups in hop 2
 
     event_names = [e[0] for e in events]
     assert "diligence_plan_generated" in event_names
@@ -348,10 +323,15 @@ def test_agent_progress_callback_exception_absorption(mock_candidate: Candidate)
 
     agent = DeepDiligenceAgent(
         max_hops=1,
-        offline=True,
+        search_fn=lambda *_args: [],
+        scraper_tool=WebFetchTool(
+            client=httpx.Client(
+                transport=httpx.MockTransport(lambda req: httpx.Response(404, request=req))
+            ),
+            url_validator=lambda url: url,
+        ),
         progress_callback=broken_callback,
     )
     # Should not raise exception
     state = agent.run(mock_candidate, "Enterprise AI")
     assert state.is_complete
-

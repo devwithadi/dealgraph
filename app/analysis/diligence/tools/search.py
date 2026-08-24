@@ -42,15 +42,28 @@ def is_allowed_url(url: str) -> bool:
     )
 
 
-def _resolve_status_for_url(url: str) -> CitationTag:
+def _company_domain(url: str, company_website: str) -> bool:
+    host = (urlsplit(url).hostname or "").lower().removeprefix("www.")
+    company_host = (urlsplit(company_website).hostname or "").lower().removeprefix("www.")
+    return bool(company_host and (host == company_host or host.endswith(f".{company_host}")))
+
+
+def _resolve_status_for_url(url: str, company_website: str = "") -> CitationTag:
     parsed = urlsplit(url)
     host = (parsed.hostname or "").lower()
     if any(host == d or host.endswith(f".{d}") for d in VERIFIED_DOMAINS):
         return CitationTag.VERIFIED
+    if _company_domain(url, company_website):
+        return CitationTag.CLAIMED
     return CitationTag.TRUSTED
 
 
-def _parse_search_output(stdout: str, query_item: SearchQuery, start_id: int) -> list[Evidence]:
+def _parse_search_output(
+    stdout: str,
+    query_item: SearchQuery,
+    start_id: int,
+    company_website: str = "",
+) -> list[Evidence]:
     evidence: list[Evidence] = []
     for block in re.split(r"\n-{3,}\n", stdout):
         title_match = re.search(r"^Title:\s*(.+)$", block, re.MULTILINE)
@@ -62,7 +75,7 @@ def _parse_search_output(stdout: str, query_item: SearchQuery, start_id: int) ->
         if not is_allowed_url(url):
             continue
         title = title_match.group(1).strip()
-        status = _resolve_status_for_url(url)
+        status = _resolve_status_for_url(url, company_website)
         evidence.append(
             Evidence(
                 id=f"ev-{start_id + len(evidence):03d}",
@@ -71,7 +84,7 @@ def _parse_search_output(stdout: str, query_item: SearchQuery, start_id: int) ->
                 source_url=url,
                 source_title=title,
                 source_type="deep_diligence_search",
-                trust_tier="multi_hop_web",
+                trust_tier="first_party" if status == CitationTag.CLAIMED else "multi_hop_web",
                 verification="multi_hop_search",
                 status=status,
             )
@@ -135,4 +148,4 @@ class SearchTool:
         if completed.returncode != 0 or len(completed.stdout.encode("utf-8")) > 200_000:
             return []
 
-        return _parse_search_output(completed.stdout, query_item, start_id)
+        return _parse_search_output(completed.stdout, query_item, start_id, candidate.website)
