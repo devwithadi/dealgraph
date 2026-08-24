@@ -55,9 +55,11 @@
   ],
   "financials": {
     "burn": null,
-    "evidence_ids": [],
+    "evidence_ids": [
+      "ev-003"
+    ],
     "funding": null,
-    "pricing": null,
+    "pricing": "$200/m",
     "revenue": null,
     "runway": null
   },

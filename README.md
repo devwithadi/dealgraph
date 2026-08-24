@@ -70,6 +70,17 @@ gaps. They never contain credentials, authorization headers, prompts, or raw mod
 A committed example run is available under `examples/ai-agents-smb/`, so reviewers can inspect the
 output without credentials or another paid run.
 
+## Case-study requirement coverage
+
+| Requirement | Implementation |
+| --- | --- |
+| Source 10–20 candidates | One topic command collects 10 by default from enabled public sources, with launch freshness and available team signals. |
+| Analyze finalists | Cited Team, Product, Market, Why Now, risks, questions, and five fixed score dimensions are stored in JSON. |
+| Clear recommendation | Every finalist receives `Pass`, `Watch`, or `Take a meeting` plus two or three decision-changing proof points. |
+| One-page memo | ReportLab produces a structurally single-page PDF with clickable inline citations and a numbered source table. |
+| Reviewer trust | Complete sanitized inputs, screening decisions, evidence, gaps, analyses, manifest, and final PDFs are committed. |
+| Visible AI process | The commit-linked work log records human scope decisions, RED/GREEN checkpoints, live runs, and independent reviews. |
+
 ## Scoring
 
 The synthesizer returns cited 0–10 assessments for five fixed dimensions. Runtime code validates the
@@ -93,8 +104,8 @@ points, and clickable sources on one page.
 
 ## Sources and safety
 
-Candidate discovery uses the enabled source registry—currently YC and Agent Reach/Exa. Finalist
-research uses the company website for first-party claims plus three focused searches for team,
+Candidate discovery uses the enabled YC and Agent Reach/Exa channels. Finalist research uses the
+enabled company-website source for first-party claims plus three focused searches for team,
 traction/funding/freshness, and competition/differentiation. First-party results stay labeled
 `CLAIMED`; independent and official evidence ranks above them.
 

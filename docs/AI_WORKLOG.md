@@ -104,3 +104,16 @@ or rejected trade-offs.
   record through evidence, score, and PDF.
 - Review the committed example memos as an investor. Automated validation can enforce citations and
   scoring consistency, but it cannot decide whether the investment judgment is genuinely insightful.
+
+## 2026-08-24 — final requirement and PDF audit
+
+- Re-rendered all three committed PDFs and inspected the full page images. Each remained one page,
+  with no overlap, clipping, broken glyphs, or unreadable text; annotation inspection found only
+  public HTTP(S) targets.
+- `beba75f` → `1bc93bb`: RED/GREEN — compact `$200/m` company pricing is now extracted and cited
+  instead of disagreeing with the resolved evidence gap.
+- `5a9a96b` → `d320cad`: RED/GREEN — compact memo prose prefers complete sentences and preserves a
+  citation when content must be shortened.
+- `a055ec5` → `fdcbc11`: RED/GREEN — the registry now truthfully enables the company-website source
+  already used for labeled first-party evidence.
+- Final automated checkpoint: 154 tests passed before the full coverage and packaging gates.
