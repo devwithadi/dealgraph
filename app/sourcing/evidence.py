@@ -4,12 +4,11 @@ import re
 import subprocess
 from collections.abc import Callable
 
-from urllib.parse import urlsplit
-
 from app.core.logging import current_request_id
+from app.core.urls import resolve_host
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
-from app.sourcing.policy import BLOCKED_HOSTS, SourcePolicyError
+from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 
 def yc_evidence(candidate: Candidate) -> list[Evidence]:
@@ -34,22 +33,14 @@ def yc_evidence(candidate: Candidate) -> list[Evidence]:
     ]
 
 
-def _allowed_research_url(url: str) -> bool:
-    parsed = urlsplit(url)
-    host = (parsed.hostname or "").lower()
-    blocked = any(host == item or host.endswith(f".{item}") for item in BLOCKED_HOSTS)
+def _allowed_research_url(
+    url: str, resolver: Callable[[str], list[str]] = resolve_host
+) -> bool:
     try:
-        port = parsed.port
-    except ValueError:
+        validate_public_url(url, resolver=resolver)
+    except SourcePolicyError:
         return False
-    return bool(
-        parsed.scheme in {"http", "https"}
-        and host
-        and not parsed.username
-        and not parsed.password
-        and port in {None, 80, 443}
-        and not blocked
-    )
+    return True
 
 
 def agent_reach_evidence(
@@ -58,6 +49,7 @@ def agent_reach_evidence(
     start: int,
     *,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    resolver: Callable[[str], list[str]] = resolve_host,
 ) -> list[Evidence]:
     """Search through Agent Reach's Exa route and normalize its cited results."""
     query = (
@@ -102,7 +94,7 @@ def agent_reach_evidence(
         title = re.search(r"^Title:\s*(.+)$", block, re.MULTILINE)
         url = re.search(r"^URL:\s*(\S+)$", block, re.MULTILINE)
         highlights = block.partition("Highlights:")[2].strip()
-        if not title or not url or not highlights or not _allowed_research_url(url.group(1)):
+        if not title or not url or not highlights or not _allowed_research_url(url.group(1), resolver):
             continue
         evidence.append(
             Evidence(

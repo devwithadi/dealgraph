@@ -90,8 +90,9 @@ or rejected trade-offs.
 - GREEN — synthesis now rejects missing dimensions; the runtime always derives the 0–100 total and
   recommendation from the fixed weights. OpenAI example model names were also corrected to real
   defaults.
-- Final checkpoint: 150 tests passed after deleting the retired fallback normalizers. Build,
-  dependency, coverage, diff, artifact-secret, and PDF
+- Final checkpoint: 152 tests passed after deleting the retired fallback normalizers and adding
+  public-IP validation for search-result citations. Scraped token-like strings are redacted before
+  they can reach artifacts. Build, dependency, coverage, diff, artifact-secret, and PDF
   layout/link checks were run before handoff.
 
 ## Human follow-up still required

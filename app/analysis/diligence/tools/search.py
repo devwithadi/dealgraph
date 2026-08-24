@@ -10,9 +10,10 @@ from urllib.parse import urlsplit
 
 from app.analysis.diligence.models import SearchQuery
 from app.core.logging import current_request_id
+from app.core.urls import resolve_host
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
-from app.sourcing.policy import BLOCKED_HOSTS
+from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 LOGGER = logging.getLogger("dealgraph.diligence.search")
 
@@ -24,22 +25,14 @@ VERIFIED_DOMAINS = {
 }
 
 
-def is_allowed_url(url: str) -> bool:
-    parsed = urlsplit(url)
-    host = (parsed.hostname or "").lower()
-    blocked = any(host == item or host.endswith(f".{item}") for item in BLOCKED_HOSTS)
+def is_allowed_url(
+    url: str, resolver: Callable[[str], list[str]] = resolve_host
+) -> bool:
     try:
-        port = parsed.port
-    except ValueError:
+        validate_public_url(url, resolver=resolver)
+    except SourcePolicyError:
         return False
-    return bool(
-        parsed.scheme in {"http", "https"}
-        and host
-        and not parsed.username
-        and not parsed.password
-        and port in {None, 80, 443}
-        and not blocked
-    )
+    return True
 
 
 def _company_domain(url: str, company_website: str) -> bool:
@@ -63,6 +56,7 @@ def _parse_search_output(
     query_item: SearchQuery,
     start_id: int,
     company_website: str = "",
+    resolver: Callable[[str], list[str]] = resolve_host,
 ) -> list[Evidence]:
     evidence: list[Evidence] = []
     for block in re.split(r"\n-{3,}\n", stdout):
@@ -72,7 +66,7 @@ def _parse_search_output(
         if not title_match or not url_match or not highlights:
             continue
         url = url_match.group(1).strip()
-        if not is_allowed_url(url):
+        if not is_allowed_url(url, resolver):
             continue
         title = title_match.group(1).strip()
         status = _resolve_status_for_url(url, company_website)
@@ -98,9 +92,11 @@ class SearchTool:
         *,
         runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
         custom_search_fn: Callable[[Candidate, SearchQuery, int], list[Evidence]] | None = None,
+        resolver: Callable[[str], list[str]] = resolve_host,
     ) -> None:
         self.runner = runner
         self.custom_search_fn = custom_search_fn
+        self.resolver = resolver
 
     def search(
         self,
@@ -148,4 +144,6 @@ class SearchTool:
         if completed.returncode != 0 or len(completed.stdout.encode("utf-8")) > 200_000:
             return []
 
-        return _parse_search_output(completed.stdout, query_item, start_id, candidate.website)
+        return _parse_search_output(
+            completed.stdout, query_item, start_id, candidate.website, self.resolver
+        )
