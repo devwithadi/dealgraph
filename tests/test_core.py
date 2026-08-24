@@ -519,6 +519,19 @@ Unusable result.
         agent_reach_evidence(candidate(), "AI", 2, runner=runner)
 
 
+def test_agent_reach_rejects_private_search_result_targets() -> None:
+    def runner(command, **_kwargs):
+        output = """Title: Poisoned result
+URL: http://127.0.0.1/admin
+Highlights:
+Internal-only target.
+"""
+        return subprocess.CompletedProcess(command, 0, stdout=output, stderr="")
+
+    with pytest.raises(SourcePolicyError, match="no usable"):
+        agent_reach_evidence(candidate(), "AI", 2, runner=runner)
+
+
 def test_financials_prioritize_authentic_sources_and_ignore_search_snippets() -> None:
     items = [
         Evidence(
