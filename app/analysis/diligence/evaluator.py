@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 from app.analysis.diligence.models import DiligencePillar, InformationGap, SearchQuery
+from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
 
 PILLAR_KEYWORDS: dict[str, list[str]] = {
@@ -78,9 +79,13 @@ PILLAR_KEYWORDS: dict[str, list[str]] = {
 }
 
 
-def _find_matching_evidence(pillar: str, evidence: list[Evidence]) -> Evidence | None:
+def _find_matching_evidence(
+    pillar: str, evidence: list[Evidence], *, independent: bool = False
+) -> Evidence | None:
     keywords = PILLAR_KEYWORDS.get(pillar, [])
     for item in evidence:
+        if independent and item.status != CitationTag.TRUSTED:
+            continue
         text = f"{item.claim} {item.excerpt} {item.source_title}".lower()
         if any(re.search(rf"\b{re.escape(kw)}\b", text) or (kw == "$" and "$" in text) for kw in keywords):
             return item
@@ -111,7 +116,9 @@ def evaluate_evidence_gaps(
     gaps: list[InformationGap] = []
 
     # 1. Commercial / TAM
-    ev_commercial = _find_matching_evidence(DiligencePillar.COMMERCIAL_TAM.value, evidence)
+    ev_commercial = _find_matching_evidence(
+        DiligencePillar.COMMERCIAL_TAM.value, evidence, independent=True
+    )
     if ev_commercial is None:
         gaps.append(
             InformationGap(

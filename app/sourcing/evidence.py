@@ -3,6 +3,7 @@ import os
 import re
 import subprocess
 from collections.abc import Callable
+from urllib.parse import urlsplit
 
 from app.core.logging import current_request_id
 from app.core.urls import resolve_host
@@ -11,23 +12,57 @@ from app.domain.models import Candidate, Evidence
 from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 
-def yc_evidence(candidate: Candidate) -> list[Evidence]:
+def candidate_evidence(candidate: Candidate) -> list[Evidence]:
+    """Build baseline evidence without upgrading a non-YC source to YC-verified."""
     facts = [candidate.one_liner, candidate.description]
     if candidate.team_size is not None:
         facts.append(f"Reported team size: {candidate.team_size}.")
     if candidate.is_hiring:
         facts.append("YC marks the company as hiring.")
+    source_host = (urlsplit(candidate.source_url).hostname or "").lower()
+    if source_host == "news.ycombinator.com":
+        source_name, source_type, trust_tier, verification, status = (
+            "Hacker News launch",
+            "hacker_news",
+            "public_community",
+            "third_party",
+            CitationTag.TRUSTED,
+        )
+    elif source_host == "ycombinator.com" or source_host.endswith(".ycombinator.com"):
+        source_name, source_type, trust_tier, verification, status = (
+            "YC profile",
+            "yc_directory",
+            "curated_directory",
+            "third_party",
+            CitationTag.VERIFIED,
+        )
+    elif source_host == "producthunt.com" or source_host.endswith(".producthunt.com"):
+        source_name, source_type, trust_tier, verification, status = (
+            "Product Hunt launch",
+            "product_hunt",
+            "product_community",
+            "third_party",
+            CitationTag.TRUSTED,
+        )
+    else:
+        source_name, source_type, trust_tier, verification, status = (
+            "Candidate source",
+            "candidate_source",
+            "unverified_origin",
+            "source_record",
+            CitationTag.CLAIMED,
+        )
     return [
         Evidence(
             id="ev-001",
-            claim="YC company profile",
+            claim=source_name,
             excerpt=" ".join(filter(None, facts))[:2500],
             source_url=candidate.source_url,
-            source_title=f"YC profile: {candidate.name}",
-            source_type="yc_directory",
-            trust_tier="curated_directory",
-            verification="third_party",
-            status=CitationTag.VERIFIED,
+            source_title=f"{source_name}: {candidate.name}",
+            source_type=source_type,
+            trust_tier=trust_tier,
+            verification=verification,
+            status=status,
             published_at=candidate.launched_at,
         )
     ]

@@ -2,31 +2,17 @@ from __future__ import annotations
 
 import re
 from datetime import date
+from urllib.parse import urlsplit
 
 import httpx
 
 from app.analysis.providers import model_for, model_json, screening_model_for
 from app.analysis.scoring import THESIS, normalize_dimensions, validate_citations
-from app.domain.enums import AIProvider, AnalysisMode
+from app.domain.enums import AIProvider, AnalysisMode, CitationTag
 from app.domain.models import Analysis, Candidate, Evidence, Financials, ScreeningDecision
 from app.prompts.screening import build_screening_prompt
 from app.prompts.synthesis import build_synthesis_prompt
 from app.sourcing.registry import financial_source_priority
-
-
-def _normalize_confidence(value: object) -> float:
-    if isinstance(value, (int, float)):
-        num = float(value)
-    elif isinstance(value, str):
-        try:
-            num = float(value.strip().rstrip("%"))
-        except ValueError:
-            num = 0.5
-    else:
-        num = 0.5
-    if num > 1.0:
-        num = num / 100.0
-    return max(0.0, min(1.0, num))
 
 
 def _normalize_changes_mind(value: object) -> list[str]:
@@ -93,6 +79,29 @@ def _financials(evidence: list[Evidence]) -> Financials:
         pricing=values["pricing"],
         evidence_ids=list(dict.fromkeys(cited)),
     )
+
+
+def _evidence_confidence(evidence: list[Evidence]) -> float:
+    """Return a deterministic coverage score; model self-confidence is not evidence."""
+    statuses = {item.status for item in evidence}
+    hosts = {
+        host
+        for item in evidence
+        if (host := (urlsplit(item.source_url).hostname or "").lower())
+    }
+    source_types = {item.source_type for item in evidence}
+    financials = _financials(evidence)
+    score = sum(
+        (
+            0.25 if statuses & {CitationTag.VERIFIED, CitationTag.TRUSTED} else 0,
+            0.25 if CitationTag.TRUSTED in statuses else 0,
+            0.15 if len(hosts) >= 2 else 0,
+            0.15 if len(evidence) >= 3 else 0,
+            0.10 if len(source_types) >= 2 else 0,
+            0.10 if financials.evidence_ids else 0,
+        )
+    )
+    return round(score, 2)
 
 
 def screen_candidates(
@@ -273,7 +282,7 @@ def synthesize(
             "financials": _financials(evidence),
             "analysis_mode": mode,
             "score": score,
-            "confidence": _normalize_confidence(payload.get("confidence")),
+            "confidence": _evidence_confidence(evidence),
             "recommendation": recommendation,
             "changes_mind": _normalize_changes_mind(payload.get("changes_mind")),
             "dimensions": dimensions,

@@ -22,7 +22,7 @@ from app.analysis.service import (
 )
 from app.core.errors import AppError
 from app.core.logging import bind_request_id
-from app.domain.enums import AIProvider, AnalysisMode, Recommendation
+from app.domain.enums import AIProvider, AnalysisMode, CitationTag, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, Financials, ScreeningDecision
 from app.prompts.screening import build_screening_prompt
 from app.prompts.synthesis import build_synthesis_prompt
@@ -460,7 +460,7 @@ def test_candidate_evidence_does_not_label_hacker_news_as_yc_verified() -> None:
 
     assert item.source_type == "hacker_news"
     assert item.trust_tier == "public_community"
-    assert item.status.value == "TRUSTED"
+    assert item.status == CitationTag.TRUSTED
     assert "YC profile" not in item.claim
 
 
