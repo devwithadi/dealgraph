@@ -61,5 +61,3 @@ Dependencies point inward: CLI → pipeline → domain services → domain/core.
 - Do not silently change the scoring rubric, source trust policy, or recommendation thresholds.
 - Update `README.md` when CLI commands or observable behavior change.
 - Before handoff, run tests with coverage, `uv pip check`, `git diff --check`, and inspect `git status`.
-
-The primary command is `dealgraph`; `ida` remains an execution alias for existing scripts and displays the primary DealGraph help identity.
