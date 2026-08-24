@@ -433,7 +433,7 @@ class Pipeline:
                 "screening_model": safe_screening_model,
                 "synthesis_model": safe_synthesis_model,
                 "created_at": datetime.now(timezone.utc).isoformat(),
-                "summary": summary.model_dump(mode="json"),
+                "summary": {**summary.model_dump(mode="json"), "output": "."},
                 "artifacts": {
                     "input": "input.json",
                     "candidates": "candidates.json",

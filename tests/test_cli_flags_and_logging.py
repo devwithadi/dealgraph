@@ -17,6 +17,25 @@ from app.pipeline.service import Pipeline, _safe_stage_error
 NOW = datetime(2026, 8, 24, tzinfo=timezone.utc)
 
 
+def _dimensions(score: float = 9.0) -> list[dict[str, object]]:
+    return [
+        {
+            "name": name,
+            "score": score,
+            "weight": weight,
+            "rationale": "Supported by the supplied evidence [ev-001]",
+            "evidence_ids": ["ev-001"],
+        }
+        for name, weight in (
+            ("workflow_pain", 25),
+            ("speed_to_value", 20),
+            ("compounding_advantage", 20),
+            ("team_execution", 15),
+            ("market_distribution", 20),
+        )
+    ]
+
+
 def _summary(tmp_path: Path, *, failed: int = 0) -> RunSummary:
     return RunSummary(
         run_id="run-cli-test",
@@ -254,6 +273,7 @@ def test_pipeline_run_with_progress_callback_and_model_overrides(tmp_path: Path,
                     "open_questions": ["What is SMB churn?"],
                     "changes_mind": ["Verified retention metrics", "Customer reference calls"],
                     "score": 90.0,
+                    "dimensions": _dimensions(),
                     "confidence": 0.85,
                     "recommendation": "Take a meeting",
                     "citations": ["ev-001", "ev-002"],
@@ -501,6 +521,7 @@ def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> N
                     "open_questions": ["What is SMB churn?"],
                     "changes_mind": ["Verified retention metrics", "Customer reference calls"],
                     "score": 90.0,
+                    "dimensions": _dimensions(),
                     "confidence": 0.85,
                     "recommendation": "Take a meeting",
                     "citations": ["ev-001", "ev-002"],

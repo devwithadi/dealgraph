@@ -87,6 +87,21 @@ def _find_matching_evidence(pillar: str, evidence: list[Evidence]) -> Evidence |
     return None
 
 
+def _find_financial_evidence(evidence: list[Evidence]) -> Evidence | None:
+    signal = re.compile(
+        r"(?:[$€£]\s?\d|\b(?:arr|mrr|revenue|funding|raised|burn|runway|margin|valuation|price|pricing)\b[^.]{0,40}\d)",
+        re.IGNORECASE,
+    )
+    return next(
+        (
+            item
+            for item in evidence
+            if signal.search(f"{item.claim} {item.excerpt} {item.source_title}")
+        ),
+        None,
+    )
+
+
 def evaluate_evidence_gaps(
     candidate: Candidate,
     evidence: list[Evidence],
@@ -120,7 +135,7 @@ def evaluate_evidence_gaps(
         )
 
     # 2. Unit Economics
-    ev_econ = _find_matching_evidence(DiligencePillar.UNIT_ECONOMICS.value, evidence)
+    ev_econ = _find_financial_evidence(evidence)
     if ev_econ is None:
         gaps.append(
             InformationGap(

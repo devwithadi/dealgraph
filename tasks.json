@@ -5,7 +5,7 @@
     {
       "id": "task-001",
       "title": "Sourcing and Date Filtering",
-      "description": "Multi-source candidate discovery via YC Launch directory, Hacker News, and Agent Reach with lookback window filtering.",
+      "description": "Candidate discovery through the enabled YC and Agent Reach sources with lookback filtering.",
       "status": "completed",
       "assignee": "sourcing-engine"
     },
@@ -18,29 +18,29 @@
     },
     {
       "id": "task-003",
-      "title": "Deep Diligence Research",
-      "description": "Multi-hop 4-pillar diligence information gathering across Commercial/TAM, Financials, Tech/IP Defensibility, and Risk/ESG.",
+      "title": "Focused Finalist Research",
+      "description": "Three focused searches cover team, traction/funding/freshness, and competition/differentiation.",
       "status": "completed",
       "assignee": "diligence-agent"
     },
     {
       "id": "task-004",
       "title": "Investment Committee Synthesis",
-      "description": "Evidence-grounded synthesis, scoring, and recommendation generation with strict citation verification.",
+      "description": "Concise evidence-grounded synthesis with five validated dimensions and runtime-computed score and recommendation.",
       "status": "completed",
       "assignee": "synthesis-agent"
     },
     {
       "id": "task-005",
-      "title": "PDF-Only Output Generation",
-      "description": "Direct generation of publication-grade vector PDF investment committee memos (<slug>.pdf) in results/ without intermediate markdown or JSON files.",
+      "title": "Auditable One-Page Output",
+      "description": "One-page vector PDF memos plus sanitized candidates, screenings, evidence, analyses, gaps, shortlist, and manifest JSON.",
       "status": "completed",
       "assignee": "reporting-engine"
     },
     {
       "id": "task-006",
-      "title": "CLI & Replay Mode",
-      "description": "CLI interface supporting run and offline replay with default output directory results/ and direct open command guidance.",
+      "title": "Live-Only CLI",
+      "description": "One credential-gated run command with concise output, JSON/verbose modes, and direct memo guidance.",
       "status": "completed",
       "assignee": "cli-interface"
     }

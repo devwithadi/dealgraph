@@ -1,7 +1,7 @@
 [project]
 name = "dealgraph"
 version = "0.1.0"
-description = "Replayable public-data startup sourcing and investment memo pipeline"
+description = "Evidence-first startup sourcing and one-page investment memo pipeline"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

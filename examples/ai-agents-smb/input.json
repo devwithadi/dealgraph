@@ -1,0 +1,14 @@
+{
+  "batch": null,
+  "cutoff": "2026-07-25T15:18:25.232800+00:00",
+  "deep_diligence": true,
+  "limit": 10,
+  "lookback_days": 30,
+  "max_hops": 2,
+  "provider": "bedrock",
+  "request_id": "req-f65abf914a504204",
+  "screening_model": "amazon.nova-lite-v1:0",
+  "source_file": null,
+  "synthesis_model": "amazon.nova-pro-v1:0",
+  "topic": "AI agents for SMBs"
+}

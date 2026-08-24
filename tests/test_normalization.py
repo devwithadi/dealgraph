@@ -9,8 +9,6 @@ import pytest
 from app.analysis.service import (
     _normalize_changes_mind,
     _normalize_confidence,
-    _normalize_recommendation,
-    _normalize_score,
     synthesize,
 )
 from app.domain.enums import AIProvider, AnalysisMode, Recommendation
@@ -81,39 +79,6 @@ def test_normalize_confidence() -> None:
     assert _normalize_confidence("invalid") == 0.5
     assert _normalize_confidence(-10) == 0.0
     assert _normalize_confidence(150) == 1.0
-
-
-def test_normalize_score() -> None:
-    assert _normalize_score(85.5) == 85.5
-    assert _normalize_score(0) == 0.0
-    assert _normalize_score(100) == 100.0
-    assert _normalize_score("78.2") == 78.2
-    assert _normalize_score(-10) == 0.0
-    assert _normalize_score(150) == 100.0
-    assert _normalize_score(None) == 50.0
-    assert _normalize_score("invalid") == 50.0
-
-
-def test_normalize_recommendation() -> None:
-    assert _normalize_recommendation(Recommendation.TAKE_A_MEETING) == Recommendation.TAKE_A_MEETING
-    assert _normalize_recommendation("Take a meeting") == Recommendation.TAKE_A_MEETING
-    assert _normalize_recommendation("take a meeting") == Recommendation.TAKE_A_MEETING
-    assert _normalize_recommendation("take_a_meeting") == Recommendation.TAKE_A_MEETING
-    assert _normalize_recommendation("meet") == Recommendation.TAKE_A_MEETING
-
-    assert _normalize_recommendation(Recommendation.WATCH) == Recommendation.WATCH
-    assert _normalize_recommendation("Watch") == Recommendation.WATCH
-    assert _normalize_recommendation("watch") == Recommendation.WATCH
-    assert _normalize_recommendation("monitoring") == Recommendation.WATCH
-
-    assert _normalize_recommendation(Recommendation.PASS) == Recommendation.PASS
-    assert _normalize_recommendation("Pass") == Recommendation.PASS
-    assert _normalize_recommendation("pass") == Recommendation.PASS
-    assert _normalize_recommendation("reject") == Recommendation.PASS
-
-    # Default fallback for unknown
-    assert _normalize_recommendation("unknown_recommendation") == Recommendation.WATCH
-    assert _normalize_recommendation(None) == Recommendation.WATCH
 
 
 def test_normalize_changes_mind() -> None:

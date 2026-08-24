@@ -1,0 +1,182 @@
+[
+  {
+    "batch": "Summer 2026",
+    "description": "We make Silicon on the Moon. Data centers in space are launch-constrained. Silicon in space removes the constraint. Scales past terawatts.",
+    "industry": "Industrials -> Aviation and Space",
+    "is_hiring": false,
+    "launched_at": "2026-08-23T23:49:21Z",
+    "name": "Ethos Space Resources",
+    "one_liner": "We make Silicon on the Moon.",
+    "slug": "ethos-space-resources",
+    "source_url": "https://www.ycombinator.com/companies/ethos-space-resources",
+    "tags": [
+      "Hard Tech",
+      "Exascale Computing",
+      "3D Printing",
+      "Energy",
+      "Aerospace"
+    ],
+    "team_size": 2,
+    "website": "https://ethos-space.com"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Spectre Intelligence is a neotrading firm. We create AI traders instead of hiring human ones. Currently trading semis + bio.",
+    "industry": "Fintech -> Asset Management",
+    "is_hiring": false,
+    "launched_at": "2026-08-22T17:50:48Z",
+    "name": "Spectre Intelligence",
+    "one_liner": "We are a multi-strategy trading firm that trains AI traders. ",
+    "slug": "spectre-intelligence",
+    "source_url": "https://www.ycombinator.com/companies/spectre-intelligence",
+    "tags": [
+      "Biotech",
+      "Investing",
+      "Trading",
+      "Semiconductors"
+    ],
+    "team_size": 2,
+    "website": "https://www.spectreintelligence.ai"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Edgerun Industries builds military exoskeletons. Our hip-mounted system assists every step a soldier takes under combat load, so they can travel farther, carry more, and arrive ready to fight.",
+    "industry": "Industrials -> Defense",
+    "is_hiring": false,
+    "launched_at": "2026-08-21T20:22:39Z",
+    "name": "Edgerun",
+    "one_liner": "Military exoskeletons",
+    "slug": "edgerun",
+    "source_url": "https://www.ycombinator.com/companies/edgerun",
+    "tags": [
+      "Robotics",
+      "Defense"
+    ],
+    "team_size": 8,
+    "website": "https://edgerun.com"
+  },
+  {
+    "batch": "Fall 2026",
+    "description": "Covera builds AI agents for insurance brokers. Our ready-to-use agents take over the day-to-day servicing work: submission intake, carrier quoting, quote comparison, claims handling, past-due collections, and account rounding. That means brokers can spend their time advising and selling clients instead of doing data entry. We work with agencies of every size and connect natively to the tools they already use.",
+    "industry": "Fintech -> Insurance",
+    "is_hiring": true,
+    "launched_at": "2026-08-21T14:58:58Z",
+    "name": "Covera",
+    "one_liner": "AI-native OS for insurance brokers",
+    "slug": "covera",
+    "source_url": "https://www.ycombinator.com/companies/covera",
+    "tags": [
+      "AIOps"
+    ],
+    "team_size": 2,
+    "website": "https://www.covera-agents.com/"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Allia is the first full-stack, AI-native clinical group for mental health. We bring independent practices into one national clinical group that can deliver, measure, and improve care at scale - 600+ providers (350+ therapists, 200+ nurses & doctors, 30+ psychologists) across 70 sites in 32 states, plus telehealth nationwide. Every clinician runs on a single intelligent system of record. And, that intelligence coupled with scale unlocks what no single practice could achieve alone. ",
+    "industry": "Healthcare -> Healthcare Services",
+    "is_hiring": false,
+    "launched_at": "2026-08-19T19:37:55Z",
+    "name": "Allia Health",
+    "one_liner": "Clinically Integrated Group for Mental Health ",
+    "slug": "allia-health",
+    "source_url": "https://www.ycombinator.com/companies/allia-health",
+    "tags": [
+      "Artificial Intelligence",
+      "Healthcare",
+      "Mental Health"
+    ],
+    "team_size": 3,
+    "website": "https://allia.health/"
+  },
+  {
+    "batch": "Fall 2026",
+    "description": "",
+    "industry": "Government",
+    "is_hiring": false,
+    "launched_at": "2026-08-19T17:36:28Z",
+    "name": "Capveon",
+    "one_liner": "Turning infrastructure demand into action ",
+    "slug": "capveon",
+    "source_url": "https://www.ycombinator.com/companies/capveon",
+    "tags": [
+      "GovTech"
+    ],
+    "team_size": 2,
+    "website": "https://capveon.ai"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Studio is a simulation lab studying how humans and societies respond to new ideas, and is building the first software models that can accurately predict that response. Instead of creating digital twins of survey respondents, Studio builds live market models of interconnected audience segments from real, traceable consumer-behavior evidence. Our predictions match live KPI outcomes like revenue and sentiment with over 95% accuracy for large consumer-facing brands.",
+    "industry": "B2B -> Analytics",
+    "is_hiring": false,
+    "launched_at": "2026-08-19T04:40:00Z",
+    "name": "Studio",
+    "one_liner": "Engineer the future",
+    "slug": "studio",
+    "source_url": "https://www.ycombinator.com/companies/studio",
+    "tags": [
+      "Artificial Intelligence",
+      "B2B",
+      "Analytics",
+      "AI"
+    ],
+    "team_size": 2,
+    "website": "https://trystudio.ai"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Gini is an AI coworker that lives in your Slack and Teams. It has full context on your company, so it can answer questions, join calls, and take real work off your team's plate. Gini also keeps your company wiki and knowledge base up to date automatically, so your team's knowledge never goes stale or walks out the door.",
+    "industry": "B2B",
+    "is_hiring": false,
+    "launched_at": "2026-08-18T22:54:31Z",
+    "name": "Gini",
+    "one_liner": "AI coworker in Slack and Teams",
+    "slug": "gini",
+    "source_url": "https://www.ycombinator.com/companies/gini",
+    "tags": [
+      "AIOps",
+      "Artificial Intelligence",
+      "B2B",
+      "Workflow Automation",
+      "Enterprise Software"
+    ],
+    "team_size": 3,
+    "website": "https://ginicomputer.com/"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "We build physical agent harnesses to enable AI to debug, validate, and ship functional hardware and software.",
+    "industry": "Industrials -> Manufacturing and Robotics",
+    "is_hiring": false,
+    "launched_at": "2026-08-18T19:23:10Z",
+    "name": "Hilstart",
+    "one_liner": "Autonomous Hardware Testing",
+    "slug": "hilstart",
+    "source_url": "https://www.ycombinator.com/companies/hilstart",
+    "tags": [
+      "Developer Tools",
+      "Hardware"
+    ],
+    "team_size": 0,
+    "website": "https://hilstart.io/"
+  },
+  {
+    "batch": "Fall 2026",
+    "description": "Lantern learns what exceptional looks like for your team, pressure-tests the role against the real talent market, then runs the hiring loop: sourcing, inbound applications, interviews, assessments, candidate communication, and offers.",
+    "industry": "B2B -> Human Resources",
+    "is_hiring": false,
+    "launched_at": "2026-08-18T05:16:46Z",
+    "name": "Lantern AI",
+    "one_liner": "Turn Your Taste Into Hires",
+    "slug": "lantern-ai",
+    "source_url": "https://www.ycombinator.com/companies/lantern-ai",
+    "tags": [
+      "Human Resources",
+      "Recruiting",
+      "HR Tech"
+    ],
+    "team_size": 4,
+    "website": "https://www.lantern.md"
+  }
+]
