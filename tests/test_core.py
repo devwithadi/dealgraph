@@ -562,6 +562,26 @@ def test_financials_prioritize_authentic_sources_and_ignore_search_snippets() ->
     assert result.pricing == "$199 per month"
 
 
+def test_financials_extract_compact_pricing_from_scraped_company_page() -> None:
+    items = [
+        Evidence(
+            id="ev-001",
+            claim="Company pricing",
+            excerpt="Free trial, then $200/m or $170/m billed annually.",
+            source_url="https://company.example/pricing",
+            source_title="Pricing",
+            source_type="web_scraper",
+            trust_tier="self_reported",
+            verification="direct_scrape",
+        )
+    ]
+
+    result = _financials(items)
+
+    assert result.pricing == "$200/m"
+    assert result.evidence_ids == ["ev-001"]
+
+
 def test_source_registry_routes_research_only_through_agent_reach() -> None:
     assert SOURCE_REGISTRY["agent_reach"]["enabled"] is True
     assert SOURCE_REGISTRY["company_website"]["enabled"] is False
