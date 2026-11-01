@@ -76,6 +76,7 @@ def test_screening_model_for_and_model_for_env_and_cli_overrides(monkeypatch) ->
 
 
 def test_validate_provider_config_accepts_valid_overrides(monkeypatch) -> None:
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "configured")
     monkeypatch.setenv("BEDROCK_SCREENING_MODEL_ID", "   ")
     # Without override, blank env fails
     with pytest.raises(AppError, match="model IDs cannot be empty"):

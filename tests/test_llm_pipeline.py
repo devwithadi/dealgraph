@@ -73,6 +73,7 @@ def test_lookback_days_defaults_to_thirty_and_validates_env(monkeypatch) -> None
 def test_all_recent_candidates_are_screened_but_only_finalists_are_researched(
     tmp_path: Path, monkeypatch
 ) -> None:
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "test-only")
     records = [_record(f"company-{index}", index % 20) for index in range(25)]
     source = tmp_path / "yc.json"
     source.write_text(json.dumps(records), encoding="utf-8")
@@ -153,29 +154,7 @@ def test_all_recent_candidates_are_screened_but_only_finalists_are_researched(
     assert {path.stem for path in (tmp_path / "run").glob("*.pdf")} == set(researched)
 
 
-def test_offline_llm_pipeline_fails_before_any_network(tmp_path: Path, monkeypatch) -> None:
-    source = tmp_path / "yc.json"
-    source.write_text(json.dumps([_record("company", 1)]), encoding="utf-8")
-
-    def forbidden(*_args, **_kwargs):
-        raise AssertionError("network/model/research should not be called")
-
-    monkeypatch.setattr("app.pipeline.service.screen_candidates", forbidden)
-    monkeypatch.setattr("app.pipeline.service.agent_reach_evidence", forbidden)
-    monkeypatch.setattr("app.pipeline.service.synthesize", forbidden)
-
-    with pytest.raises(AppError, match="LLM-only"):
-        Pipeline(client=httpx.Client(transport=httpx.MockTransport(forbidden))).run(
-            topic="AI",
-            batch=None,
-            limit=None,
-            output=tmp_path / "run",
-            source_file=source,
-            offline=True,
-        )
-
-
-def test_build_synthesis_prompt_includes_exhaustive_vc_instructions() -> None:
+def test_build_synthesis_prompt_is_concise_and_thesis_aligned() -> None:
     from app.prompts.synthesis import build_synthesis_prompt
 
     inputs = {
@@ -197,12 +176,11 @@ def test_build_synthesis_prompt_includes_exhaustive_vc_instructions() -> None:
     prompt = build_synthesis_prompt(inputs)
 
     assert "Acme AI" in prompt
-    assert "Bottom-Up TAM / SAM Breakdown" in prompt
-    assert "Biographical Audit" in prompt
-    assert "Technical Architecture Deep-Dive" in prompt
-    assert "Comprehensive Pricing Breakdown" in prompt
-    assert "Critical Failure Scenarios" in prompt
-    assert "Crown Jewel Strategic Assessment" in prompt
-    assert "The Inverse Case" in prompt
-    assert "multi-paragraph" in prompt
-
+    assert "first-pass triage memo" in prompt
+    assert "company-specific investment thesis" in prompt
+    assert "workflow_pain" in prompt
+    assert "speed_to_value" in prompt
+    assert "compounding_advantage" in prompt
+    assert "team_execution" in prompt
+    assert "market_distribution" in prompt
+    assert "exhaustive institutional diligence" in prompt

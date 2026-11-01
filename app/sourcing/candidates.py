@@ -155,19 +155,21 @@ def discover_candidates(
         except Exception as error:
             LOGGER.warning("failed to select YC candidates error=%s", error)
 
-    # Source 2: Hacker News (Show HN)
-    try:
-        hn_cands = fetch_hn_candidates(topic, client=client, limit=15)
-        all_candidates.extend(hn_cands)
-    except Exception as error:
-        LOGGER.warning("failed to fetch HN candidates error=%s", error)
+    # Source 2: Hacker News (Show HN), when explicitly enabled.
+    if source_enabled("hacker_news"):
+        try:
+            hn_cands = fetch_hn_candidates(topic, client=client, limit=15)
+            all_candidates.extend(hn_cands)
+        except Exception as error:
+            LOGGER.warning("failed to fetch HN candidates error=%s", error)
 
     # Source 3: Agent Reach / Exa Multi-Source Discovery (Product Hunt, TechCrunch, GitHub)
-    try:
-        reach_cands = search_agent_reach_candidates(topic, runner=runner, limit=15)
-        all_candidates.extend(reach_cands)
-    except Exception as error:
-        LOGGER.warning("failed to search Agent Reach candidates error=%s", error)
+    if source_enabled("agent_reach"):
+        try:
+            reach_cands = search_agent_reach_candidates(topic, runner=runner, limit=15)
+            all_candidates.extend(reach_cands)
+        except Exception as error:
+            LOGGER.warning("failed to search Agent Reach candidates error=%s", error)
 
     deduped = deduplicate_and_merge_candidates(all_candidates, limit=limit)
     LOGGER.info("discovered total %d unique candidates across sources for topic=%r", len(deduped), topic)

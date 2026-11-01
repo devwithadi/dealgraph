@@ -28,7 +28,6 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--limit", type=_positive_int, help="optional emergency cap after date filtering")
     run.add_argument("--output", type=Path, default=Path("results"))
     run.add_argument("--source-file", type=Path)
-    run.add_argument("--offline", action="store_true", help="replay source data without web enrichment")
     run.add_argument(
         "--deep-diligence",
         action=argparse.BooleanOptionalAction,
@@ -50,19 +49,6 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--screening-model", help="override LLM model ID or alias for screening")
     run.add_argument("--synthesis-model", help="override LLM model ID or alias for synthesis")
 
-    replay = subparsers.add_parser(
-        "replay",
-        help="re-generate PDF memos from stored run artifacts without network or LLM calls",
-    )
-    replay.add_argument(
-        "--run-dir",
-        type=Path,
-        default=Path("results"),
-        help="directory containing stored run artifacts (default: results)",
-    )
-    replay.add_argument("--json", action="store_true", help="print the machine-readable run summary")
-    replay.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
-    replay.add_argument("--request-id", help="reuse an upstream request ID for end-to-end tracking")
     return parser
 
 
@@ -74,13 +60,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         request_id = bind_request_id(args.request_id or new_request_id())
         reporter = None if args.json else ConsoleReporter()
-        if args.command == "replay":
-            result = Pipeline().replay(
-                run_dir=args.run_dir,
-                progress_callback=reporter,
-                request_id=request_id,
-            )
-        elif args.command == "run":
+        if args.command == "run":
             if args.source_file and not args.source_file.is_file():
                 raise AppError(f"source file not found: {args.source_file}", exit_code=2)
             screening_model = args.screening_model or args.model
@@ -91,7 +71,6 @@ def main(argv: list[str] | None = None) -> int:
                 limit=args.limit,
                 output=args.output,
                 source_file=args.source_file,
-                offline=args.offline,
                 deep_diligence=args.deep_diligence,
                 max_hops=args.max_hops,
                 request_id=request_id,

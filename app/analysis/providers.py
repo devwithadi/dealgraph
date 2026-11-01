@@ -211,6 +211,25 @@ def model_name_for_artifact(model: str | None) -> str | None:
     return ":".join([*parts[:4], "REDACTED", parts[5]]) if len(parts) == 6 else model
 
 
+def _env_is_configured(name: str) -> bool:
+    return bool((os.getenv(name) or "").strip())
+
+
+def _bedrock_credentials_are_explicit() -> bool:
+    return any(
+        (
+            _env_is_configured("AWS_BEARER_TOKEN_BEDROCK"),
+            _env_is_configured("AWS_ACCESS_KEY_ID")
+            and _env_is_configured("AWS_SECRET_ACCESS_KEY"),
+            _env_is_configured("AWS_PROFILE"),
+            _env_is_configured("AWS_ROLE_ARN")
+            and _env_is_configured("AWS_WEB_IDENTITY_TOKEN_FILE"),
+            _env_is_configured("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"),
+            _env_is_configured("AWS_CONTAINER_CREDENTIALS_FULL_URI"),
+        )
+    )
+
+
 def create_bedrock_client():
     """Create a runtime client using Boto3's bearer-token or IAM credential chain."""
     return boto3.client(
@@ -279,7 +298,7 @@ def _chat_completion_json(
     config = PROVIDER_CONFIGS.get(provider)
     if not config:
         raise AppError(f"Unsupported provider: {provider}", exit_code=2)
-    key = os.getenv(config.api_key_env) if config.api_key_env else None
+    key = ((os.getenv(config.api_key_env) or "").strip() or None) if config.api_key_env else None
     if config.requires_key and not key:
         raise AppError(f"{config.api_key_env} is required for the {config.name} provider", exit_code=2)
     headers_dict: dict[str, str] = {}
@@ -356,11 +375,19 @@ def validate_provider_config(
     provider: AIProvider,
     screening_override: str | None = None,
     synthesis_override: str | None = None,
+    *,
+    credentials_required: bool = True,
 ) -> None:
     cfg = PROVIDER_CONFIGS.get(provider)
     if not cfg:
         raise AppError(f"Unsupported provider: {provider}", exit_code=2)
-    if cfg.requires_key and not os.getenv(cfg.api_key_env or ""):
+    if (
+        provider == AIProvider.BEDROCK
+        and credentials_required
+        and not _bedrock_credentials_are_explicit()
+    ):
+        raise AppError("Explicit AWS credentials are required for Bedrock", exit_code=2)
+    if cfg.requires_key and not _env_is_configured(cfg.api_key_env or ""):
         raise AppError(f"{cfg.api_key_env} is required for the {cfg.name} provider", exit_code=2)
     if cfg.base_url_env and cfg.default_base_url:
         try:

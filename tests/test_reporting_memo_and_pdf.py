@@ -159,8 +159,9 @@ def test_citation_transformation() -> None:
 
     # Test PDF citation transformation
     pdf_transformed = _transform_citations_for_pdf(raw_text, ev_map)
-    assert '<a href="https://ycombinator.com/companies/vortex" color="#2563EB"><b>[1] &#8599;</b></a>' in pdf_transformed
-    assert '<a href="https://benchmarks.io/test" color="#2563EB"><b>[2] &#8599;</b></a>' in pdf_transformed
+    assert '<a href="https://ycombinator.com/companies/vortex" color="#2563EB"><b>[1]</b></a>' in pdf_transformed
+    assert '<a href="https://benchmarks.io/test" color="#2563EB"><b>[2]</b></a>' in pdf_transformed
+    assert "&#8599;" not in pdf_transformed
     assert '<font color="#64748B"><b>[EV-999]</b></font>' in pdf_transformed
     assert _transform_citations_for_pdf("", ev_map) == ""
 
@@ -259,6 +260,7 @@ def test_render_pdf_memo_with_multi_paragraph_and_bullets(
     render_pdf_memo(sample_candidate, multi_para_analysis, sample_evidence, pdf_out)
     assert pdf_out.exists()
     assert pdf_out.stat().st_size > 1000
+    assert len(re.findall(rb"/Type\s*/Page\b", pdf_out.read_bytes())) == 1
 
 
 def test_render_pdf_memo_with_empty_and_minimal_fields(

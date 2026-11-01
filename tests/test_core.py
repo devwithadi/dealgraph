@@ -201,35 +201,26 @@ def test_synthesis_prompt_requests_direct_llm_judgment() -> None:
     assert all(
         marker in prompt
         for marker in (
-            "WHO YOU ARE",
-            "WHAT YOU RECEIVE",
-            "SOURCE HIERARCHY (STRICT)",
-            "EVIDENCE & CITATION RULES (NON-NEGOTIABLE)",
-            "QUANTITATIVE DISCIPLINE",
-            "THE 4-PILLAR RUBRIC",
-            "JUDGE LOGIC",
-            "DETERMINISTIC SCORING",
+            "ROLE",
+            "INPUT",
+            "EVIDENCE RULES",
+            "MISSING DATA AND RECENCY",
+            "DECISION DISCIPLINE",
+            "TAKE-HOME TRIAGE WORKFLOW",
+            "FIVE-DIMENSION SCORECARD",
             "SELF-CHECK BEFORE OUTPUT",
             "SYNTHESIS OUTPUT CONTRACT",
-            "Prefer evidence ≤12 months old",
-            "Full-length URLs only",
-            "Runway (months) = Cash balance ÷ Average monthly net burn",
-            "Commercial & Market (weight 0.25)",
-            "Financial & Valuation (weight 0.25)",
-            "Technical & IP (weight 0.30)",
-            "Risk, Compliance & ESG (weight 0.20)",
-            "cap that pillar at 5",
-            "Strong Conviction",
-            "Proceed to Confirmatory Diligence",
-            "Hold — Requires Further Diligence",
-            "Claim Verification Ledger",
-            "Information Gap Register",
-            "Source Registry",
+            "workflow_pain",
+            "speed_to_value",
+            "compounding_advantage",
+            "team_execution",
+            "market_distribution",
+            "The runtime recomputes",
         )
     )
     assert '"score": 0' in prompt
     assert '"recommendation": "Take a meeting | Watch | Pass"' in prompt
-    assert "Return exactly one JSON object" in prompt
+    assert "Return exactly one concise JSON object" in prompt
     assert '"company_name": "AgentDesk"' in prompt
 
 
@@ -250,9 +241,9 @@ def test_prompt_components_are_assembled_once_in_a_stable_order() -> None:
 
     synthesis = build_synthesis_prompt({"external_evidence": []})
     synthesis_markers = (
-        "## 0. WHO YOU ARE",
-        "## 2. SOURCE HIERARCHY (STRICT)",
-        "## 5. THE 4-PILLAR RUBRIC",
+        "## 0. ROLE",
+        "## 2. EVIDENCE RULES",
+        "## 5. TAKE-HOME TRIAGE WORKFLOW",
         "## 9. SYNTHESIS OUTPUT CONTRACT",
     )
     assert [synthesis.index(marker) for marker in synthesis_markers] == sorted(
@@ -269,7 +260,7 @@ def test_untrusted_prompt_text_stays_inside_serialized_input_before_guardrails()
     assert screening.count(sentinel) == 1
     assert screening.index("# SCREENING GUARDRAILS") < screening.index(sentinel)
     assert synthesis.count(sentinel) == 1
-    assert synthesis.index(sentinel) < synthesis.index("## 2. SOURCE HIERARCHY (STRICT)")
+    assert synthesis.index(sentinel) < synthesis.index("## 2. EVIDENCE RULES")
 
 
 def test_bedrock_client_uses_official_bearer_env_and_configured_region(monkeypatch) -> None:
@@ -289,9 +280,69 @@ def test_bedrock_client_uses_official_bearer_env_and_configured_region(monkeypat
     assert calls == [("bedrock-runtime", {"region_name": "ap-south-1"})]
 
 
+BEDROCK_CREDENTIAL_ENV_VARS = (
+    "AWS_BEARER_TOKEN_BEDROCK",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "AWS_PROFILE",
+    "AWS_ROLE_ARN",
+    "AWS_WEB_IDENTITY_TOKEN_FILE",
+    "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI",
+    "AWS_CONTAINER_CREDENTIALS_FULL_URI",
+)
+
+
+@pytest.mark.parametrize(
+    "credentials",
+    [
+        {"AWS_BEARER_TOKEN_BEDROCK": "bearer-token"},
+        {"AWS_ACCESS_KEY_ID": "access-key", "AWS_SECRET_ACCESS_KEY": "secret-key"},
+        {"AWS_PROFILE": "dealgraph"},
+        {"AWS_ROLE_ARN": "role-arn", "AWS_WEB_IDENTITY_TOKEN_FILE": "/token"},
+        {"AWS_CONTAINER_CREDENTIALS_RELATIVE_URI": "/v2/credentials/id"},
+        {"AWS_CONTAINER_CREDENTIALS_FULL_URI": "http://127.0.0.1/credentials"},
+    ],
+)
+def test_bedrock_accepts_supported_explicit_credential_sources(monkeypatch, credentials) -> None:
+    for name in BEDROCK_CREDENTIAL_ENV_VARS:
+        monkeypatch.delenv(name, raising=False)
+    for name, value in credentials.items():
+        monkeypatch.setenv(name, value)
+    monkeypatch.setattr(
+        "app.analysis.providers.boto3.client",
+        lambda *_args, **_kwargs: pytest.fail("validation must not resolve AWS credentials"),
+    )
+
+    validate_provider_config(AIProvider.BEDROCK)
+
+
+@pytest.mark.parametrize(
+    "credentials",
+    [
+        {},
+        {"AWS_BEARER_TOKEN_BEDROCK": "   "},
+        {"AWS_ACCESS_KEY_ID": "access-key"},
+        {"AWS_SECRET_ACCESS_KEY": "secret-key"},
+        {"AWS_ROLE_ARN": "role-arn"},
+        {"AWS_WEB_IDENTITY_TOKEN_FILE": "/token"},
+    ],
+)
+def test_bedrock_rejects_missing_blank_or_incomplete_credentials(monkeypatch, credentials) -> None:
+    for name in BEDROCK_CREDENTIAL_ENV_VARS:
+        monkeypatch.delenv(name, raising=False)
+    for name, value in credentials.items():
+        monkeypatch.setenv(name, value)
+
+    with pytest.raises(AppError, match="Explicit AWS credentials are required for Bedrock") as caught:
+        validate_provider_config(AIProvider.BEDROCK)
+
+    assert all(value.strip() not in str(caught.value) for value in credentials.values() if value.strip())
+
+
 def test_bedrock_model_ids_are_arbitrary_converse_identifiers(monkeypatch) -> None:
     screening_id = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
     synthesis_id = "arn:aws:bedrock:us-east-1:123456789012:inference-profile/example"
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "configured")
     monkeypatch.setenv("BEDROCK_SCREENING_MODEL_ID", f"  {screening_id}  ")
     monkeypatch.setenv("BEDROCK_MODEL_ID", synthesis_id)
 
@@ -311,6 +362,7 @@ def test_account_id_is_redacted_from_model_arn_artifacts() -> None:
 
 
 def test_bedrock_rejects_a_blank_stage_model_id(monkeypatch) -> None:
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "configured")
     monkeypatch.setenv("BEDROCK_SCREENING_MODEL_ID", "   ")
 
     with pytest.raises(AppError, match="model IDs cannot be empty"):

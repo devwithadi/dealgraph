@@ -3,18 +3,15 @@ from __future__ import annotations
 import html
 import logging
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from reportlab.platypus import (
-    HRFlowable,
-    KeepTogether,
+    KeepInFrame,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -22,8 +19,6 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from app.analysis.diligence.evaluator import PILLAR_KEYWORDS
-from app.analysis.diligence.models import DiligencePillar
 from app.domain.enums import CitationTag, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence
 from app.reporting.memo import _build_evidence_map, _format_source_category, _resolve_evidence_entry
@@ -137,9 +132,9 @@ def _transform_citations_for_pdf(text: str, evidence_map: dict[str, Any]) -> str
                 idx, ev = resolved
                 url = html.escape(ev.source_url) if ev.source_url and ev.source_url.startswith(("http://", "https://")) else ""
                 if url:
-                    rendered.append(f'<a href="{url}" color="#2563EB"><b>[{idx}] &#8599;</b></a>')
+                    rendered.append(f'<a href="{url}" color="#2563EB"><b>[{idx}]</b></a>')
                 else:
-                    rendered.append(f'<font color="#2563EB"><b>[{idx}] &#8599;</b></font>')
+                    rendered.append(f'<font color="#2563EB"><b>[{idx}]</b></font>')
             else:
                 rendered.append(f'<font color="#64748B"><b>[{ev_id.upper()}]</b></font>')
         token = make_token()
@@ -153,9 +148,9 @@ def _transform_citations_for_pdf(text: str, evidence_map: dict[str, Any]) -> str
             idx, ev = resolved
             url = html.escape(ev.source_url) if ev.source_url and ev.source_url.startswith(("http://", "https://")) else ""
             if url:
-                rendered = f'<a href="{url}" color="#2563EB"><b>[{idx}] &#8599;</b></a>'
+                rendered = f'<a href="{url}" color="#2563EB"><b>[{idx}]</b></a>'
             else:
-                rendered = f'<font color="#2563EB"><b>[{idx}] &#8599;</b></font>'
+                rendered = f'<font color="#2563EB"><b>[{idx}]</b></font>'
         else:
             rendered = f'<font color="#64748B"><b>[{ev_id.upper()}]</b></font>'
         token = make_token()
@@ -179,468 +174,216 @@ def _transform_citations_for_pdf(text: str, evidence_map: dict[str, Any]) -> str
     return escaped
 
 
-def _add_narrative_flowables(
-    flowables: list[Any],
-    text: str,
-    evidence_map: dict[str, Any],
-    body_style: ParagraphStyle,
-    bullet_style: ParagraphStyle,
-    subheading_style: ParagraphStyle | None = None,
-) -> None:
-    """Split multi-paragraph text into clean ReportLab flowables with proper leading and spacing."""
-    if not text or not text.strip():
-        flowables.append(Paragraph("Not disclosed", body_style))
-        return
-
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-    for p in paragraphs:
-        if any(line.strip().startswith(("•", "-", "*")) for line in p.splitlines()):
-            lines = p.splitlines()
-            for line in lines:
-                clean_line = line.strip()
-                if not clean_line:
-                    continue
-                if clean_line.startswith(("•", "-", "*")):
-                    bullet_text = clean_line.lstrip("•-* ").strip()
-                    transformed = _transform_citations_for_pdf(bullet_text, evidence_map)
-                    flowables.append(Paragraph(f"• {transformed}", bullet_style))
-                else:
-                    transformed = _transform_citations_for_pdf(clean_line, evidence_map)
-                    flowables.append(Paragraph(transformed, body_style))
-        else:
-            if p.startswith("### ") and subheading_style:
-                sub_title = p.lstrip("# ").strip()
-                transformed = _transform_citations_for_pdf(sub_title, evidence_map)
-                flowables.append(Paragraph(transformed, subheading_style))
-            else:
-                transformed = _transform_citations_for_pdf(p, evidence_map)
-                flowables.append(Paragraph(transformed, body_style))
-
-
 def render_pdf_memo(
     candidate: Candidate,
     analysis: Analysis,
     evidence: list[Evidence],
     output_path: Path | str,
 ) -> Path:
-    """Generate a publication-grade PDF Investment Committee Memo using ReportLab Platypus."""
+    """Render a compact, evidence-linked memo with a structural one-page limit."""
     out_file = Path(output_path).resolve()
     out_file.parent.mkdir(parents=True, exist_ok=True)
-
     doc = SimpleDocTemplate(
-        str(out_file),
-        pagesize=letter,
-        leftMargin=36,
-        rightMargin=36,
-        topMargin=48,
-        bottomMargin=48,
+        str(out_file), pagesize=letter, leftMargin=36, rightMargin=36,
+        topMargin=48, bottomMargin=48,
     )
-
     styles = getSampleStyleSheet()
-
-    # Custom typography styles
-    style_h1 = ParagraphStyle(
-        "PDF_H1",
-        parent=styles["Heading1"],
-        fontName="Helvetica-Bold",
-        fontSize=12.5,
-        leading=15.5,
-        textColor=COLOR_SLATE_DARK,
-        spaceBefore=14,
-        spaceAfter=5,
-        keepWithNext=True,
+    body = ParagraphStyle(
+        "OnePageBody", parent=styles["BodyText"], fontName="Helvetica",
+        fontSize=7.7, leading=9.6, textColor=COLOR_SLATE_MID,
     )
-
-    style_h2 = ParagraphStyle(
-        "PDF_H2",
-        parent=styles["Heading2"],
-        fontName="Helvetica-Bold",
-        fontSize=10,
-        leading=13.5,
-        textColor=COLOR_SLATE_MID,
-        spaceBefore=8,
-        spaceAfter=4,
-        keepWithNext=True,
+    small = ParagraphStyle(
+        "OnePageSmall", parent=body, fontSize=6.8, leading=8.2,
     )
-
-    style_body = ParagraphStyle(
-        "PDF_Body",
-        parent=styles["BodyText"],
-        fontName="Helvetica",
-        fontSize=8.5,
-        leading=12.5,
-        textColor=COLOR_SLATE_MID,
-        spaceBefore=2,
-        spaceAfter=5,
+    label = ParagraphStyle(
+        "OnePageLabel", parent=body, fontName="Helvetica-Bold",
+        fontSize=7.2, leading=8.5, textColor=COLOR_SLATE_DARK,
     )
+    evidence_map = _build_evidence_map(evidence)
 
-    style_bullet = ParagraphStyle(
-        "PDF_Bullet",
-        parent=style_body,
-        leftIndent=12,
-        firstLineIndent=-8,
-        spaceBefore=2,
-        spaceAfter=3,
-    )
+    def capped(text: str | None, limit: int = 300) -> str:
+        clean = re.sub(r"\s+", " ", text or "").strip() or "Not disclosed"
+        if len(clean) <= limit:
+            return clean
+        return clean[: limit - 3].rsplit(" ", 1)[0] + "..."
 
-    style_card_title = ParagraphStyle(
-        "PDF_CardTitle",
-        fontName="Helvetica-Bold",
-        fontSize=9,
-        leading=12,
-        textColor=COLOR_SLATE_DARK,
-        spaceAfter=3,
-    )
+    def linked(text: str | None, limit: int = 300) -> Paragraph:
+        return Paragraph(_transform_citations_for_pdf(capped(text, limit), evidence_map), body)
 
-    style_card_body = ParagraphStyle(
-        "PDF_CardBody",
-        fontName="Helvetica",
-        fontSize=8.5,
-        leading=12,
-        textColor=COLOR_SLATE_MID,
-    )
-
-    style_source_text = ParagraphStyle(
-        "PDF_SourceText",
-        fontName="Helvetica",
-        fontSize=7.5,
-        leading=10,
-        textColor=COLOR_SLATE_MID,
-    )
-
-    # Build evidence map
-    ev_map = _build_evidence_map(evidence)
-
-    flowables: list[Any] = []
-
-    # 1. Header Banner
     if analysis.recommendation == Recommendation.TAKE_A_MEETING:
-        rec_bg = COLOR_EMERALD
-        rec_label = "TAKE A MEETING"
+        call_color, call_text = COLOR_EMERALD, "TAKE A MEETING"
     elif analysis.recommendation == Recommendation.WATCH:
-        rec_bg = COLOR_AMBER
-        rec_label = "WATCH"
+        call_color, call_text = COLOR_AMBER, "WATCH"
     else:
-        rec_bg = COLOR_ROSE
-        rec_label = "PASS"
+        call_color, call_text = COLOR_ROSE, "PASS"
 
-    title_para = Paragraph(
+    title = Paragraph(
         f'<font color="#FFFFFF"><b>{_clean_for_xml(candidate.name)}</b></font><br/>'
-        f'<font color="#94A3B8" size="8.5">INVESTMENT COMMITTEE MEMO · DEALGRAPH DILIGENCE ENGINE</font>',
-        ParagraphStyle("BannerTitle", fontName="Helvetica-Bold", fontSize=15, leading=18),
+        '<font color="#CBD5E1" size="7">DEALGRAPH / SEED INVESTMENT MEMO</font>',
+        ParagraphStyle("OnePageTitle", fontName="Helvetica-Bold", fontSize=15, leading=17),
     )
+    call = Paragraph(
+        f'<font color="#FFFFFF"><b>{call_text}</b></font><br/>'
+        f'<font color="#E0F2FE">{analysis.score:.1f}/100</font> &nbsp; '
+        f'<font color="#D1FAE5">{analysis.confidence:.0%} confidence</font>',
+        ParagraphStyle("OnePageCall", fontName="Helvetica-Bold", fontSize=8.2, leading=13, alignment=2),
+    )
+    banner = Table([[title, call]], colWidths=[330, 210])
+    banner.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (0, 0), COLOR_SLATE_DARK),
+        ("BACKGROUND", (1, 0), (1, 0), call_color),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+    ]))
 
-    score_label = f"Score: {analysis.score:.1f}/100"
-    conf_label = f"Confidence: {analysis.confidence:.0%}"
-    batch_val = candidate.batch.strip() if candidate.batch else ""
-    stage_label = f"Batch: {batch_val}" if batch_val and batch_val.lower() != "general" else "Stage: Pre-Seed / Seed"
+    website = _clean_for_xml(candidate.website) or "N/A"
+    if candidate.website.startswith(("http://", "https://")):
+        website = f'<a href="{html.escape(candidate.website)}" color="#2563EB">{website}</a>'
+    metadata = Table([[
+        Paragraph(f"<b>Website</b><br/>{website}", small),
+        Paragraph(f"<b>Stage / batch</b><br/>{_clean_for_xml(candidate.batch) or 'Pre-Seed / Seed'}", small),
+        Paragraph(f"<b>Sector</b><br/>{_clean_for_xml(candidate.industry) or 'Technology'}", small),
+        Paragraph(f"<b>Team</b><br/>{candidate.team_size if candidate.team_size is not None else 'Undisclosed'}", small),
+    ]], colWidths=[185, 115, 160, 80])
+    metadata.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), COLOR_SLATE_LIGHT),
+        ("BOX", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("INNERGRID", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
 
-    badge_table_data = [
-        [
-            Paragraph(f'<font color="#FFFFFF"><b>{rec_label}</b></font>', ParagraphStyle("RecBadge", fontName="Helvetica-Bold", fontSize=8.5, alignment=1)),
-            Paragraph(f'<font color="#38BDF8"><b>{score_label}</b></font>', ParagraphStyle("ScoreBadge", fontName="Helvetica-Bold", fontSize=8.5, alignment=1)),
-            Paragraph(f'<font color="#A7F3D0"><b>{conf_label}</b></font>', ParagraphStyle("ConfBadge", fontName="Helvetica-Bold", fontSize=8.5, alignment=1)),
-            Paragraph(f'<font color="#CBD5E1"><b>{stage_label}</b></font>', ParagraphStyle("StageBadge", fontName="Helvetica-Bold", fontSize=8.5, alignment=1)),
+    thesis = Table([
+        [Paragraph('<font color="#2563EB"><b>INVESTMENT THESIS</b></font>', label)],
+        [linked(analysis.thesis or analysis.summary, 420)],
+    ], colWidths=[540])
+    thesis.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), COLOR_COBALT_LIGHT),
+        ("BOX", (0, 0), (-1, -1), .6, COLOR_COBALT),
+        ("LINEBEFORE", (0, 0), (0, -1), 3, COLOR_COBALT),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+    ]))
+
+    snapshot = Table([
+        [Paragraph("TEAM", label), Paragraph("PRODUCT", label)],
+        [linked(analysis.team, 240), linked(analysis.product, 240)],
+        [Paragraph("MARKET", label), Paragraph("WHY NOW", label)],
+        [linked(analysis.market, 240), linked(analysis.why_now, 240)],
+    ], colWidths=[270, 270])
+    snapshot.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_LIGHT),
+        ("BACKGROUND", (0, 2), (-1, 2), COLOR_SLATE_LIGHT),
+        ("BOX", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("INNERGRID", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 3),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+    ]))
+
+    dimension_cells: list[Paragraph] = []
+    for item in analysis.dimensions[:5]:
+        name = str(item.get("name", "dimension")).replace("_", " ").title()
+        raw_score = item.get("score", "N/A")
+        score_text = f"{raw_score:g}/10" if isinstance(raw_score, (int, float)) else _clean_for_xml(str(raw_score))
+        weight = item.get("weight")
+        weight_text = f" / {weight:g}% wt" if isinstance(weight, (int, float)) else ""
+        dimension_cells.append(Paragraph(f"<b>{_clean_for_xml(name)}</b><br/>{score_text}{weight_text}", small))
+    if not dimension_cells:
+        dimension_cells = [
+            Paragraph(f"<b>{name}</b><br/>N/A", small)
+            for name in ("Workflow Pain", "Speed to Value", "Compounding Advantage", "Team Execution", "Market / Distribution")
         ]
-    ]
-    badge_table = Table(badge_table_data, colWidths=[130, 115, 130, 165])
-    badge_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (0, 0), rec_bg),
-            ("BACKGROUND", (1, 0), (1, 0), COLOR_SLATE_MID),
-            ("BACKGROUND", (2, 0), (2, 0), COLOR_SLATE_MID),
-            ("BACKGROUND", (3, 0), (3, 0), COLOR_SLATE_MID),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("TOPPADDING", (0, 0), (-1, -1), 4),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-        ])
+    count = len(dimension_cells)
+    dimensions = Table(
+        [[Paragraph('<font color="#FFFFFF"><b>DIMENSION SCORE BREAKDOWN</b></font>', label)] + [""] * (count - 1), dimension_cells],
+        colWidths=[540 / count] * count,
     )
+    dimensions.setStyle(TableStyle([
+        ("SPAN", (0, 0), (-1, 0)),
+        ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_MID),
+        ("BOX", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("INNERGRID", (0, 1), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("ALIGN", (0, 1), (-1, -1), "CENTER"),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
 
-    banner_data = [
-        [title_para],
-        [badge_table],
-    ]
-    banner_table = Table(banner_data, colWidths=[540])
-    banner_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), COLOR_SLATE_DARK),
-            ("TOPPADDING", (0, 0), (-1, -1), 9),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 9),
-            ("LEFTPADDING", (0, 0), (-1, -1), 12),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 12),
-        ])
-    )
-    flowables.append(banner_table)
-    flowables.append(Spacer(1, 8))
+    def compact_list(items: list[str], fallback: str) -> Paragraph:
+        values = items[:3] or [fallback]
+        lines = [f"- {_transform_citations_for_pdf(capped(item, 145), evidence_map)}" for item in values]
+        return Paragraph("<br/>".join(lines), small)
 
-    # 2. Metadata Grid
-    website_display = _clean_for_xml(candidate.website) or "N/A"
-    batch_display = _clean_for_xml(candidate.batch) or "General"
-    sector_display = _clean_for_xml(candidate.industry) or "Technology"
-    team_display = str(candidate.team_size) if candidate.team_size is not None else "Undisclosed"
-    hiring_display = "Actively Hiring" if candidate.is_hiring else "Not Specified"
-    today_str = datetime.now(timezone.utc).strftime("%B %d, %Y")
+    decisions = Table([
+        [Paragraph('<font color="#DC2626"><b>KEY RISKS</b></font>', label), Paragraph('<font color="#059669"><b>WHAT CHANGES OUR MIND</b></font>', label)],
+        [compact_list(analysis.risks, "No critical risk identified"), compact_list(analysis.changes_mind, "More verified traction")],
+    ], colWidths=[270, 270])
+    decisions.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (0, -1), COLOR_ROSE_LIGHT),
+        ("BACKGROUND", (1, 0), (1, -1), COLOR_EMERALD_LIGHT),
+        ("BOX", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("INNERGRID", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+    ]))
 
-    if candidate.website and candidate.website.startswith(("http://", "https://")):
-        web_url = html.escape(candidate.website)
-        web_field = f'<a href="{web_url}" color="#2563EB"><u>{website_display}</u></a>'
-    else:
-        web_field = f'<font color="#2563EB">{website_display}</font>'
-
-    meta_data = [
-        [
-            Paragraph('<b>Website:</b> ' + web_field, style_body),
-            Paragraph("<b>Batch:</b> " + batch_display, style_body),
-            Paragraph("<b>Sector:</b> " + sector_display, style_body),
-        ],
-        [
-            Paragraph("<b>Team Size:</b> " + team_display, style_body),
-            Paragraph("<b>Hiring:</b> " + hiring_display, style_body),
-            Paragraph("<b>Evaluation Date:</b> " + today_str, style_body),
-        ],
-    ]
-    meta_table = Table(meta_data, colWidths=[180, 180, 180])
-    meta_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), COLOR_SLATE_LIGHT),
-            ("BOX", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("TOPPADDING", (0, 0), (-1, -1), 4),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-            ("LEFTPADDING", (0, 0), (-1, -1), 8),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-        ])
-    )
-    flowables.append(meta_table)
-    flowables.append(Spacer(1, 8))
-
-    # 3. 4-Pillar Diligence Scorecard
-    flowables.append(Paragraph("4-Pillar Diligence Scorecard", style_h2))
-
-    scorecard_data = [
-        [
-            Paragraph('<font color="#FFFFFF"><b>Diligence Pillar</b></font>', style_card_title),
-            Paragraph('<font color="#FFFFFF"><b>Key Assessment & Signals</b></font>', style_card_title),
-            Paragraph('<font color="#FFFFFF"><b>Evidence</b></font>', style_card_title),
-        ],
-        [
-            Paragraph("<b>Commercial / TAM</b>", style_body),
-            Paragraph(_transform_citations_for_pdf(analysis.market[:220] or candidate.one_liner, ev_map), style_body),
-            Paragraph(f"{sum(1 for e in evidence if any(k in f'{e.claim} {e.excerpt}'.lower() for k in PILLAR_KEYWORDS[DiligencePillar.COMMERCIAL_TAM.value]))} item(s)", style_body),
-        ],
-        [
-            Paragraph("<b>Unit Economics</b>", style_body),
-            Paragraph(_transform_citations_for_pdf(analysis.financials.pricing or analysis.financials.revenue or "Pre-revenue business model", ev_map), style_body),
-            Paragraph(f"{sum(1 for e in evidence if any(k in f'{e.claim} {e.excerpt}'.lower() for k in PILLAR_KEYWORDS[DiligencePillar.UNIT_ECONOMICS.value]))} item(s)", style_body),
-        ],
-        [
-            Paragraph("<b>Tech / IP Defensibility</b>", style_body),
-            Paragraph(_transform_citations_for_pdf(analysis.product[:220] or candidate.description, ev_map), style_body),
-            Paragraph(f"{sum(1 for e in evidence if any(k in f'{e.claim} {e.excerpt}'.lower() for k in PILLAR_KEYWORDS[DiligencePillar.TECH_IP.value]))} item(s)", style_body),
-        ],
-        [
-            Paragraph("<b>Risk / ESG</b>", style_body),
-            Paragraph(_transform_citations_for_pdf(analysis.risks[0] if analysis.risks else "Manageable platform risk", ev_map), style_body),
-            Paragraph(f"{sum(1 for e in evidence if any(k in f'{e.claim} {e.excerpt}'.lower() for k in PILLAR_KEYWORDS[DiligencePillar.RISK_ESG.value]))} item(s)", style_body),
-        ],
-    ]
-    scorecard_table = Table(scorecard_data, colWidths=[130, 330, 80])
-    scorecard_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_MID),
-            ("BOX", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [COLOR_WHITE, COLOR_SLATE_LIGHT]),
-            ("TOPPADDING", (0, 0), (-1, -1), 4),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-            ("LEFTPADDING", (0, 0), (-1, -1), 6),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 6),
-            ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ])
-    )
-    flowables.append(scorecard_table)
-    flowables.append(Spacer(1, 8))
-
-    # 4. Crown Jewel & Inverse Case Callout Cards
-    crown_jewel_text = analysis.thesis if analysis.thesis else f"Defensible positioning in {candidate.industry or 'market'}."
-    crown_card_data = [
-        [
-            Paragraph('<font color="#2563EB"><b>💎 CROWN JEWEL ASSET</b></font>', style_card_title),
-        ],
-        [
-            Paragraph(_transform_citations_for_pdf(crown_jewel_text, ev_map), style_card_body),
-        ],
-    ]
-    crown_table = Table(crown_card_data, colWidths=[540])
-    crown_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), COLOR_COBALT_LIGHT),
-            ("BOX", (0, 0), (-1, -1), 0.5, COLOR_COBALT),
-            ("LINEBEFORE", (0, 0), (0, -1), 3.0, COLOR_COBALT),
-            ("TOPPADDING", (0, 0), (-1, -1), 5),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-            ("LEFTPADDING", (0, 0), (-1, -1), 10),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ])
-    )
-    flowables.append(crown_table)
-    flowables.append(Spacer(1, 6))
-
-    inverse_text = analysis.risks[0] if analysis.risks else "Potential downside from market saturation and execution friction."
-    inverse_card_data = [
-        [
-            Paragraph('<font color="#DC2626"><b>⚠️ THE INVERSE CASE (Failure Mode & Tripwires)</b></font>', style_card_title),
-        ],
-        [
-            Paragraph(_transform_citations_for_pdf(inverse_text, ev_map), style_card_body),
-        ],
-    ]
-    inverse_table = Table(inverse_card_data, colWidths=[540])
-    inverse_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), COLOR_ROSE_LIGHT),
-            ("BOX", (0, 0), (-1, -1), 0.5, COLOR_ROSE),
-            ("LINEBEFORE", (0, 0), (0, -1), 3.0, COLOR_ROSE),
-            ("TOPPADDING", (0, 0), (-1, -1), 5),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-            ("LEFTPADDING", (0, 0), (-1, -1), 10),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ])
-    )
-    flowables.append(inverse_table)
-    flowables.append(Spacer(1, 8))
-
-    # 5. Narrative Sections with Multi-Paragraph Support
-    flowables.append(Paragraph("1. Executive Summary & Investment Thesis", style_h1))
-    _add_narrative_flowables(flowables, analysis.summary, ev_map, style_body, style_bullet, style_h2)
-
-    flowables.append(Paragraph("Investment Thesis", style_h2))
-    _add_narrative_flowables(flowables, analysis.thesis, ev_map, style_body, style_bullet, style_h2)
-
-    flowables.append(Paragraph("2. Team & Founder Capability", style_h1))
-    _add_narrative_flowables(flowables, analysis.team, ev_map, style_body, style_bullet, style_h2)
-
-    flowables.append(Paragraph("3. Product Architecture & TRL", style_h1))
-    _add_narrative_flowables(flowables, analysis.product, ev_map, style_body, style_bullet, style_h2)
-
-    flowables.append(Paragraph("4. Market Dynamics & Why Now", style_h1))
-    _add_narrative_flowables(flowables, analysis.market, ev_map, style_body, style_bullet, style_h2)
-
-    flowables.append(Paragraph("Why Now Catalyst", style_h2))
-    _add_narrative_flowables(flowables, analysis.why_now, ev_map, style_body, style_bullet, style_h2)
-
-    # 6. Financials Grid with Full-Width Pricing Span
-    flowables.append(Paragraph("5. Financials & Unit Economics", style_h1))
-    financial_data = [
-        [
-            Paragraph("<b>Revenue / ARR:</b> " + _transform_citations_for_pdf(analysis.financials.revenue or "Undisclosed", ev_map), style_body),
-            Paragraph("<b>Burn Rate:</b> " + _transform_citations_for_pdf(analysis.financials.burn or "Undisclosed", ev_map), style_body),
-        ],
-        [
-            Paragraph("<b>Runway:</b> " + _transform_citations_for_pdf(analysis.financials.runway or "Undisclosed", ev_map), style_body),
-            Paragraph("<b>Total Funding:</b> " + _transform_citations_for_pdf(analysis.financials.funding or "Undisclosed", ev_map), style_body),
-        ],
-        [
-            Paragraph("<b>Pricing Model & Tiers:</b> " + _transform_citations_for_pdf(analysis.financials.pricing or "Undisclosed", ev_map), style_body),
-            Paragraph("", style_body),
-        ],
-    ]
-    fin_table = Table(financial_data, colWidths=[270, 270])
-    fin_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), COLOR_SLATE_LIGHT),
-            ("SPAN", (0, 2), (1, 2)),
-            ("BOX", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("TOPPADDING", (0, 0), (-1, -1), 4),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-            ("LEFTPADDING", (0, 0), (-1, -1), 8),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-            ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ])
-    )
-    flowables.append(fin_table)
-
-    # 7. Risks & Questions
-    flowables.append(Paragraph("6. Critical Risks & Diligence Questions", style_h1))
-    flowables.append(Paragraph("Key Risks & Tripwires", style_h2))
-    for r in analysis.risks:
-        flowables.append(Paragraph(f"• {_transform_citations_for_pdf(r, ev_map)}", style_bullet))
-
-    if analysis.open_questions:
-        flowables.append(Paragraph("Open Diligence Questions", style_h2))
-        for q in analysis.open_questions:
-            flowables.append(Paragraph(f"• {_transform_citations_for_pdf(q, ev_map)}", style_bullet))
-
-    # 8. Triggers
-    flowables.append(Paragraph('7. Triggers ("What Would Change Our Mind")', style_h1))
-    for c in analysis.changes_mind:
-        flowables.append(Paragraph(f"• {_transform_citations_for_pdf(c, ev_map)}", style_bullet))
-
-    # 9. Auditable Sources Table
-    flowables.append(Spacer(1, 10))
-    flowables.append(Paragraph("8. Auditable Sources & References", style_h1))
-
-    sources_data = [
-        [
-            Paragraph('<font color="#FFFFFF"><b>#</b></font>', style_source_text),
-            Paragraph('<font color="#FFFFFF"><b>Trust Tag</b></font>', style_source_text),
-            Paragraph('<font color="#FFFFFF"><b>Source & Publisher</b></font>', style_source_text),
-            Paragraph('<font color="#FFFFFF"><b>Category</b></font>', style_source_text),
-            Paragraph('<font color="#FFFFFF"><b>Key Excerpt</b></font>', style_source_text),
-        ]
-    ]
-
-    for idx, item in enumerate(evidence, start=1):
+    sources_data = [[
+        Paragraph('<font color="#FFFFFF"><b>#</b></font>', small),
+        Paragraph('<font color="#FFFFFF"><b>TRUST</b></font>', small),
+        Paragraph('<font color="#FFFFFF"><b>SOURCE</b></font>', small),
+        Paragraph('<font color="#FFFFFF"><b>SUPPORTING EVIDENCE</b></font>', small),
+    ]]
+    for idx, item in enumerate(evidence[:3], start=1):
         if item.status == CitationTag.VERIFIED:
-            tag_color = "#059669"
-            tag_label = "VERIFIED"
+            tag_color, tag_text = "#059669", "VERIFIED"
         elif item.status == CitationTag.TRUSTED:
-            tag_color = "#2563EB"
-            tag_label = "TRUSTED"
+            tag_color, tag_text = "#2563EB", "TRUSTED"
         else:
-            tag_color = "#D97706"
-            tag_label = "CLAIMED"
-
-        num_para = Paragraph(f'<font color="#2563EB"><b>[{idx}]</b></font>', style_source_text)
-        tag_para = Paragraph(f'<font color="{tag_color}"><b>{tag_label}</b></font>', style_source_text)
-
-        raw_title = item.source_title.strip() or item.claim.strip() or f"Source {idx}"
-        clean_title = re.sub(r"\s*[↗&#8599;]+\s*$", "", raw_title).strip()
-        source_title_clean = _clean_for_xml(clean_title)
-        if item.source_url and item.source_url.startswith(("http://", "https://")):
-            url_clean = html.escape(item.source_url)
-            link_para = Paragraph(f'<a href="{url_clean}" color="#2563EB"><b>{source_title_clean} &#8599;</b></a>', style_source_text)
-        else:
-            link_para = Paragraph(f"<b>{source_title_clean}</b>", style_source_text)
-
-        category = _clean_for_xml(_format_source_category(item, candidate))
-        category_para = Paragraph(f"<b>{category}</b>", style_source_text)
-
-        snippet_clean = _clean_for_xml(re.sub(r"\s+", " ", item.excerpt).strip())
-        if len(snippet_clean) > 220:
-            snippet_clean = snippet_clean[:217].rsplit(" ", 1)[0] + "..."
-        snippet_para = Paragraph(f'<i>"{snippet_clean}"</i>', style_source_text)
-
-        sources_data.append([num_para, tag_para, link_para, category_para, snippet_para])
-
-    sources_table = Table(sources_data, colWidths=[28, 56, 140, 96, 220])
-    sources_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_MID),
-            ("BOX", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("INNERGRID", (0, 0), (-1, -1), 0.5, COLOR_SLATE_BORDER),
-            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [COLOR_WHITE, COLOR_SLATE_LIGHT]),
-            ("TOPPADDING", (0, 0), (-1, -1), 3),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-            ("LEFTPADDING", (0, 0), (-1, -1), 4),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            tag_color, tag_text = "#D97706", "CLAIMED"
+        source_title = _clean_for_xml(capped(item.source_title or item.claim, 70))
+        if item.source_url.startswith(("http://", "https://")):
+            source_title = f'<a href="{html.escape(item.source_url)}" color="#2563EB"><b>{source_title}</b></a>'
+        support = f"{_format_source_category(item, candidate)}: {capped(item.excerpt, 145)}"
+        sources_data.append([
+            Paragraph(f'<font color="#2563EB"><b>[{idx}]</b></font>', small),
+            Paragraph(f'<font color="{tag_color}"><b>{tag_text}</b></font>', small),
+            Paragraph(source_title, small),
+            Paragraph(_clean_for_xml(support), small),
         ])
-    )
-    flowables.append(sources_table)
+    if len(sources_data) == 1:
+        sources_data.append([
+            Paragraph("-", small), Paragraph("N/A", small),
+            Paragraph("No cited sources", small), Paragraph("Evidence unavailable", small),
+        ])
+    sources = Table(sources_data, colWidths=[28, 58, 170, 284])
+    sources.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_MID),
+        ("BOX", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("INNERGRID", (0, 0), (-1, -1), .5, COLOR_SLATE_BORDER),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [COLOR_WHITE, COLOR_SLATE_LIGHT]),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 2.5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5),
+        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+    ]))
 
-    doc.build(flowables, canvasmaker=NumberedCanvas)
-    LOGGER.info("rendered pdf memo candidate=%s path=%s", candidate.slug, out_file)
+    content: list[Any] = []
+    for block in (banner, metadata, thesis, snapshot, dimensions, decisions):
+        content.extend([block, Spacer(1, 5)])
+    content.extend([Paragraph("TOP SOURCES", label), sources])
+    page = KeepInFrame(540, doc.height, content, mode="shrink")
+    doc.build([page], canvasmaker=NumberedCanvas)
+    LOGGER.info("rendered one-page pdf memo candidate=%s path=%s", candidate.slug, out_file)
     return out_file

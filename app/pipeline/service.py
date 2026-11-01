@@ -13,6 +13,7 @@ from app.analysis.diligence import DeepDiligenceAgent
 from app.analysis.providers import (
     create_bedrock_client,
     model_for,
+    model_name_for_artifact,
     screening_model_for,
     validate_provider_config,
 )
@@ -20,7 +21,7 @@ from app.analysis.service import screen_candidates, synthesize
 from app.core.errors import AppError
 from app.core.logging import bind_request_id, request_headers
 from app.domain.enums import AIProvider, AnalysisMode, Recommendation
-from app.domain.models import Analysis, Candidate, Evidence, RunSummary, ScreeningDecision
+from app.domain.models import RunSummary, ScreeningDecision
 from app.reporting.pdf import render_pdf_memo
 from app.sourcing.candidates import (
     discover_candidates,
@@ -61,6 +62,17 @@ def _emit(
             pass
 
 
+def _write_json(path: Path, value: Any) -> None:
+    """Write a JSON artifact atomically so interrupted runs do not leave partial files."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    temporary.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 class Pipeline:
     def __init__(
         self,
@@ -82,7 +94,6 @@ class Pipeline:
         limit: int | None,
         output: Path,
         source_file: Path | None = None,
-        offline: bool = False,
         request_id: str | None = None,
         provider: AIProvider = AIProvider.BEDROCK,
         screening_model: str | None = None,
@@ -93,23 +104,17 @@ class Pipeline:
         max_hops: int = 2,
     ) -> RunSummary:
         request_id = bind_request_id(request_id)
-        LOGGER.info("run started offline=%s deep_diligence=%s", offline, deep_diligence)
+        LOGGER.info("run started deep_diligence=%s", deep_diligence)
         if not topic.strip():
             raise AppError("topic cannot be empty", exit_code=2)
-        if offline:
-            output_resolved = output.resolve()
-            if (
-                (output_resolved / "candidates.json").is_file()
-                and (output_resolved / "analyses").is_dir()
-                and (output_resolved / "evidence").is_dir()
-            ):
-                return self.replay(
-                    output_resolved,
-                    progress_callback=progress_callback,
-                    request_id=request_id,
-                )
-            raise AppError("offline raw-data runs are unavailable in the LLM-only pipeline", exit_code=2)
-        validate_provider_config(provider, screening_model, synthesis_model)
+        validate_provider_config(
+            provider,
+            screening_model,
+            synthesis_model,
+            credentials_required=not (
+                provider == AIProvider.BEDROCK and self.bedrock_client is not None
+            ),
+        )
         resolved_screening_model = screening_model_for(provider, screening_model) or ""
         resolved_synthesis_model = model_for(provider, synthesis_model) or ""
         lookback_days = lookback_days_from_env()
@@ -117,6 +122,27 @@ class Pipeline:
         cutoff = effective_now - timedelta(days=lookback_days)
         output = output.resolve()
         output.mkdir(parents=True, exist_ok=True)
+        (output / "evidence").mkdir(exist_ok=True)
+        (output / "analyses").mkdir(exist_ok=True)
+        safe_screening_model = model_name_for_artifact(resolved_screening_model)
+        safe_synthesis_model = model_name_for_artifact(resolved_synthesis_model)
+        _write_json(
+            output / "input.json",
+            {
+                "topic": topic,
+                "batch": batch,
+                "limit": limit,
+                "source_file": source_file.name if source_file else None,
+                "provider": provider.value,
+                "screening_model": safe_screening_model,
+                "synthesis_model": safe_synthesis_model,
+                "lookback_days": lookback_days,
+                "cutoff": cutoff.isoformat(),
+                "deep_diligence": deep_diligence,
+                "max_hops": max_hops,
+                "request_id": request_id,
+            },
+        )
 
         _emit(
             progress_callback,
@@ -133,7 +159,6 @@ class Pipeline:
                 "max_hops": max_hops,
             },
         )
-
         _emit(
             progress_callback,
             "sourcing_start",
@@ -174,7 +199,12 @@ class Pipeline:
             )
             if not candidates:
                 raise AppError("Unable to load candidate startups from sourcing channels", exit_code=3)
-            source = YC_URL if (yc_records and not source_enabled("hacker_news") and not source_enabled("agent_reach")) else "Multi-Source (YC Directory, Hacker News, Agent Reach)"
+            source_names = ["YC Directory"] if yc_records else []
+            if source_enabled("hacker_news"):
+                source_names.append("Hacker News")
+            if source_enabled("agent_reach"):
+                source_names.append("Agent Reach / Exa")
+            source = " + ".join(source_names) or "enabled public sources"
 
         _emit(
             progress_callback,
@@ -185,13 +215,17 @@ class Pipeline:
                 "source": source,
             },
         )
+        _write_json(
+            output / "candidates.json",
+            [candidate.model_dump(mode="json") for candidate in candidates],
+        )
 
         bedrock_client = self.bedrock_client
         if provider == AIProvider.BEDROCK and candidates and bedrock_client is None:
             bedrock_client = create_bedrock_client()
 
         screenings: list[ScreeningDecision] = []
-        gaps: list[dict[str, str]] = []
+        gaps: list[dict[str, Any]] = []
         failed_slugs: set[str] = set()
         total_batches = (len(candidates) + SCREENING_BATCH_SIZE - 1) // SCREENING_BATCH_SIZE if candidates else 0
         _emit(
@@ -245,6 +279,10 @@ class Pipeline:
 
         candidate_by_slug = {candidate.slug: candidate for candidate in candidates}
         finalists = [candidate_by_slug[item.slug] for item in screenings if item.advance]
+        _write_json(
+            output / "screenings.json",
+            [decision.model_dump(mode="json") for decision in screenings],
+        )
         _emit(
             progress_callback,
             "screening_complete",
@@ -271,16 +309,24 @@ class Pipeline:
                 if deep_diligence:
                     agent = DeepDiligenceAgent(
                         max_hops=max_hops,
-                        offline=offline,
                         progress_callback=progress_callback,
                     )
                     dstate = agent.run(candidate, topic, initial_evidence=yc_ev)
                     evidence = dstate.evidence
+                    gaps.extend(
+                        {"candidate": candidate.slug, **gap.model_dump(mode="json")}
+                        for gap in dstate.gaps
+                    )
                     reach_ev_count = len(evidence) - len(yc_ev)
                 else:
                     reach_ev = agent_reach_evidence(candidate, topic, len(yc_ev) + 1)
                     evidence = yc_ev + reach_ev
                     reach_ev_count = len(reach_ev)
+
+                _write_json(
+                    output / "evidence" / f"{candidate.slug}.json",
+                    [item.model_dump(mode="json") for item in evidence],
+                )
 
                 _emit(
                     progress_callback,
@@ -310,6 +356,10 @@ class Pipeline:
                     provider=provider,
                     model=resolved_synthesis_model,
                     bedrock_client=bedrock_client,
+                )
+                _write_json(
+                    output / "analyses" / f"{candidate.slug}.json",
+                    result.model_dump(mode="json"),
                 )
                 modes.add(result.analysis_mode)
                 pdf_file = output / f"{candidate.slug}.pdf"
@@ -371,135 +421,34 @@ class Pipeline:
             succeeded=succeeded,
             failed=len(failed_slugs),
         )
+        _write_json(output / "shortlist.json", shortlist)
+        _write_json(output / "gaps.json", gaps)
+        _write_json(
+            output / "manifest.json",
+            {
+                "run_id": run_id,
+                "request_id": request_id,
+                "topic": topic,
+                "provider": provider.value,
+                "screening_model": safe_screening_model,
+                "synthesis_model": safe_synthesis_model,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "summary": summary.model_dump(mode="json"),
+                "artifacts": {
+                    "input": "input.json",
+                    "candidates": "candidates.json",
+                    "screenings": "screenings.json",
+                    "evidence": "evidence/",
+                    "analyses": "analyses/",
+                    "shortlist": "shortlist.json",
+                    "gaps": "gaps.json",
+                },
+            },
+        )
         LOGGER.info(
             "run completed candidates=%d screened=%d finalists=%d succeeded=%d failed=%d",
             summary.candidates,
             summary.screened,
-            summary.finalists,
-            summary.succeeded,
-            summary.failed,
-        )
-        return summary
-
-    def replay(
-        self,
-        run_dir: Path,
-        *,
-        progress_callback: Callable[[str, dict[str, Any]], None] | None = None,
-        request_id: str | None = None,
-    ) -> RunSummary:
-        """Re-generate PDF investment memos from stored run artifacts."""
-        run_dir = run_dir.resolve()
-        if not run_dir.is_dir():
-            raise AppError(f"run directory not found: {run_dir}", exit_code=2)
-
-        candidates_file = run_dir / "candidates.json"
-        analyses_dir = run_dir / "analyses"
-        evidence_dir = run_dir / "evidence"
-
-        if not candidates_file.is_file():
-            raise AppError(f"missing candidates.json in {run_dir}", exit_code=2)
-        if not analyses_dir.is_dir():
-            raise AppError(f"missing analyses directory in {run_dir}", exit_code=2)
-        if not evidence_dir.is_dir():
-            raise AppError(f"missing evidence directory in {run_dir}", exit_code=2)
-
-        try:
-            candidates_data = json.loads(candidates_file.read_text(encoding="utf-8"))
-            candidates = [Candidate.model_validate(c) for c in candidates_data]
-        except Exception as error:
-            raise AppError(f"failed to load candidates.json: {error}", exit_code=3) from error
-
-        candidate_by_slug = {c.slug: c for c in candidates}
-        analysis_files = sorted(analyses_dir.glob("*.json"))
-        if not analysis_files:
-            raise AppError(f"no analysis files found in {analyses_dir}", exit_code=2)
-
-        _emit(
-            progress_callback,
-            "replay_header",
-            {
-                "run_dir": str(run_dir),
-                "total_analyses": len(analysis_files),
-            },
-        )
-
-        succeeded = 0
-        failed = 0
-        selected = 0
-        shortlist: list[dict[str, object]] = []
-
-        for analysis_file in analysis_files:
-            slug = analysis_file.stem
-            candidate = candidate_by_slug.get(slug)
-            if not candidate:
-                LOGGER.warning("candidate with slug %s not found in candidates.json, skipping", slug)
-                failed += 1
-                continue
-
-            evidence_file = evidence_dir / f"{slug}.json"
-            if not evidence_file.is_file():
-                LOGGER.warning("evidence file %s not found, skipping", evidence_file)
-                failed += 1
-                continue
-
-            try:
-                analysis_data = json.loads(analysis_file.read_text(encoding="utf-8"))
-                analysis = Analysis.model_validate(analysis_data)
-                evidence_data = json.loads(evidence_file.read_text(encoding="utf-8"))
-                evidence = [Evidence.model_validate(e) for e in evidence_data]
-
-                # Render PDF memo directly to run_dir / f"{slug}.pdf"
-                pdf_path = run_dir / f"{slug}.pdf"
-                render_pdf_memo(candidate, analysis, evidence, pdf_path)
-
-                if analysis.recommendation != Recommendation.PASS:
-                    selected += 1
-                    shortlist.append(
-                        {
-                            "slug": candidate.slug,
-                            "score": analysis.score,
-                            "confidence": analysis.confidence,
-                            "recommendation": analysis.recommendation,
-                        }
-                    )
-
-                succeeded += 1
-                _emit(
-                    progress_callback,
-                    "finalist_success",
-                    {
-                        "name": candidate.name,
-                        "slug": candidate.slug,
-                        "decision": analysis.recommendation.value,
-                        "score": analysis.score,
-                        "confidence": analysis.confidence,
-                        "pdf_memo_path": str(pdf_path),
-                    },
-                )
-            except Exception as error:
-                failed += 1
-                LOGGER.warning("failed to replay memo for %s: %s", slug, error)
-
-        _emit(progress_callback, "summary_table", {})
-
-        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        req_id = request_id or "replay"
-
-        summary = RunSummary(
-            run_id=run_id,
-            request_id=req_id,
-            output=str(run_dir),
-            candidates=len(candidates),
-            screened=len(candidates),
-            finalists=len(analysis_files),
-            selected=selected,
-            succeeded=succeeded,
-            failed=failed,
-        )
-        LOGGER.info(
-            "replay completed candidates=%d finalists=%d succeeded=%d failed=%d",
-            summary.candidates,
             summary.finalists,
             summary.succeeded,
             summary.failed,

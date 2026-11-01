@@ -420,12 +420,6 @@ def test_console_reporter_deep_diligence_events(capsys) -> None:
         "pillar": "Unit Economics",
         "status": "claimed",
     })
-    reporter("diligence_offline_complete", {
-        "candidate": "Nexus AI",
-        "slug": "nexus-ai",
-        "evidence_count": 1,
-        "gaps_count": 4,
-    })
     reporter("finalist_success", {
         "name": "Nexus AI",
         "slug": "nexus-ai",
@@ -446,7 +440,6 @@ def test_console_reporter_deep_diligence_events(capsys) -> None:
     assert "[ev-005] [claimed] Nexus Pricing Page" in output
     assert "Diligence [Hop 1 Complete]: +2 new evidence (3 total) | Gaps: 2 resolved, 2 pending" in output
     assert "All 4-pillar information gaps resolved for Nexus AI in hop 2." in output
-    assert "Diligence (Offline): Evaluated 1 local evidence items for Nexus AI (4 gaps)." in output
     assert "PDF Memo:     /tmp/results/nexus-ai.pdf" in output
     assert "open /tmp/results/nexus-ai.pdf" in output
 
@@ -531,4 +524,3 @@ def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> N
     assert result.failed == 0
     assert (tmp_path / "run_dd" / "agentdesk.pdf").exists()
     assert (tmp_path / "run_dd" / "agentdesk.pdf").stat().st_size > 0
-

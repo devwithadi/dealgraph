@@ -26,8 +26,6 @@ class ConsoleReporter:
     def __call__(self, event: str, data: dict[str, Any]) -> None:
         if event == "header":
             self._print_header(data)
-        elif event == "replay_header":
-            self._print_replay_header(data)
         elif event == "sourcing_start":
             print(f"[Sourcing] Sourcing candidates from {data.get('source')}...")
         elif event == "sourcing_complete":
@@ -126,11 +124,6 @@ class ConsoleReporter:
             candidate = data.get("candidate", "")
             hop = data.get("hop", 1)
             print(f"  - Diligence: All 4-pillar information gaps resolved for {candidate} in hop {hop}.")
-        elif event == "diligence_offline_complete":
-            candidate = data.get("candidate", "")
-            ev_count = data.get("evidence_count", 0)
-            gaps = data.get("gaps_count", 0)
-            print(f"  - Diligence (Offline): Evaluated {ev_count} local evidence items for {candidate} ({gaps} gaps).")
         elif event == "finalist_synthesis_start":
             model = data.get("model", "")
             print(f"  - Synthesis: Generating investment memo with {model}...")
@@ -186,14 +179,6 @@ class ConsoleReporter:
         print(f"Screening Model: {data.get('screening_model')}")
         print(f"Synthesis Model: {data.get('synthesis_model')}")
         print(f"Output Directory: {data.get('output')}")
-        print(divider)
-
-    def _print_replay_header(self, data: dict[str, Any]) -> None:
-        divider = "=" * 80
-        print(divider)
-        print("DealGraph Replay Mode (Offline Re-generation)")
-        print(f"Run Directory: {data.get('run_dir')}")
-        print(f"Analyses to Replay: {data.get('total_analyses')}")
         print(divider)
 
     def print_summary_table(self) -> None:
