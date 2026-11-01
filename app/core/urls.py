@@ -1,11 +1,9 @@
-"""Shared public-network target validation."""
-
 import ipaddress
 import socket
 from typing import Callable, Collection
 from urllib.parse import urlsplit
 
-from dealgraph.core.errors import AppError
+from app.core.errors import AppError
 
 
 class PublicUrlError(AppError, ValueError):

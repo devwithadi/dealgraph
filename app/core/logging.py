@@ -1,5 +1,3 @@
-"""One request context for concise logs and outbound HTTP tracking."""
-
 from __future__ import annotations
 
 import logging
@@ -8,7 +6,7 @@ from contextvars import ContextVar
 from typing import Mapping
 from uuid import uuid4
 
-from dealgraph.core.errors import AppError
+from app.core.errors import AppError
 
 USER_AGENT = "DealGraph/0.1.0 (public research; contact in repository)"
 _request_id: ContextVar[str] = ContextVar("request_id", default="unbound")

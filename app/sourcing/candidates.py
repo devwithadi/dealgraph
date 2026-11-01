@@ -1,14 +1,14 @@
-"""Candidate loading, normalization, filtering, and ranking."""
-
 import json
+import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import urlsplit
 
-from dealgraph.domain.models import Candidate
-from dealgraph.sourcing.registry import YC_URL
+from app.domain.models import Candidate
+from app.core.errors import AppError
+from app.sourcing.registry import YC_URL
 
 
 def _batch_name(batch: str | None) -> str:
@@ -19,13 +19,15 @@ def _batch_name(batch: str | None) -> str:
     return value
 
 
-def _topic_tokens(topic: str) -> set[str]:
-    stop = {"and", "for", "from", "the", "with"}
-    return {
-        word.rstrip("s")
-        for word in re.findall(r"[a-z0-9]+", topic.lower())
-        if word not in stop and (len(word) > 2 or word == "ai")
-    }
+def lookback_days_from_env() -> int:
+    raw = os.getenv("DEALGRAPH_LOOKBACK_DAYS", "30")
+    try:
+        days = int(raw)
+    except ValueError as error:
+        raise AppError("DEALGRAPH_LOOKBACK_DAYS must be an integer from 1 to 3650", exit_code=2) from error
+    if not 1 <= days <= 3650:
+        raise AppError("DEALGRAPH_LOOKBACK_DAYS must be an integer from 1 to 3650", exit_code=2)
+    return days
 
 
 def _candidate(record: dict) -> Candidate:
@@ -46,13 +48,21 @@ def _candidate(record: dict) -> Candidate:
     )
 
 
-def filter_candidates(
-    records: Iterable[dict], topic: str, batch: str | None, limit: int
+def select_candidates(
+    records: Iterable[dict],
+    batch: str | None,
+    lookback_days: int,
+    *,
+    now: datetime | None = None,
+    limit: int | None = None,
 ) -> list[Candidate]:
-    if not 1 <= limit <= 20:
-        raise ValueError("limit must be between 1 and 20")
-    expected_batch, tokens = _batch_name(batch), _topic_tokens(topic)
-    ranked: list[tuple[int, Candidate]] = []
+    if lookback_days < 1:
+        raise ValueError("lookback_days must be positive")
+    if limit is not None and limit < 1:
+        raise ValueError("limit must be positive")
+    expected_batch = _batch_name(batch)
+    cutoff = (now or datetime.now(timezone.utc)) - timedelta(days=lookback_days)
+    selected: list[Candidate] = []
     seen: set[str] = set()
     for record in records:
         if str(record.get("status", "Active")).lower() != "active":
@@ -60,28 +70,29 @@ def filter_candidates(
         candidate = _candidate(record)
         if expected_batch and candidate.batch.lower() != expected_batch:
             continue
+        if candidate.launched_at is None or candidate.launched_at < cutoff:
+            continue
         domain = (urlsplit(candidate.website).hostname or candidate.slug).lower()
         if domain in seen:
             continue
-        haystack = " ".join(
-            [candidate.name, candidate.one_liner, candidate.description, *candidate.tags]
-        ).lower()
-        score = sum(token in haystack for token in tokens)
-        if tokens and not score:
-            continue
         seen.add(domain)
-        ranked.append((score, candidate))
-    ranked.sort(
-        key=lambda item: (
-            item[0],
-            item[1].launched_at or datetime.min.replace(tzinfo=timezone.utc),
-        ),
-        reverse=True,
-    )
-    return [candidate for _, candidate in ranked[:limit]]
+        selected.append(candidate)
+    selected.sort(key=lambda candidate: candidate.launched_at, reverse=True)
+    return selected[:limit]
 
 
 def load_candidates(
-    source_file: Path, topic: str, batch: str | None, limit: int
+    source_file: Path,
+    batch: str | None,
+    lookback_days: int,
+    *,
+    now: datetime | None = None,
+    limit: int | None = None,
 ) -> list[Candidate]:
-    return filter_candidates(json.loads(source_file.read_text()), topic, batch, limit)
+    return select_candidates(
+        json.loads(source_file.read_text()),
+        batch,
+        lookback_days,
+        now=now,
+        limit=limit,
+    )

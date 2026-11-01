@@ -1,5 +1,3 @@
-"""Expected application errors and the single CLI error boundary."""
-
 from __future__ import annotations
 
 import logging
