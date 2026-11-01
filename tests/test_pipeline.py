@@ -1,318 +1,168 @@
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
-import pytest
 
-from dealgraph.core.errors import AppError
-from dealgraph.core.logging import configure_logging
-from dealgraph.domain.enums import AIProvider, AnalysisMode
-from dealgraph.domain.models import Candidate
-from dealgraph.pipeline.service import Pipeline, _summarize_modes
-from dealgraph.sourcing.evidence import hn_evidence
-from dealgraph.sourcing.policy import SafeFetcher, SourcePolicyError
+from app.domain.enums import AIProvider, AnalysisMode
+from app.domain.models import Evidence
+from app.pipeline.service import Pipeline, _summarize_modes
+from app.sourcing.registry import YC_URL
 
 
-FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
+NOW = datetime(2026, 8, 23, tzinfo=timezone.utc)
 
 
-def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
+def record(slug: str = "agentdesk") -> dict:
+    return {
+        "id": slug,
+        "slug": slug,
+        "name": "AgentDesk",
+        "website": "https://agentdesk.example",
+        "one_liner": "AI agents that automate support workflows for SMBs",
+        "long_description": "Support automation platform",
+        "batch": "Summer 2026",
+        "status": "Active",
+        "launched_at": int(NOW.timestamp()),
+    }
+
+
+class BedrockClient:
+    def converse(self, **kwargs):
+        stage = kwargs["requestMetadata"]["stage"]
+        if stage == "screening":
+            payload = {
+                "decisions": [
+                    {
+                        "slug": "agentdesk",
+                        "advance": True,
+                        "fit_score": 85,
+                        "rationale": "Strong fit",
+                    }
+                ]
+            }
+        else:
+            payload = {
+                "summary": "Strong fit with evidence gaps. [ev-001]",
+                "team": "Unknown",
+                "product": "AI support automation. [ev-001]",
+                "market": "SMB support. [ev-001]",
+                "why_now": "AI adoption. [ev-001]",
+                "risks": ["Retention is unknown. [ev-001]"],
+                "open_questions": ["What is retention?"],
+                "changes_mind": ["Verified retention", "Customer references"],
+                "score": 71,
+                "confidence": 0.6,
+                "recommendation": "Watch",
+                "citations": ["ev-001", "ev-002"],
+            }
+        return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+
+
+def test_pipeline_runs_two_stage_flow_and_writes_auditable_artifacts(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source = tmp_path / "yc.json"
+    source.write_text(json.dumps([record()]), encoding="utf-8")
+
+    def research(candidate, _topic, _start):
+        return [
+            Evidence(
+                id="ev-002",
+                claim="Agent Reach result",
+                excerpt="A customer pilot was announced.",
+                source_url="https://news.example/agentdesk",
+                source_title="Customer pilot",
+                source_type="agent_reach",
+                trust_tier="open_web",
+                verification="third_party_search",
+            )
+        ]
+
+    monkeypatch.setattr("app.pipeline.service.agent_reach_evidence", research)
+    client = BedrockClient()
+    created: list[object] = []
+
+    def create_client():
+        created.append(client)
+        return client
+
+    monkeypatch.setattr("app.pipeline.service.create_bedrock_client", create_client)
+    result = Pipeline().run(
+        topic="AI agents for SMBs",
+        batch=None,
+        limit=None,
+        output=tmp_path / "run",
+        source_file=source,
+        request_id="req-pipeline",
+        now=NOW,
+    )
+
+    assert result.model_dump() | {"output": "ignored"} == {
+        "run_id": result.run_id,
+        "request_id": "req-pipeline",
+        "output": "ignored",
+        "candidates": 1,
+        "screened": 1,
+        "finalists": 1,
+        "selected": 1,
+        "succeeded": 1,
+        "failed": 0,
+    }
+    assert created == [client]
+    run = tmp_path / "run"
+    assert json.loads((run / "screenings.json").read_text())[0]["advance"] is True
+    assert json.loads((run / "shortlist.json").read_text())[0]["recommendation"] == "Watch"
+    manifest = json.loads((run / "manifest.json").read_text())
+    assert manifest["lookback_days"] == 30
+    assert manifest["selected"] == 1
+    assert manifest["screening_model"] == "amazon.nova-micro-v1:0"
+    assert manifest["synthesis_model"] == "amazon.nova-lite-v1:0"
+    assert manifest["screening_prompt_version"] == "screening-v5"
+    assert manifest["synthesis_prompt_version"] == "synthesis-v4"
+    assert manifest["evidence_sources"] == [YC_URL, "Agent Reach / Exa web search"]
+    memo = (run / "memos" / "agentdesk.md").read_text()
+    assert "**Decision:** Watch" in memo
+    assert "https://news.example/agentdesk" in memo
+
+
+def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypatch) -> None:
     requests: list[httpx.Request] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append(request)
-        if request.url.host == "agentdesk.example" and request.url.path == "/robots.txt":
-            return httpx.Response(200, text="User-agent: *\nAllow: /", request=request)
-        if request.url.host == "agentdesk.example":
-            return httpx.Response(
-                200,
-                text=(
-                    "<html><head><title>AgentDesk</title></head><body>"
-                    "<main><h1>Resolve 70% of support tickets</h1>"
-                    "<p>Plans start at $99 per month for small businesses.</p></main>"
-                    "</body></html>"
-                ),
-                headers={"content-type": "text/html"},
-                request=request,
+        return httpx.Response(200, json=[record()], request=request)
+
+    monkeypatch.setattr(
+        "app.pipeline.service.agent_reach_evidence",
+        lambda *_args: [
+            Evidence(
+                id="ev-002",
+                claim="Research",
+                excerpt="Evidence",
+                source_url="https://news.example",
+                source_title="News",
+                source_type="agent_reach",
+                trust_tier="open_web",
+                verification="third_party_search",
             )
-        if request.url.host == "hn.algolia.com":
-            return httpx.Response(
-                200,
-                json={
-                    "hits": [
-                        {
-                            "objectID": "42",
-                            "title": "Show HN: AgentDesk",
-                            "url": "https://agentdesk.example",
-                            "points": 83,
-                            "num_comments": 21,
-                            "created_at": "2025-02-01T00:00:00Z",
-                        }
-                    ]
-                },
-                request=request,
-            )
-        raise AssertionError(f"Unexpected request: {request.url}")
-
-    client = httpx.Client(transport=httpx.MockTransport(handler))
-
-    class BedrockClient:
-        def converse(self, **_kwargs):
-            narrative = {
-                "summary": "Summary",
-                "team": "Unknown",
-                "product": "AI support",
-                "market": "Customer support",
-                "why_now": "AI adoption",
-                "risks": ["Retention is unknown"],
-                "open_questions": ["What is retention?"],
-                "changes_mind": [
-                    "Verified retention",
-                    "Reference customers",
-                    "Defensible distribution",
-                ],
-                "citations": ["ev-001"],
-            }
-            return {
-                "output": {
-                    "message": {"content": [{"text": json.dumps(narrative)}]}
-                }
-            }
-
+        ],
+    )
     result = Pipeline(
-        client=client,
-        resolver=lambda _host: ["93.184.216.34"],
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
         bedrock_client=BedrockClient(),
     ).run(
-        topic="AI agents for SMBs",
-        batch="W25",
-        limit=1,
+        topic="AI",
+        batch=None,
+        limit=None,
         output=tmp_path,
-        source_file=FIXTURE,
-        request_id="req-pipeline-test",
+        now=NOW,
     )
 
     assert result.succeeded == 1
-    assert result.failed == 0
-    assert result.request_id == "req-pipeline-test"
-    assert requests
-    assert {request.headers["x-kong-request-id"] for request in requests} == {
-        "req-pipeline-test"
-    }
-    manifest = json.loads((tmp_path / "manifest.json").read_text())
-    assert manifest["request_id"] == "req-pipeline-test"
-    assert manifest["provider"] == "bedrock"
-    assert manifest["analysis_mode"] == "bedrock"
-    assert manifest["model"] == "amazon.nova-micro-v1:0"
-    assert (tmp_path / "evidence" / "agentdesk.json").exists()
-    assert (tmp_path / "analyses" / "agentdesk.json").exists()
-    analysis = json.loads((tmp_path / "analyses" / "agentdesk.json").read_text())
-    assert {"team", "product", "market", "why_now", "risks", "open_questions"} <= analysis.keys()
-    assert analysis["financials"]["revenue"] is None
-    assert 0 <= analysis["score"] <= 100
-    assert len(analysis["changes_mind"]) == 3
-    memo = (tmp_path / "memos" / "agentdesk.md").read_text()
-    assert "# AgentDesk — Investment Memo" in memo
-    assert "Pass\n" in memo or "Watch\n" in memo or "Take a meeting\n" in memo
-    assert "https://agentdesk.example" in memo
-    assert "ev-001" in next(line for line in memo.splitlines() if "Pain Roi" in line)
-
-
-def test_fetcher_revalidates_redirects_and_obeys_robots() -> None:
-    requested: list[str] = []
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        requested.append(str(request.url))
-        if request.url.path == "/robots.txt":
-            return httpx.Response(200, text="User-agent: *\nDisallow: /secret", request=request)
-        if request.url.path == "/redirect":
-            return httpx.Response(302, headers={"location": "http://127.0.0.1/private"}, request=request)
-        raise AssertionError(f"Page should not be fetched: {request.url}")
-
-    fetcher = SafeFetcher(
-        httpx.Client(transport=httpx.MockTransport(handler)),
-        resolver=lambda _host: ["93.184.216.34"],
-    )
-    with pytest.raises(SourcePolicyError, match="Non-public"):
-        fetcher.html("https://public.example/redirect")
-    with pytest.raises(SourcePolicyError, match="robots.txt"):
-        fetcher.html("https://public.example/secret")
-    assert not any(url.endswith("/private") or url.endswith("/secret") for url in requested)
-
-
-def test_offline_pipeline_never_uses_network(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "must-not-be-used")
-    monkeypatch.setattr(
-        "dealgraph.analysis.providers.boto3.client",
-        lambda *_args, **_kwargs: (_ for _ in ()).throw(
-            AssertionError("offline mode attempted AWS client creation")
-        ),
-    )
-
-    def fail_on_request(request: httpx.Request) -> httpx.Response:
-        raise AssertionError(f"offline mode attempted network: {request.url}")
-
-    result = Pipeline(client=httpx.Client(transport=httpx.MockTransport(fail_on_request))).run(
-        topic="AI agents for SMBs",
-        batch="W25",
-        limit=1,
-        output=tmp_path,
-        source_file=FIXTURE,
-        offline=True,
-    )
-    assert result.succeeded == 1
-    evidence = json.loads((tmp_path / "evidence" / "agentdesk.json").read_text())
-    assert evidence[0]["verification"] == "third_party"
-    analysis = json.loads((tmp_path / "analyses" / "agentdesk.json").read_text())
-    assert analysis["analysis_mode"] == "deterministic_fallback"
-    assert analysis["financials"] == {
-        "revenue": None,
-        "burn": None,
-        "runway": None,
-        "funding": None,
-        "pricing": None,
-        "evidence_ids": [],
-    }
-
-
-def test_offline_pipeline_requires_local_source_file(tmp_path: Path) -> None:
-    def fail_on_request(request: httpx.Request) -> httpx.Response:
-        raise AssertionError(f"offline mode attempted network: {request.url}")
-
-    with pytest.raises(AppError, match="source file"):
-        Pipeline(client=httpx.Client(transport=httpx.MockTransport(fail_on_request))).run(
-            topic="AI agents",
-            batch=None,
-            limit=1,
-            output=tmp_path,
-            offline=True,
-        )
-
-
-def test_selected_openai_rejects_invalid_base_before_network(
-    tmp_path: Path, monkeypatch
-) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "must-not-leak")
-    monkeypatch.setenv("OPENAI_BASE_URL", "https://127.0.0.1/v1")
-
-    with pytest.raises(AppError, match="OPENAI_BASE_URL"):
-        Pipeline().run(
-            topic="AI agents",
-            batch="W25",
-            limit=1,
-            output=tmp_path,
-            source_file=FIXTURE,
-            provider=AIProvider.OPENAI,
-        )
+    assert requests[0].url == YC_URL
+    assert requests[0].headers["x-kong-request-id"] == result.request_id
 
 
 def test_mixed_provider_results_are_reported_as_mixed() -> None:
-    assert _summarize_modes(
-        {AnalysisMode.BEDROCK, AnalysisMode.DETERMINISTIC_FALLBACK}
-    ) == AnalysisMode.MIXED
-
-
-def test_verbose_pipeline_logs_unexpected_candidate_traceback(
-    tmp_path: Path, monkeypatch, capsys
-) -> None:
-    monkeypatch.setattr(
-        "dealgraph.pipeline.service.render_memo",
-        lambda *_args: (_ for _ in ()).throw(RuntimeError("render broke")),
-    )
-    configure_logging(verbose=True)
-
-    result = Pipeline().run(
-        topic="AI agents for SMBs",
-        batch="W25",
-        limit=1,
-        output=tmp_path,
-        source_file=FIXTURE,
-        offline=True,
-        request_id="req-render-failure",
-    )
-
-    assert result.failed == 1
-    stderr = capsys.readouterr().err
-    assert "candidate failed stage=pipeline" in stderr
-    assert "Traceback" in stderr
-
-
-def test_hn_evidence_ignores_unrelated_hits() -> None:
-    candidate = Candidate(
-        slug="agentdesk",
-        name="AgentDesk",
-        website="https://agentdesk.example",
-        one_liner="AI agents for support teams",
-        source_url="https://www.ycombinator.com/companies/agentdesk",
-    )
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        assert request.url.host == "hn.algolia.com"
-        return httpx.Response(
-            200,
-            json={
-                "hits": [
-                    {
-                        "objectID": "999",
-                        "title": "Agent desk setup tips",
-                        "url": "https://other.example/post",
-                        "points": 999,
-                        "num_comments": 999,
-                        "created_at": "2026-08-01T00:00:00Z",
-                    },
-                    {
-                        "objectID": "42",
-                        "title": "Show HN: AgentDesk",
-                        "url": "https://agentdesk.example/blog/launch",
-                        "points": 12,
-                        "num_comments": 3,
-                        "created_at": "2026-08-02T00:00:00Z",
-                    },
-                ]
-            },
-            request=request,
-        )
-
-    evidence = hn_evidence(
-        candidate,
-        httpx.Client(transport=httpx.MockTransport(handler)),
-        evidence_id=2,
-    )
-
-    assert evidence[0].source_url == "https://news.ycombinator.com/item?id=42"
-
-
-def test_pipeline_fetches_yc_feed_when_source_file_is_omitted(tmp_path: Path) -> None:
-    with FIXTURE.open() as handle:
-        yc_payload = json.load(handle)
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        if request.url.host == "yc-oss.github.io":
-            return httpx.Response(200, json=yc_payload, request=request)
-        if request.url.host == "agentdesk.example" and request.url.path == "/robots.txt":
-            return httpx.Response(200, text="User-agent: *\nAllow: /", request=request)
-        if request.url.host == "agentdesk.example":
-            return httpx.Response(
-                200,
-                text="<html><head><title>AgentDesk</title></head><body>Support automation for SMBs</body></html>",
-                headers={"content-type": "text/html"},
-                request=request,
-            )
-        if request.url.host == "hn.algolia.com":
-            return httpx.Response(200, json={"hits": []}, request=request)
-        raise AssertionError(f"Unexpected request: {request.url}")
-
-    result = Pipeline(
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
-        resolver=lambda _host: ["93.184.216.34"],
-    ).run(
-        topic="AI agents for SMBs",
-        batch="W25",
-        limit=1,
-        output=tmp_path,
-        provider=AIProvider.DETERMINISTIC,
-    )
-
-    assert result.succeeded == 1
-    manifest = json.loads((tmp_path / "manifest.json").read_text())
-    assert manifest["candidate_source"] == "https://yc-oss.github.io/api/companies/all.json"
+    assert _summarize_modes({AnalysisMode.BEDROCK, AnalysisMode.OPENAI}) == AnalysisMode.MIXED

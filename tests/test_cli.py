@@ -1,160 +1,79 @@
-import subprocess
-import sys
+import json
 from pathlib import Path
 
-from dealgraph.cli.main import build_parser, main
-from dealgraph.core.errors import AppError
-from dealgraph.domain.enums import AIProvider
-from dealgraph.domain.models import RunSummary
+from app.cli.main import build_parser, main
+from app.core.errors import AppError
+from app.domain.enums import AIProvider
+from app.domain.models import RunSummary
 
 
-FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
-
-
-def test_cli_defaults_to_bedrock_and_allows_openai() -> None:
-    default = build_parser().parse_args(["run", "--topic", "AI"])
-    openai = build_parser().parse_args(
-        ["run", "--topic", "AI", "--provider", "openai"]
+def summary(tmp_path: Path, *, failed: int = 0) -> RunSummary:
+    return RunSummary(
+        run_id="run-1",
+        request_id="req-test",
+        output=str(tmp_path),
+        candidates=25,
+        screened=25,
+        finalists=3,
+        selected=2,
+        succeeded=3 - failed,
+        failed=failed,
     )
+
+
+def test_cli_defaults_to_bedrock_without_a_company_cap() -> None:
+    default = build_parser().parse_args(["run", "--topic", "AI"])
+    openai = build_parser().parse_args(["run", "--topic", "AI", "--provider", "openai"])
+    capped = build_parser().parse_args(["run", "--topic", "AI", "--limit", "50"])
 
     assert default.provider is AIProvider.BEDROCK
+    assert default.limit is None
     assert openai.provider is AIProvider.OPENAI
+    assert capped.limit == 50
 
 
-def test_cli_offline_replay_creates_memos(tmp_path: Path) -> None:
-    command = [
-        sys.executable,
-        "-m",
-        "dealgraph.cli.main",
-        "run",
-        "--topic",
-        "AI agents for SMBs",
-        "--batch",
-        "W25",
-        "--limit",
-        "1",
-        "--source-file",
-        str(FIXTURE),
-        "--offline",
-        "--output",
-        str(tmp_path),
-    ]
-    completed = subprocess.run(command, text=True, capture_output=True, check=False, timeout=15)
-    assert completed.returncode == 0, completed.stderr
-    lines = completed.stdout.splitlines()
-    assert lines[:2] == [
-        "Completed 1/1 companies.",
-        f"Memos: {(tmp_path / 'memos').resolve()}",
-    ]
-    assert len(lines) == 3
-    assert lines[2].startswith("Request ID: req-")
-    assert completed.stderr == ""
-    assert list((tmp_path / "memos").glob("*.md"))
+def test_cli_reports_screening_and_finalist_counts(monkeypatch, tmp_path: Path, capsys) -> None:
+    monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-test")
+    monkeypatch.setattr("app.cli.main.Pipeline.run", lambda *_args, **_kwargs: summary(tmp_path))
+
+    assert main(["run", "--topic", "AI"]) == 0
+    output = capsys.readouterr().out
+    assert "Screened 25/25 companies; created 3/3 finalist memos; selected 2." in output
+    assert f"Memos: {tmp_path / 'memos'}" in output
 
 
-def test_cli_main_emits_json_only_when_requested(tmp_path: Path, capsys) -> None:
-    exit_code = main(
-        [
-            "run",
-            "--topic",
-            "AI agents for SMBs",
-            "--batch",
-            "W25",
-            "--limit",
-            "1",
-            "--source-file",
-            str(FIXTURE),
-            "--offline",
-            "--output",
-            str(tmp_path),
-            "--json",
-        ]
-    )
+def test_cli_json_output_contains_stage_counts(monkeypatch, tmp_path: Path, capsys) -> None:
+    monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-test")
+    monkeypatch.setattr("app.cli.main.Pipeline.run", lambda *_args, **_kwargs: summary(tmp_path))
 
-    assert exit_code == 0
-    import json
-
-    summary = json.loads(capsys.readouterr().out)
-    assert summary["output"] == str(tmp_path.resolve())
-    assert summary["succeeded"] == 1
-    assert summary["request_id"].startswith("req-")
+    assert main(["run", "--topic", "AI", "--json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["screened"] == 25
+    assert payload["finalists"] == 3
 
 
 def test_cli_centralizes_expected_errors(monkeypatch, capsys) -> None:
-    monkeypatch.setattr("dealgraph.cli.main.new_request_id", lambda: "req-test")
+    monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-test")
 
     def fail(*_args, **_kwargs):
         raise AppError("candidate source unavailable", exit_code=3)
 
-    monkeypatch.setattr("dealgraph.cli.main.Pipeline.run", fail)
-    exit_code = main(["run", "--topic", "AI", "--offline"])
-
+    monkeypatch.setattr("app.cli.main.Pipeline.run", fail)
+    assert main(["run", "--topic", "AI"]) == 3
     captured = capsys.readouterr()
-    assert exit_code == 3
     assert captured.out == ""
     assert captured.err == "Error [req-test]: candidate source unavailable\n"
-    assert "Traceback" not in captured.err
-
-
-def test_verbose_cli_logs_lifecycle_to_stderr(tmp_path: Path, capsys) -> None:
-    exit_code = main(
-        [
-            "run",
-            "--topic",
-            "AI agents for SMBs",
-            "--batch",
-            "W25",
-            "--limit",
-            "1",
-            "--source-file",
-            str(FIXTURE),
-            "--offline",
-            "--output",
-            str(tmp_path),
-            "--request-id",
-            "req-readable",
-            "--verbose",
-        ]
-    )
-
-    captured = capsys.readouterr()
-    assert exit_code == 0
-    assert "INFO [req-readable] run started" in captured.err
-    assert "INFO [req-readable] run completed candidates=1 succeeded=1 failed=0" in captured.err
 
 
 def test_missing_source_file_uses_central_error_boundary(tmp_path: Path, capsys) -> None:
-    exit_code = main(
-        [
-            "run",
-            "--topic",
-            "AI agents",
-            "--source-file",
-            str(tmp_path / "missing.json"),
-            "--request-id",
-            "req-missing",
-        ]
-    )
-
+    missing = tmp_path / "missing.json"
+    assert main(["run", "--topic", "AI", "--source-file", str(missing), "--request-id", "req-missing"]) == 2
     captured = capsys.readouterr()
-    assert exit_code == 2
     assert captured.out == ""
-    assert captured.err == f"Error [req-missing]: source file not found: {tmp_path / 'missing.json'}\n"
+    assert captured.err == f"Error [req-missing]: source file not found: {missing}\n"
 
 
 def test_cli_returns_failure_when_any_candidate_fails(monkeypatch, tmp_path: Path, capsys) -> None:
-    monkeypatch.setattr("dealgraph.cli.main.new_request_id", lambda: "req-partial")
-    monkeypatch.setattr(
-        "dealgraph.cli.main.Pipeline.run",
-        lambda *_args, **_kwargs: RunSummary(
-            run_id="run-1",
-            request_id="req-partial",
-            output=str(tmp_path),
-            candidates=2,
-            succeeded=1,
-            failed=1,
-        ),
-    )
-
+    monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-test")
+    monkeypatch.setattr("app.cli.main.Pipeline.run", lambda *_args, **_kwargs: summary(tmp_path, failed=1))
     assert main(["run", "--topic", "AI"]) == 1
-    assert "Completed 1/2 companies." in capsys.readouterr().out
