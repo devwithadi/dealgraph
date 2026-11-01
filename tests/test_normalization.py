@@ -7,11 +7,11 @@ import httpx
 import pytest
 
 from app.analysis.service import (
+    _evidence_confidence,
     _normalize_changes_mind,
-    _normalize_confidence,
     synthesize,
 )
-from app.domain.enums import AIProvider, AnalysisMode, Recommendation
+from app.domain.enums import AIProvider, AnalysisMode, CitationTag, Recommendation
 from app.domain.models import Candidate, Evidence
 
 
@@ -41,6 +41,7 @@ def _evidence() -> list[Evidence]:
             source_type="yc_directory",
             trust_tier="canonical",
             verification="first_party",
+            status=CitationTag.VERIFIED,
         ),
         Evidence(
             id="ev-002",
@@ -55,30 +56,28 @@ def _evidence() -> list[Evidence]:
     ]
 
 
-def test_normalize_confidence() -> None:
-    # 0 to 1 float values
-    assert _normalize_confidence(0.85) == 0.85
-    assert _normalize_confidence(0.0) == 0.0
-    assert _normalize_confidence(1.0) == 1.0
+def test_evidence_confidence_is_deterministic_and_rewards_independent_coverage() -> None:
+    yc = _evidence()[0].model_copy(update={"status": CitationTag.VERIFIED})
+    company = _evidence()[1].model_copy(
+        update={
+            "source_url": "https://agentflow.example/pricing",
+            "source_type": "company_website",
+            "status": CitationTag.CLAIMED,
+        }
+    )
+    independent = _evidence()[1].model_copy(
+        update={
+            "source_url": "https://independent.example/review",
+            "source_type": "agent_reach",
+            "status": CitationTag.TRUSTED,
+        }
+    )
 
-    # Integer 0 to 100 percentages normalized to 0.0 - 1.0
-    assert _normalize_confidence(85) == 0.85
-    assert _normalize_confidence(100) == 1.0
-    assert _normalize_confidence(50) == 0.5
-
-    # Float > 1.0
-    assert _normalize_confidence(72.5) == 0.725
-
-    # String percentage
-    assert _normalize_confidence("85%") == 0.85
-    assert _normalize_confidence(" 0.90 ") == 0.90
-    assert _normalize_confidence("95") == 0.95
-
-    # Invalid / None fallback
-    assert _normalize_confidence(None) == 0.5
-    assert _normalize_confidence("invalid") == 0.5
-    assert _normalize_confidence(-10) == 0.0
-    assert _normalize_confidence(150) == 1.0
+    assert _evidence_confidence([yc, company]) == 0.6
+    assert _evidence_confidence([yc, company, independent]) == 1.0
+    assert _evidence_confidence([yc, company, independent]) == _evidence_confidence(
+        [yc, company, independent]
+    )
 
 
 def test_normalize_changes_mind() -> None:
@@ -154,7 +153,7 @@ def test_synthesize_preserves_thesis_and_recomputes_dimension_score() -> None:
         "AgentFlow owns the SMB workflow layer through embedded integrations [ev-001]."
     )
     assert analysis.score == 77.5
-    assert analysis.confidence == 0.85
+    assert analysis.confidence == 0.35
     assert analysis.recommendation == Recommendation.TAKE_A_MEETING
     assert [item["name"] for item in analysis.dimensions] == [
         "workflow_pain",

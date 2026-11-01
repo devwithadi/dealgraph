@@ -236,7 +236,7 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
 
-    # Test gpt-4o-mini (screening stage) -> max_completion_tokens, temperature 0.1, no reasoning_effort
+    # Supported non-reasoning models use deterministic sampling.
     model_json(
         "screening prompt",
         provider=AIProvider.OPENAI,
@@ -249,10 +249,10 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
     assert mini_req["model"] == "gpt-4o-mini"
     assert mini_req["max_completion_tokens"] == 600
     assert "max_tokens" not in mini_req
-    assert mini_req["temperature"] == 0.1
+    assert mini_req["temperature"] == 0
     assert "reasoning_effort" not in mini_req
 
-    # Test gpt-4.1 -> max_completion_tokens, temperature 0.1, no reasoning_effort
+    # Synthesis uses the same deterministic setting.
     model_json(
         "synthesis prompt",
         provider=AIProvider.OPENAI,
@@ -264,7 +264,7 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
     synth_req = captured_payloads[-1]
     assert synth_req["model"] == "gpt-4.1"
     assert synth_req["max_completion_tokens"] == 1500
-    assert synth_req["temperature"] == 0.1
+    assert synth_req["temperature"] == 0
     assert "reasoning_effort" not in synth_req
 
     # Test o1 (reasoning model) -> max_completion_tokens, reasoning_effort "low", no temperature
