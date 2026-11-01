@@ -136,6 +136,33 @@ DealGraph was rigorously benchmarked across 6 distinct foundation models spannin
 - **Meta Llama 3.3 70B:** Demonstrates deep adversarial reasoning. The "Inverse Case" and "Pre-Mortem" sections written by Llama 3.3 consistently uncover nuanced distribution and churn bottlenecks.
 - **Anthropic Claude 3.5 Sonnet:** The undisputed benchmark for nuanced venture capital prose. Exhibits flawless evidence citation discipline, zero hallucinated financials, and sharp, opinionated conviction scoring.
 
+### 3.3 OpenAI Codenames, Model Aliases & Reasoning Gateway
+
+DealGraph provides native alias resolution and parameter dispatch across OpenAI models and internal codenames via `MODEL_ALIASES` and `is_reasoning_model`:
+
+| Alias / Codename | Resolved Model ID | Category / Architecture | Reasoning Effort | Parameter Policy |
+|---|---|---|---|---|
+| `luna` | `gpt-5-luna` | Fast Screening / Frontier | N/A | `temperature=0.1`, `max_completion_tokens` |
+| `terra` | `gpt-5-terra` | Frontier Reasoning | `low` (configurable) | `reasoning_effort`, no temperature |
+| `sol` | `gpt-5-sol` | General Synthesis | N/A | `temperature=0.1`, `max_completion_tokens` |
+| `strawberry` | `o1` | Deep Reasoning | `low` (configurable) | `reasoning_effort`, no temperature |
+| `o3-mini` | `o3-mini` | High-Speed Reasoning | `low` (configurable) | `reasoning_effort`, no temperature |
+| `o1` | `o1` | Deep Reasoning | `low` (configurable) | `reasoning_effort`, no temperature |
+| `o1-mini` | `o1-mini` | Lightweight Reasoning | `low` (configurable) | `reasoning_effort`, no temperature |
+| `orion` | `gpt-4.5-preview` | Frontier Knowledge | N/A | `temperature=0.1`, `max_completion_tokens` |
+| `gpt-4.5` | `gpt-4.5-preview` | Frontier Knowledge | N/A | `temperature=0.1`, `max_completion_tokens` |
+| `gpt-4o` | `gpt-4o` | Multimodal Frontier | N/A | `temperature=0.1`, `max_completion_tokens` |
+| `gpt-4o-mini` | `gpt-4o-mini` | Lightweight Screening | N/A | `temperature=0.1`, `max_completion_tokens` |
+
+#### Reasoning Model Detection & Parameter Routing
+1. **Detection Gate (`is_reasoning_model`):**
+   - Automatically identifies reasoning models: `terra`, `gpt-5-terra`, `o1`, `o1-mini`, `o3`, `o3-mini`, `strawberry`, and `deepseek-reasoner`.
+2. **Dynamic Reasoning Effort:**
+   - Reasoning models receive `reasoning_effort="low"` by default (or the custom value configured in `OPENAI_REASONING_EFFORT`).
+   - Temperature parameters are automatically omitted for reasoning models to comply with strict provider API schemas.
+3. **Token Parameter Modernization:**
+   - Newer OpenAI models (`gpt-5*`, `gpt-4.5*`, `gpt-4o*`, `o1*`, `o3*`, `luna`, `terra`, `sol`, `strawberry`, `orion`) route tokens via `max_completion_tokens` instead of legacy `max_tokens`.
+
 ---
 
 ## 4. Failure Modes & Defensive Engineering

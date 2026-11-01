@@ -8,6 +8,7 @@ from app.analysis.providers import (
     DEFAULT_BEDROCK_SCREENING_MODEL,
     DEFAULT_OPENAI_MODEL,
     DEFAULT_OPENAI_SCREENING_MODEL,
+    is_reasoning_model,
     model_for,
     resolve_model_id,
     screening_model_for,
@@ -169,14 +170,68 @@ def test_bedrock_json_error_handling() -> None:
         )
 
 
-def test_openai_model_aliases_luna_and_terra() -> None:
-    assert resolve_model_id("luna", DEFAULT_OPENAI_SCREENING_MODEL) == "gpt-5-luna"
-    assert resolve_model_id("LUNA", DEFAULT_OPENAI_SCREENING_MODEL) == "gpt-5-luna"
-    assert resolve_model_id("  luna  ", DEFAULT_OPENAI_SCREENING_MODEL) == "gpt-5-luna"
+def test_openai_model_aliases_all() -> None:
+    expected_openai_mappings = {
+        "luna": "gpt-5-luna",
+        "terra": "gpt-5-terra",
+        "sol": "gpt-5-sol",
+        "strawberry": "o1",
+        "o3-mini": "o3-mini",
+        "o1": "o1",
+        "o1-mini": "o1-mini",
+        "orion": "gpt-4.5-preview",
+        "gpt-4.5": "gpt-4.5-preview",
+        "gpt-4o": "gpt-4o",
+        "gpt-4o-mini": "gpt-4o-mini",
+    }
+    for alias, expected_target in expected_openai_mappings.items():
+        assert resolve_model_id(alias, DEFAULT_OPENAI_MODEL) == expected_target
+        assert resolve_model_id(alias.upper(), DEFAULT_OPENAI_MODEL) == expected_target
+        assert resolve_model_id(f"  {alias}  ", DEFAULT_OPENAI_MODEL) == expected_target
 
-    assert resolve_model_id("terra", DEFAULT_OPENAI_MODEL) == "gpt-5-terra"
-    assert resolve_model_id("TERRA", DEFAULT_OPENAI_MODEL) == "gpt-5-terra"
-    assert resolve_model_id("  terra  ", DEFAULT_OPENAI_MODEL) == "gpt-5-terra"
+
+def test_is_reasoning_model_detection() -> None:
+    reasoning_cases = [
+        "terra",
+        "TERRA",
+        "gpt-5-terra",
+        "o1",
+        "o1-mini",
+        "o1-preview",
+        "o3",
+        "o3-mini",
+        "strawberry",
+        "STRAWBERRY",
+        "deepseek-reasoner",
+        "deepseek-r1",
+        "openai/o1",
+        "openai/o3-mini",
+        "openai/gpt-5-terra",
+    ]
+    for model in reasoning_cases:
+        assert is_reasoning_model(model) is True
+
+    non_reasoning_cases = [
+        "luna",
+        "gpt-5-luna",
+        "sol",
+        "gpt-5-sol",
+        "orion",
+        "gpt-4.5-preview",
+        "gpt-4.5",
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "deepseek-chat",
+        "deepseek-v3",
+        "amazon.nova-lite-v1:0",
+        "amazon.nova-pro-v1:0",
+        "claude-3.5-sonnet",
+        "qwen-turbo",
+    ]
+    for model in non_reasoning_cases:
+        assert is_reasoning_model(model) is False
 
 
 def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None:
@@ -217,6 +272,21 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
     assert luna_req["temperature"] == 0.1
     assert "reasoning_effort" not in luna_req
 
+    # Test sol -> max_completion_tokens, temperature 0.1, no reasoning_effort
+    model_json(
+        "synthesis prompt",
+        provider=AIProvider.OPENAI,
+        model=resolve_model_id("sol", DEFAULT_OPENAI_MODEL),
+        max_tokens=1500,
+        stage="synthesis",
+        client=client,
+    )
+    sol_req = captured_payloads[-1]
+    assert sol_req["model"] == "gpt-5-sol"
+    assert sol_req["max_completion_tokens"] == 1500
+    assert sol_req["temperature"] == 0.1
+    assert "reasoning_effort" not in sol_req
+
     # Test terra (synthesis stage) -> max_completion_tokens, reasoning_effort "low", no temperature
     model_json(
         "synthesis prompt",
@@ -232,6 +302,36 @@ def test_openai_payload_reasoning_effort_and_token_handling(monkeypatch) -> None
     assert "max_tokens" not in terra_req
     assert terra_req["reasoning_effort"] == "low"
     assert "temperature" not in terra_req
+
+    # Test strawberry (reasoning model) -> mapped to o1, reasoning_effort "low", no temperature
+    model_json(
+        "reasoning prompt",
+        provider=AIProvider.OPENAI,
+        model=resolve_model_id("strawberry", DEFAULT_OPENAI_MODEL),
+        max_tokens=3000,
+        stage="synthesis",
+        client=client,
+    )
+    strawberry_req = captured_payloads[-1]
+    assert strawberry_req["model"] == "o1"
+    assert strawberry_req["max_completion_tokens"] == 3000
+    assert strawberry_req["reasoning_effort"] == "low"
+    assert "temperature" not in strawberry_req
+
+    # Test orion -> mapped to gpt-4.5-preview, max_completion_tokens, temperature 0.1, no reasoning_effort
+    model_json(
+        "synthesis prompt",
+        provider=AIProvider.OPENAI,
+        model=resolve_model_id("orion", DEFAULT_OPENAI_MODEL),
+        max_tokens=2000,
+        stage="synthesis",
+        client=client,
+    )
+    orion_req = captured_payloads[-1]
+    assert orion_req["model"] == "gpt-4.5-preview"
+    assert orion_req["max_completion_tokens"] == 2000
+    assert orion_req["temperature"] == 0.1
+    assert "reasoning_effort" not in orion_req
 
     # Test o3-mini (reasoning model) with custom OPENAI_REASONING_EFFORT
     monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
