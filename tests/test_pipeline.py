@@ -116,8 +116,8 @@ def test_pipeline_runs_two_stage_flow_and_writes_auditable_artifacts(
     manifest = json.loads((run / "manifest.json").read_text())
     assert manifest["lookback_days"] == 30
     assert manifest["selected"] == 1
-    assert manifest["screening_model"] == "amazon.nova-micro-v1:0"
-    assert manifest["synthesis_model"] == "amazon.nova-lite-v1:0"
+    assert manifest["screening_model"] == "amazon.nova-lite-v1:0"
+    assert manifest["synthesis_model"] == "amazon.nova-pro-v1:0"
     assert manifest["screening_prompt_version"] == "screening-v5"
     assert manifest["synthesis_prompt_version"] == "synthesis-v4"
     assert manifest["evidence_sources"] == [YC_URL, "Agent Reach / Exa web search"]

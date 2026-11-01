@@ -19,6 +19,13 @@ PILLAR_KEYWORDS: dict[str, list[str]] = {
         "pilot",
         "sales",
         "pipeline",
+        "founder",
+        "ceo",
+        "cto",
+        "exit",
+        "background",
+        "sentiment",
+        "review",
     ],
     DiligencePillar.UNIT_ECONOMICS.value: [
         "pricing",
@@ -50,6 +57,7 @@ PILLAR_KEYWORDS: dict[str, list[str]] = {
         "stack",
         "benchmark",
         "llm",
+        "integration",
     ],
     DiligencePillar.RISK_ESG.value: [
         "risk",
@@ -63,7 +71,9 @@ PILLAR_KEYWORDS: dict[str, list[str]] = {
         "vulnerability",
         "challenge",
         "gdpr",
+        "soc2",
         "legal",
+        "security",
     ],
 }
 

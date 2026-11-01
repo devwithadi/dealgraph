@@ -29,7 +29,12 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--output", type=Path, default=Path("data/runs/latest"))
     run.add_argument("--source-file", type=Path)
     run.add_argument("--offline", action="store_true", help="replay source data without web enrichment")
-    run.add_argument("--deep-diligence", action="store_true", help="enable multi-hop 4-pillar deep diligence research")
+    run.add_argument(
+        "--deep-diligence",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="enable multi-hop 4-pillar deep diligence research (default: enabled, use --no-deep-diligence to opt out)",
+    )
     run.add_argument("--max-hops", type=_positive_int, default=2, help="maximum research hops for deep diligence (default: 2)")
     run.add_argument("--json", action="store_true", help="print the machine-readable run summary")
     run.add_argument("--verbose", action="store_true", help="show operational logs on stderr")
@@ -102,13 +107,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(result.model_dump(), indent=2))
     else:
+        memos_dir = Path(result.output) / "memos"
         print(
             f"Screened {result.screened}/{result.candidates} companies; "
             f"created {result.succeeded}/{result.finalists} finalist memos; "
             f"selected {result.selected}."
         )
-        print(f"Memos: {Path(result.output) / 'memos'}")
+        print(f"Memos: {memos_dir}")
         print(f"Request ID: {result.request_id}")
+        if result.succeeded > 0:
+            print(f"\nTo open generated PDF investment memos:")
+            print(f"  open {memos_dir}/*.pdf")
     return 0 if result.failed == 0 else 1
 
 

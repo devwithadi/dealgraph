@@ -128,6 +128,55 @@ class DeepDiligenceAgent:
         current_gaps = list(initial_gaps)
         hop = 0
 
+        # Phase 1: Direct multi-page candidate website scraping
+        if candidate.website and candidate.website.strip():
+            subpages_list = ["/", "/pricing", "/about", "/product", "/docs", "/security"]
+            self._emit(
+                "diligence_scrape_start",
+                {
+                    "candidate": candidate.name,
+                    "slug": candidate.slug,
+                    "website": candidate.website.strip(),
+                    "subpages": subpages_list,
+                },
+            )
+
+            def _on_subpage_scraped(subpage: str, title: str, length: int) -> None:
+                self._emit(
+                    "diligence_scrape_page",
+                    {
+                        "candidate": candidate.name,
+                        "slug": candidate.slug,
+                        "subpage": subpage,
+                        "title": title,
+                        "length": length,
+                    },
+                )
+
+            scraped_items = self.scraper_tool.scrape_candidate_pages(
+                candidate,
+                start_id=len(current_evidence) + 1,
+                on_page_scraped=_on_subpage_scraped,
+            )
+
+            new_scraped: list[Evidence] = []
+            for item in scraped_items:
+                if item.source_url not in seen_urls:
+                    seen_urls.add(item.source_url)
+                    new_scraped.append(item)
+
+            current_evidence.extend(new_scraped)
+            current_gaps = evaluate_evidence_gaps(candidate, current_evidence, topic)
+            self._emit(
+                "diligence_scrape_complete",
+                {
+                    "candidate": candidate.name,
+                    "slug": candidate.slug,
+                    "scraped_count": len(new_scraped),
+                    "total_evidence_count": len(current_evidence),
+                },
+            )
+
         for hop_idx in range(1, self.max_hops + 1):
             hop = hop_idx
             if hop == 1:
@@ -156,17 +205,38 @@ class DeepDiligenceAgent:
 
             hop_new_evidence: list[Evidence] = []
             for q in pending_queries:
+                self._emit(
+                    "diligence_query_start",
+                    {
+                        "candidate": candidate.name,
+                        "slug": candidate.slug,
+                        "query": q.query,
+                        "pillar": q.pillar,
+                        "hop": hop,
+                    },
+                )
                 start_id = len(current_evidence) + len(hop_new_evidence) + 1
                 if self.search_fn is not None:
                     results = self.search_fn(candidate, q, start_id)
                 else:
-                    results = self.search_tool.search(candidate, q, start_id)
+                    results = self.search_tool.search(candidate, q, start_id, num_results=5)
 
                 unique_results: list[Evidence] = []
                 for res in results:
                     if res.source_url not in seen_urls:
                         seen_urls.add(res.source_url)
                         unique_results.append(res)
+                        self._emit(
+                            "diligence_evidence_collected",
+                            {
+                                "candidate": candidate.name,
+                                "id": res.id,
+                                "title": res.source_title,
+                                "url": res.source_url,
+                                "pillar": q.pillar,
+                                "status": res.status.value if hasattr(res.status, "value") else str(res.status),
+                            },
+                        )
 
                 hop_new_evidence.extend(unique_results)
                 executed_queries.append(

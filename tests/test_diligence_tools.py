@@ -177,6 +177,52 @@ def test_scraper_tool_raises_source_policy_error_on_blocked_url() -> None:
         scraper.scrape_to_evidence("https://pitchbook.com/company/123", "ev-030")
 
 
+def test_scraper_tool_scrape_candidate_pages(test_candidate: Candidate) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        url_str = str(request.url)
+        if "pricing" in url_str:
+            content = "<html><head><title>Strata Pricing</title></head><body>Tier 1 starts at $100/mo. Enterprise tier is custom.</body></html>"
+        elif "product" in url_str:
+            content = "<html><head><title>Strata Product</title></head><body>Vector indexing engine with sub-second queries.</body></html>"
+        elif "security" in url_str:
+            content = "<html><head><title>Strata Security</title></head><body>SOC2 Type II certified and GDPR compliant data pipeline.</body></html>"
+        else:
+            content = "<html><head><title>Strata Data Home</title></head><body>Enterprise data lake indexing and semantic catalog.</body></html>"
+        return httpx.Response(200, text=content, request=request)
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    scraper = WebFetchTool(client=client, url_validator=lambda u: u)
+
+    scraped_events: list[tuple[str, str, int]] = []
+    evidence_list = scraper.scrape_candidate_pages(
+        test_candidate,
+        start_id=1,
+        on_page_scraped=lambda subpage, title, length: scraped_events.append((subpage, title, length)),
+    )
+
+    assert len(evidence_list) == 6
+    assert all(e.source_type == "web_scraper" for e in evidence_list)
+    assert all(e.status == CitationTag.CLAIMED for e in evidence_list)
+    assert len(scraped_events) == 6
+
+    # Test with empty website
+    empty_cand = Candidate(
+        slug="empty",
+        name="Empty",
+        website="",
+        one_liner="Empty",
+        description="",
+        batch="",
+        industry="",
+        tags=[],
+        team_size=1,
+        launched_at=datetime.now(timezone.utc),
+        is_hiring=False,
+        source_url="https://api.ycombinator.com/v0.1/companies/empty",
+    )
+    assert scraper.scrape_candidate_pages(empty_cand) == []
+
+
 def test_evidence_ranker_deduplication_and_tagging() -> None:
     ranker = EvidenceRanker()
 

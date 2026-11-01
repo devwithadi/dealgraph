@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import concurrent.futures
 import html
 import logging
 import re
+from collections.abc import Callable
 from html.parser import HTMLParser
 from typing import Any
 from urllib.parse import urlsplit
@@ -11,7 +13,7 @@ import httpx
 
 from app.core.logging import request_headers
 from app.domain.enums import CitationTag
-from app.domain.models import Evidence
+from app.domain.models import Candidate, Evidence
 from app.sourcing.policy import SourcePolicyError, validate_public_url
 
 LOGGER = logging.getLogger("dealgraph.diligence.scraper")
@@ -22,6 +24,8 @@ CANONICAL_REGISTRY_DOMAINS = {
     "companieshouse.gov.uk",
     "ycombinator.com",
 }
+
+DEFAULT_SUBPAGES: tuple[str, ...] = ("/", "/pricing", "/about", "/product", "/docs", "/security")
 
 
 class _TextExtractor(HTMLParser):
@@ -143,6 +147,82 @@ class WebFetchTool:
             verification="direct_scrape",
             status=status,
         )
+
+    def scrape_candidate_pages(
+        self,
+        candidate: Candidate,
+        start_id: int = 1,
+        *,
+        subpages: list[str] | tuple[str, ...] | None = None,
+        on_page_scraped: Callable[[str, str, int], None] | None = None,
+    ) -> list[Evidence]:
+        """Scrape key subpages of a candidate website concurrently."""
+        website = candidate.website.strip()
+        if not website:
+            return []
+
+        parsed = urlsplit(website)
+        scheme = parsed.scheme if parsed.scheme in {"http", "https"} else "https"
+        netloc = parsed.netloc or parsed.path.split("/")[0]
+        if not netloc:
+            return []
+        base_origin = f"{scheme}://{netloc}"
+
+        pages_to_scrape = subpages or DEFAULT_SUBPAGES
+        urls: list[tuple[str, str]] = []  # (subpage_key, full_url)
+        for page in pages_to_scrape:
+            page_clean = page.strip()
+            if page_clean in {"", "/"}:
+                urls.append(("/", f"{base_origin}/"))
+            else:
+                clean_path = page_clean.lstrip("/")
+                urls.append((f"/{clean_path}", f"{base_origin}/{clean_path}"))
+
+        def _fetch_single(item: tuple[str, str]) -> tuple[str, str, str, str] | None:
+            subpage_key, url = item
+            try:
+                title, text = self.fetch_url(url)
+                if len(text.strip()) >= 30:
+                    return subpage_key, url, title, text
+            except Exception as error:
+                LOGGER.debug("Subpage scrape skipped url=%r error=%s", url, error)
+            return None
+
+        results: list[tuple[str, str, str, str]] = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(urls), 6)) as executor:
+            future_to_item = {executor.submit(_fetch_single, u): u for u in urls}
+            for future in concurrent.futures.as_completed(future_to_item):
+                res = future.result()
+                if res is not None:
+                    results.append(res)
+
+        order = {u[1]: idx for idx, u in enumerate(urls)}
+        results.sort(key=lambda r: order.get(r[1], 999))
+
+        evidence_items: list[Evidence] = []
+        for idx, (subpage_key, url, title, text) in enumerate(results):
+            ev_id = f"ev-{start_id + idx:03d}"
+            subpage_label = "Home" if subpage_key == "/" else subpage_key.lstrip("/").capitalize()
+            claim = f"Company website [{subpage_label}]: {title}"
+            evidence = Evidence(
+                id=ev_id,
+                claim=claim,
+                excerpt=text[:1200],
+                source_url=url,
+                source_title=title or f"{candidate.name} {subpage_label}",
+                source_type="web_scraper",
+                trust_tier="self_reported",
+                verification="direct_scrape",
+                status=CitationTag.CLAIMED,
+            )
+            evidence_items.append(evidence)
+            if on_page_scraped is not None:
+                try:
+                    on_page_scraped(subpage_key, title, len(text))
+                except Exception:
+                    pass
+
+        return evidence_items
 
 
 ScraperTool = WebFetchTool
