@@ -37,6 +37,9 @@ BEDROCK_SYSTEM_GUARD = (
 )
 
 MODEL_ALIASES: dict[str, str] = {
+    # OpenAI
+    "luna": "gpt-5-luna",
+    "terra": "gpt-5-terra",
     # Llama
     "llama-3.3-70b": "us.meta.llama3-3-70b-instruct-v1:0",
     "llama-3.1-70b": "us.meta.llama3-1-70b-instruct-v1:0",
@@ -264,6 +267,30 @@ def _bedrock_json(prompt: str, model: str, max_tokens: int, stage: str, client=N
         raise AppError(f"Bedrock {stage} unavailable", exit_code=4) from error
 
 
+def _is_reasoning_model(model: str) -> bool:
+    m = model.lower()
+    if "terra" in m or "deepseek-reasoner" in m:
+        return True
+    model_name = m.split("/")[-1]
+    return model_name.startswith(("o1", "o3", "gpt-5-terra"))
+
+
+def _is_newer_openai_model(model: str) -> bool:
+    m = model.lower()
+    return any(
+        token in m
+        for token in (
+            "gpt-5",
+            "gpt-4o",
+            "gpt-4.1",
+            "luna",
+            "terra",
+            "o1",
+            "o3",
+        )
+    )
+
+
 def _chat_completion_json(
     prompt: str,
     model: str,
@@ -284,19 +311,41 @@ def _chat_completion_json(
 
     try:
         url = _provider_url(provider)
+        model_lower = model.lower()
+        is_reasoning = (
+            _is_reasoning_model(model)
+            or (stage == "synthesis" and "terra" in model_lower)
+        )
+
+        request_body: dict[str, Any] = {
+            "model": model,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": "You are a skeptical seed-stage investment analyst."},
+                {"role": "user", "content": prompt},
+            ],
+        }
+
+        if not is_reasoning:
+            request_body["temperature"] = 0.1
+
+        if provider == AIProvider.OPENAI and _is_newer_openai_model(model):
+            request_body["max_completion_tokens"] = max_tokens
+        else:
+            request_body["max_tokens"] = max_tokens
+
+        effort = os.getenv("OPENAI_REASONING_EFFORT", "low").strip() or "low"
+        if provider == AIProvider.OPENAI and (
+            is_reasoning or (stage == "synthesis" and "terra" in model_lower)
+        ):
+            request_body["reasoning_effort"] = effort
+        elif is_reasoning and provider == AIProvider.OPENROUTER:
+            request_body["reasoning_effort"] = effort
+
         response = client.post(
             url,
             headers=request_headers(headers_dict),
-            json={
-                "model": model,
-                "temperature": 0.1,
-                "max_tokens": max_tokens,
-                "response_format": {"type": "json_object"},
-                "messages": [
-                    {"role": "system", "content": "You are a skeptical seed-stage investment analyst."},
-                    {"role": "user", "content": prompt},
-                ],
-            },
+            json=request_body,
             timeout=60,
         )
         response.raise_for_status()
