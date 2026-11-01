@@ -10,7 +10,10 @@ from app.pipeline import Pipeline
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="AI-augmented seed investment triage")
+    parser = argparse.ArgumentParser(
+        prog="dealgraph",
+        description="DealGraph: evidence-backed seed investment triage",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
     run = subparsers.add_parser("run", help="source startups and write investment memos")
     run.add_argument("--topic", required=True)
