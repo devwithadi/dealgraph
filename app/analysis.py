@@ -43,6 +43,18 @@ def validate_citations(ids: list[str], evidence: list[Evidence]) -> None:
         raise ValueError(f"Unknown evidence IDs: {', '.join(sorted(missing))}")
 
 
+def evidence_confidence(evidence: list[Evidence]) -> float:
+    """Independent source types add confidence; extra pages from one source do not."""
+    weights = {
+        "yc_directory": 0.30,
+        "company_website": 0.25,
+        "hacker_news": 0.15,
+        "regulatory": 0.20,
+    }
+    source_types = {item.source_type for item in evidence}
+    return round(min(0.9, sum(weights.get(source, 0.05) for source in source_types)), 2)
+
+
 def _contains(text: str, words: tuple[str, ...]) -> bool:
     return any(word in text for word in words)
 
@@ -174,7 +186,7 @@ Evidence:\n<evidence>{evidence_json}</evidence>"""
 def analyze(candidate: Candidate, evidence: list[Evidence], client: httpx.Client) -> Analysis:
     dimensions = _dimensions(candidate, evidence)
     score = calculate_score(dimensions)
-    confidence = min(0.9, 0.35 + len(evidence) * 0.1)
+    confidence = evidence_confidence(evidence)
     narrative = _openai_narrative(candidate, evidence, client) or _fallback(candidate, evidence)
     return Analysis(
         company=candidate.name,

@@ -5,7 +5,7 @@ from app.models import Analysis, Candidate, Evidence
 
 def render_memo(candidate: Candidate, analysis: Analysis, evidence: list[Evidence]) -> str:
     scores = "\n".join(
-        f"| {item.name.replace('_', ' ').title()} | {item.score:.0f}/100 | {item.weight}% | {item.rationale} |"
+        f"| {item.name.replace('_', ' ').title()} | {item.score:.0f}/100 | {item.weight}% | {item.rationale} [{', '.join(item.evidence_ids)}] |"
         for item in analysis.dimensions
     )
     risks = "\n".join(f"- {item}" for item in analysis.risks)
