@@ -142,6 +142,12 @@ def test_fetcher_revalidates_redirects_and_obeys_robots() -> None:
 
 def test_offline_pipeline_never_uses_network(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "must-not-be-used")
+    monkeypatch.setattr(
+        "dealgraph.analysis.providers.boto3.client",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("offline mode attempted AWS client creation")
+        ),
+    )
 
     def fail_on_request(request: httpx.Request) -> httpx.Response:
         raise AssertionError(f"offline mode attempted network: {request.url}")
