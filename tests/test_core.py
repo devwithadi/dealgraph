@@ -464,6 +464,13 @@ def test_candidate_evidence_does_not_label_hacker_news_as_yc_verified() -> None:
     assert "YC profile" not in item.claim
 
 
+def test_candidate_evidence_rejects_non_public_citation_targets() -> None:
+    poisoned = candidate().model_copy(update={"source_url": "http://127.0.0.1/admin"})
+
+    with pytest.raises(SourcePolicyError):
+        candidate_evidence(poisoned)
+
+
 def test_screening_rejects_missing_or_duplicate_candidate_decisions(monkeypatch) -> None:
     class BedrockClient:
         def converse(self, **_kwargs):
