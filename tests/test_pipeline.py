@@ -140,6 +140,7 @@ def test_pipeline_runs_two_stage_flow_and_writes_complete_run_artifacts(
     assert manifest["request_id"] == "req-pipeline"
     assert manifest["topic"] == "AI agents for SMBs"
     assert manifest["summary"]["succeeded"] == 1
+    assert manifest["summary"]["output"] == "."
 
 
 def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypatch) -> None:
