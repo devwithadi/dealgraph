@@ -1,7 +1,5 @@
 """SSRF-safe public HTML fetching with robots enforcement."""
 
-import ipaddress
-import socket
 from html.parser import HTMLParser
 from typing import Callable
 from urllib.parse import urljoin, urlsplit
@@ -11,6 +9,7 @@ import httpx
 
 from dealgraph.core.errors import AppError
 from dealgraph.core.logging import USER_AGENT, request_headers
+from dealgraph.core.urls import PublicUrlError, resolve_host, validate_public_url as validate_target
 
 BLOCKED_HOSTS = {"pitchbook.com", "crunchbase.com", "linkedin.com"}
 MAX_RESPONSE_BYTES = 2_000_000
@@ -20,40 +19,21 @@ class SourcePolicyError(AppError, ValueError):
     pass
 
 
-def _default_resolver(host: str) -> list[str]:
-    return list({item[4][0] for item in socket.getaddrinfo(host, None)})
-
-
 def validate_public_url(
     url: str,
-    resolver: Callable[[str], list[str]] = _default_resolver,
+    resolver: Callable[[str], list[str]] = resolve_host,
 ) -> str:
     """Reject credentials, unusual ports, blocked vendors, and non-public targets."""
-    parsed = urlsplit(url)
-    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-        raise SourcePolicyError(f"Unsupported URL: {url}")
-    if parsed.username or parsed.password:
-        raise SourcePolicyError("Credentials in URLs are forbidden")
     try:
-        port = parsed.port
-    except ValueError as error:
-        raise SourcePolicyError("Invalid port") from error
-    if port not in {None, 80, 443}:
-        raise SourcePolicyError("Only ports 80 and 443 are allowed")
-    host = parsed.hostname.rstrip(".").lower()
-    if any(host == blocked or host.endswith(f".{blocked}") for blocked in BLOCKED_HOSTS):
-        raise SourcePolicyError(f"Source is blocked by policy: {host}")
-    try:
-        ipaddress.ip_address(host)
-        addresses = [host]
-    except ValueError:
-        addresses = resolver(host)
-    if not addresses:
-        raise SourcePolicyError(f"Host did not resolve: {host}")
-    for address in addresses:
-        if not ipaddress.ip_address(address).is_global:
-            raise SourcePolicyError(f"Non-public target rejected: {address}")
-    return url
+        return validate_target(
+            url,
+            schemes={"http", "https"},
+            ports={80, 443},
+            blocked_hosts=BLOCKED_HOSTS,
+            resolver=resolver,
+        )
+    except PublicUrlError as error:
+        raise SourcePolicyError(str(error)) from error
 
 
 class PageParser(HTMLParser):
@@ -94,7 +74,7 @@ class SafeFetcher:
     def __init__(
         self,
         client: httpx.Client,
-        resolver: Callable[[str], list[str]] = _default_resolver,
+        resolver: Callable[[str], list[str]] = resolve_host,
     ) -> None:
         self.client, self.resolver = client, resolver
         self._robots: dict[str, RobotFileParser] = {}

@@ -24,3 +24,4 @@ class AnalysisMode(ValueEnum):
     DETERMINISTIC_FALLBACK = "deterministic_fallback"
     BEDROCK = "bedrock"
     OPENAI = "openai"
+    MIXED = "mixed"

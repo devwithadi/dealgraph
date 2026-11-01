@@ -10,7 +10,9 @@ import httpx
 from botocore.exceptions import BotoCoreError, ClientError
 
 from dealgraph.analysis.scoring import THESIS, validate_citations
+from dealgraph.core.errors import AppError
 from dealgraph.core.logging import current_request_id, request_headers
+from dealgraph.core.urls import validate_public_url
 from dealgraph.domain.enums import AIProvider, AnalysisMode
 from dealgraph.domain.models import Candidate, Evidence
 
@@ -58,7 +60,8 @@ def _openai_url() -> str:
         or parsed.fragment
     ):
         raise ValueError("OPENAI_BASE_URL must be an HTTPS origin or path without credentials")
-    return f"{base}/chat/completions"
+    url = f"{base}/chat/completions"
+    return validate_public_url(url, schemes={"https"}, ports={443})
 
 
 def openai_narrative(
@@ -124,3 +127,15 @@ def model_for(provider: AIProvider) -> str | None:
     if provider == AIProvider.OPENAI:
         return os.getenv("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
     return None
+
+
+def validate_provider_config(provider: AIProvider) -> None:
+    if provider == AIProvider.OPENAI:
+        if not os.getenv("OPENAI_API_KEY"):
+            raise AppError("OPENAI_API_KEY is required for the OpenAI provider", exit_code=2)
+        try:
+            _openai_url()
+        except ValueError as error:
+            raise AppError(f"Invalid OPENAI_BASE_URL: {error}", exit_code=2) from error
+    if provider == AIProvider.BEDROCK and not model_for(provider):
+        raise AppError("BEDROCK_MODEL_ID cannot be empty", exit_code=2)

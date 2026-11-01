@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
 import httpx
 
-from dealgraph.analysis.providers import model_for
+from dealgraph.analysis.providers import model_for, validate_provider_config
 from dealgraph.analysis.service import analyze
 from dealgraph.core.errors import AppError
 from dealgraph.core.logging import bind_request_id, request_headers
@@ -28,6 +27,12 @@ LOGGER = logging.getLogger("dealgraph.pipeline")
 
 def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _summarize_modes(modes: set[AnalysisMode]) -> AnalysisMode:
+    if len(modes) > 1:
+        return AnalysisMode.MIXED
+    return next(iter(modes), AnalysisMode.DETERMINISTIC_FALLBACK)
 
 
 class Pipeline:
@@ -64,6 +69,7 @@ class Pipeline:
         if offline and source_file is None:
             raise AppError("offline mode requires a local source file", exit_code=2)
         effective_provider = AIProvider.DETERMINISTIC if offline else provider
+        validate_provider_config(effective_provider)
         output = output.resolve()
         for name in ("evidence", "analyses", "memos"):
             (output / name).mkdir(parents=True, exist_ok=True)
@@ -124,13 +130,11 @@ class Pipeline:
                 gaps.append({"candidate": candidate.slug, "stage": "pipeline", "error": str(error)})
 
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        analysis_mode = (
-            AnalysisMode.BEDROCK
-            if AnalysisMode.BEDROCK in modes
-            else AnalysisMode.OPENAI
-            if AnalysisMode.OPENAI in modes
-            else AnalysisMode.DETERMINISTIC_FALLBACK
-        )
+        analysis_mode = _summarize_modes(modes)
+        provider_mode = {
+            AIProvider.BEDROCK: AnalysisMode.BEDROCK,
+            AIProvider.OPENAI: AnalysisMode.OPENAI,
+        }.get(effective_provider)
         _write_json(
             output / "manifest.json",
             {
@@ -143,9 +147,10 @@ class Pipeline:
                 "evidence_sources": [YC_URL, HN_URL, "company public websites"],
                 "provider": effective_provider,
                 "analysis_mode": analysis_mode,
+                "analysis_modes": sorted(mode.value for mode in modes),
                 "model": (
                     model_for(effective_provider)
-                    if analysis_mode != AnalysisMode.DETERMINISTIC_FALLBACK
+                    if provider_mode in modes
                     else None
                 ),
                 "prompt_version": "analysis-v1",
