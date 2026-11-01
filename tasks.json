@@ -1,0 +1,48 @@
+{
+  "project": "DealGraph",
+  "description": "Evidence-backed seed investment triage engine producing vector PDF investment memos in results/",
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "Sourcing and Date Filtering",
+      "description": "Multi-source candidate discovery via YC Launch directory, Hacker News, and Agent Reach with lookback window filtering.",
+      "status": "completed",
+      "assignee": "sourcing-engine"
+    },
+    {
+      "id": "task-002",
+      "title": "Semantic Screening",
+      "description": "Batched high-recall semantic screening of eligible startup candidates using small, cost-effective LLMs.",
+      "status": "completed",
+      "assignee": "screening-agent"
+    },
+    {
+      "id": "task-003",
+      "title": "Deep Diligence Research",
+      "description": "Multi-hop 4-pillar diligence information gathering across Commercial/TAM, Financials, Tech/IP Defensibility, and Risk/ESG.",
+      "status": "completed",
+      "assignee": "diligence-agent"
+    },
+    {
+      "id": "task-004",
+      "title": "Investment Committee Synthesis",
+      "description": "Evidence-grounded synthesis, scoring, and recommendation generation with strict citation verification.",
+      "status": "completed",
+      "assignee": "synthesis-agent"
+    },
+    {
+      "id": "task-005",
+      "title": "PDF-Only Output Generation",
+      "description": "Direct generation of publication-grade vector PDF investment committee memos (<slug>.pdf) in results/ without intermediate markdown or JSON files.",
+      "status": "completed",
+      "assignee": "reporting-engine"
+    },
+    {
+      "id": "task-006",
+      "title": "CLI & Replay Mode",
+      "description": "CLI interface supporting run and offline replay with default output directory results/ and direct open command guidance.",
+      "status": "completed",
+      "assignee": "cli-interface"
+    }
+  ]
+}

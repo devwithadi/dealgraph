@@ -19,17 +19,17 @@ There is no topic keyword filter and no deterministic investment score. The topi
 ```bash
 uv sync --extra dev
 agent-reach doctor --json
-uv run dealgraph run --topic "AI agents for SMBs" --output data/runs/latest
+uv run dealgraph run --topic "AI agents for SMBs" --output results
 ```
 
 By default, DealGraph screens active YC companies launched in the last 30 days. Use `--batch W26` to restrict to a specific YC batch, or `--limit 50` as an emergency cap after date selection.
 
 ### Offline Replay Mode
 
-Re-generate both `.md` and `.pdf` investment memos from stored run artifacts without making network or LLM calls:
+Re-generate `.pdf` investment memos from stored run artifacts without making network or LLM calls:
 
 ```bash
-uv run dealgraph replay --run-dir data/runs/latest
+uv run dealgraph replay --run-dir results
 ```
 
 ---
@@ -145,40 +145,33 @@ mcporter list exa --schema --json
 
 ## Outputs
 
-Every run creates:
+Every run outputs vector PDF memos directly to the output directory (`results/` by default):
 
 ```text
-data/runs/latest/
-├── input.json
-├── candidates.json
-├── screenings.json
-├── shortlist.json        # synthesis decisions other than Pass
-├── manifest.json
-├── evidence/<finalist>.json
-├── analyses/<finalist>.json
-└── memos/
-    ├── <finalist>.md     # Cited Markdown investment memo
-    └── <finalist>.pdf    # Double-column vector PDF memo (ReportLab)
+results/
+├── <finalist-1>.pdf    # Double-column vector PDF memo (ReportLab)
+└── <finalist-2>.pdf    # Double-column vector PDF memo (ReportLab)
 ```
-
-The manifest records the launch cutoff, eligible/screened/finalist/selected/memo counts, both model IDs, provider, Agent Reach source, failures, and one validated request ID. YC and OpenAI HTTP requests receive `X-Kong-Request-ID`; Bedrock calls receive the same ID in `requestMetadata`. The Agent Reach subprocess receives it as `DEALGRAPH_REQUEST_ID` for local correlation.
 
 Normal output is concise:
 
 ```text
 Screened 48/48 companies; created 6/6 finalist memos; selected 4.
-Memos: /absolute/path/data/runs/latest/memos
+PDF Memos: /absolute/path/results
 Request ID: req-5ae470bb25d84a87
+
+To open generated PDF investment memos:
+  open /absolute/path/results/*.pdf
 ```
 
 Use `--json` for automation and `--verbose` for operational logs.
 
 ## Offline Behavior & Replay
 
-Fresh candidate screening requires LLM semantic triage. When re-generating investment memos from previously recorded runs, use `dealgraph replay` to produce both Markdown and vector PDF memos without network or LLM calls:
+Fresh candidate screening requires LLM semantic triage. When re-generating investment memos from previously recorded runs, use `dealgraph replay` to produce vector PDF memos without network or LLM calls:
 
 ```bash
-uv run dealgraph replay --run-dir data/runs/latest
+uv run dealgraph replay --run-dir results
 ```
 
 ## Verify

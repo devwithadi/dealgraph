@@ -6,7 +6,7 @@ import pytest
 
 from app.domain.enums import AIProvider, AnalysisMode, CitationTag, EvidenceStatus, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, Financials
-from app.reporting.memo import _build_evidence_map, _format_source_category, render_memo, transform_citations
+from app.reporting.memo import _build_evidence_map, _format_source_category, _resolve_evidence_entry
 from app.reporting.pdf import NumberedCanvas, _transform_citations_for_pdf, render_pdf_memo
 
 
@@ -154,14 +154,6 @@ def test_citation_transformation() -> None:
     }
 
     raw_text = "Founded in 2026 [ev-001]. Benchmark score is 99% [ev-002]. Multiple [ev-001][ev-002]. Composite [ev-001, ev-002]. Missing citation [ev-999]."
-    transformed = transform_citations(raw_text, ev_map)
-
-    assert "[[1] ↗](https://ycombinator.com/companies/vortex)" in transformed
-    assert "[[2] ↗](https://benchmarks.io/test)" in transformed
-    assert "[[1] ↗](https://ycombinator.com/companies/vortex)[[2] ↗](https://benchmarks.io/test)" in transformed
-    assert "[[1] ↗](https://ycombinator.com/companies/vortex) [[2] ↗](https://benchmarks.io/test)" in transformed
-    assert "[[EV-999] ↗](#auditable-sources)" in transformed
-    assert transform_citations("", ev_map) == ""
 
     # Test PDF citation transformation
     pdf_transformed = _transform_citations_for_pdf(raw_text, ev_map)
@@ -169,90 +161,6 @@ def test_citation_transformation() -> None:
     assert '<a href="https://benchmarks.io/test" color="#2563EB"><b>[2] &#8599;</b></a>' in pdf_transformed
     assert '<font color="#64748B"><b>[EV-999]</b></font>' in pdf_transformed
     assert _transform_citations_for_pdf("", ev_map) == ""
-
-
-def test_render_memo_output_structure(
-    sample_candidate: Candidate,
-    sample_analysis: Analysis,
-    sample_evidence: list[Evidence],
-) -> None:
-    memo = render_memo(sample_candidate, sample_analysis, sample_evidence)
-
-    # Executive Header & Badges (investor-relevant, no provider jargon)
-    assert "# [INVESTMENT COMMITTEE MEMO] Vortex AI" in memo
-    assert "🟢 **TAKE A MEETING**" in memo
-    assert "`Score: 91.5/100`" in memo
-    assert "`Confidence: 88%`" in memo
-    assert "`Batch: Summer 2026`" in memo
-    assert "Mode: bedrock" not in memo
-    assert "bedrock" not in memo.split("---")[0]
-
-    # Quick Metadata table
-    assert "| **Website** | [https://vortex.example.ai](https://vortex.example.ai) |" in memo
-    assert "| **Batch / Program** | Summer 2026 |" in memo
-    assert "| **Sector / Industry** | Cybersecurity / FinTech |" in memo
-    assert "| **Team Size** | 8 |" in memo
-    assert "| **Hiring Status** | 🟢 Actively Hiring |" in memo
-
-    # 4-Pillar Scorecard Table
-    assert "### 4-Pillar Diligence Scorecard" in memo
-    assert "| **Commercial / TAM** |" in memo
-    assert "| **Financials / Unit Economics** |" in memo
-    assert "| **Tech / IP Defensibility** |" in memo
-    assert "| **Risk / ESG** |" in memo
-
-    # Callout Quote Blocks
-    assert "> 💎 **CROWN JEWEL ASSET:**" in memo
-    assert "> ⚠️ **THE INVERSE CASE (Failure Mode & Tripwires):**" in memo
-
-    # Structured Narrative Sections
-    assert "## 1. Executive Summary & Investment Thesis" in memo
-    assert "## 2. Team & Founder Capability" in memo
-    assert "## 3. Product Architecture & TRL" in memo
-    assert "## 4. Market Dynamics & Why Now" in memo
-    assert "## 5. Financials & Unit Economics" in memo
-    assert "## 6. Critical Risks & Stress-Testing" in memo
-    assert '## 7. Triggers ("What Would Change Our Mind")' in memo
-
-    # Interactive Compact Citation Links
-    assert "[[1] ↗](https://api.ycombinator.com/v0.1/companies/vortex-ai)" in memo
-    assert "[[2] ↗](https://techbenchmarks.io/vortex-2026)" in memo
-    assert "[[3] ↗](https://vortex.example.ai/pricing)" in memo
-
-    # Auditable Sources Table (clean, investor-facing, no raw ev IDs or internal enum strings)
-    assert "## 8. Auditable Sources & References" in memo
-    assert "| # | Trust Tag | Source & Publisher | Category | Key Excerpt |" in memo
-    assert "| <a id=\"source-1\"></a>[1] | `VERIFIED` | [YC Directory: Vortex AI ↗](https://api.ycombinator.com/v0.1/companies/vortex-ai) | Official Registry |" in memo
-    assert "| <a id=\"source-2\"></a>[2] | `TRUSTED` | [TechBenchmarks 2026 Evaluation ↗](https://techbenchmarks.io/vortex-2026) | Web Research |" in memo
-    assert "| <a id=\"source-3\"></a>[3] | `CLAIMED` | [Vortex Pricing Page ↗](https://vortex.example.ai/pricing) | Company Website |" in memo
-    assert "`ev-001`" not in memo
-    assert "deep_diligence_search" not in memo
-
-
-def test_render_memo_watch_and_pass_decisions(
-    sample_candidate: Candidate,
-    sample_analysis: Analysis,
-    sample_evidence: list[Evidence],
-) -> None:
-    # Test WATCH
-    watch_analysis = Analysis(
-        **{**sample_analysis.model_dump(), "recommendation": Recommendation.WATCH, "score": 72.0}
-    )
-    watch_memo = render_memo(sample_candidate, watch_analysis, sample_evidence)
-    assert "🟡 **WATCH**" in watch_memo
-    assert "`Score: 72.0/100`" in watch_memo
-
-    # Test PASS with no batch -> Stage: Pre-Seed / Seed
-    no_batch_candidate = Candidate(
-        **{**sample_candidate.model_dump(), "batch": ""}
-    )
-    pass_analysis = Analysis(
-        **{**sample_analysis.model_dump(), "recommendation": Recommendation.PASS, "score": 45.0}
-    )
-    pass_memo = render_memo(no_batch_candidate, pass_analysis, sample_evidence)
-    assert "🔴 **PASS**" in pass_memo
-    assert "`Score: 45.0/100`" in pass_memo
-    assert "`Stage: Pre-Seed / Seed`" in pass_memo
 
 
 def test_source_category_mapping(sample_evidence: list[Evidence]) -> None:
@@ -376,4 +284,3 @@ def test_render_pdf_memo_with_empty_and_minimal_fields(
     render_pdf_memo(sample_candidate, empty_analysis, sample_evidence, pdf_out)
     assert pdf_out.exists()
     assert pdf_out.stat().st_size > 1000
-

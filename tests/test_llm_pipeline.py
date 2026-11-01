@@ -150,7 +150,7 @@ def test_all_recent_candidates_are_screened_but_only_finalists_are_researched(
     assert result.selected == 2
     assert result.succeeded == 2
     assert result.failed == 0
-    assert {path.stem for path in (tmp_path / "run" / "memos").glob("*.md")} == set(researched)
+    assert {path.stem for path in (tmp_path / "run").glob("*.pdf")} == set(researched)
 
 
 def test_offline_llm_pipeline_fails_before_any_network(tmp_path: Path, monkeypatch) -> None:

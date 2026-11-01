@@ -4,8 +4,8 @@ from pathlib import Path
 
 import httpx
 
-from app.domain.enums import AIProvider, AnalysisMode
-from app.domain.models import Evidence
+from app.domain.enums import AIProvider, AnalysisMode, Recommendation
+from app.domain.models import Analysis, Evidence, Financials
 from app.pipeline.service import Pipeline, _summarize_modes
 from app.sourcing.registry import YC_URL
 
@@ -24,6 +24,19 @@ def record(slug: str = "agentdesk") -> dict:
         "batch": "Summer 2026",
         "status": "Active",
         "launched_at": int(NOW.timestamp()),
+    }
+
+
+def candidate_record(slug: str = "agentdesk") -> dict:
+    return {
+        "slug": slug,
+        "name": "AgentDesk",
+        "website": "https://agentdesk.example",
+        "one_liner": "AI agents that automate support workflows for SMBs",
+        "description": "Support automation platform",
+        "batch": "Summer 2026",
+        "launched_at": NOW.isoformat(),
+        "source_url": "https://ycombinator.com/companies/agentdesk",
     }
 
 
@@ -59,7 +72,7 @@ class BedrockClient:
         return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
 
 
-def test_pipeline_runs_two_stage_flow_and_writes_auditable_artifacts(
+def test_pipeline_runs_two_stage_flow_and_writes_pdf_artifact(
     tmp_path: Path, monkeypatch
 ) -> None:
     source = tmp_path / "yc.json"
@@ -88,11 +101,12 @@ def test_pipeline_runs_two_stage_flow_and_writes_auditable_artifacts(
         return client
 
     monkeypatch.setattr("app.pipeline.service.create_bedrock_client", create_client)
+    run_dir = tmp_path / "run"
     result = Pipeline().run(
         topic="AI agents for SMBs",
         batch=None,
         limit=None,
-        output=tmp_path / "run",
+        output=run_dir,
         source_file=source,
         request_id="req-pipeline",
         now=NOW,
@@ -110,23 +124,17 @@ def test_pipeline_runs_two_stage_flow_and_writes_auditable_artifacts(
         "failed": 0,
     }
     assert created == [client]
-    run = tmp_path / "run"
-    assert json.loads((run / "screenings.json").read_text())[0]["advance"] is True
-    assert json.loads((run / "shortlist.json").read_text())[0]["recommendation"] == "Watch"
-    manifest = json.loads((run / "manifest.json").read_text())
-    assert manifest["lookback_days"] == 30
-    assert manifest["selected"] == 1
-    assert manifest["screening_model"] == "amazon.nova-lite-v1:0"
-    assert manifest["synthesis_model"] == "amazon.nova-pro-v1:0"
-    assert manifest["screening_prompt_version"] == "screening-v5"
-    assert manifest["synthesis_prompt_version"] == "synthesis-v4"
-    assert manifest["evidence_sources"] == [YC_URL, "Agent Reach / Exa web search"]
-    memo = (run / "memos" / "agentdesk.md").read_text()
-    assert "WATCH" in memo
-    assert "[INVESTMENT COMMITTEE MEMO]" in memo
-    assert "https://news.example/agentdesk" in memo
-    assert (run / "memos" / "agentdesk.pdf").exists()
-    assert (run / "memos" / "agentdesk.pdf").stat().st_size > 0
+    # Only PDF is outputted in run directory
+    pdf_path = run_dir / "agentdesk.pdf"
+    assert pdf_path.exists()
+    assert pdf_path.stat().st_size > 0
+    assert not (run_dir / "memos").exists()
+    assert not (run_dir / "manifest.json").exists()
+    assert not (run_dir / "candidates.json").exists()
+    assert not (run_dir / "screenings.json").exists()
+    assert not (run_dir / "shortlist.json").exists()
+    assert not (run_dir / "evidence").exists()
+    assert not (run_dir / "analyses").exists()
 
 
 def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypatch) -> None:
@@ -171,49 +179,56 @@ def test_mixed_provider_results_are_reported_as_mixed() -> None:
     assert _summarize_modes({AnalysisMode.BEDROCK, AnalysisMode.OPENAI}) == AnalysisMode.MIXED
 
 
-def test_pipeline_replay_regenerates_markdown_and_pdf_without_llm_or_network(
+def test_pipeline_replay_regenerates_pdf_without_llm_or_network(
     tmp_path: Path, monkeypatch
 ) -> None:
-    source = tmp_path / "yc.json"
-    source.write_text(json.dumps([record()]), encoding="utf-8")
-
-    monkeypatch.setattr(
-        "app.pipeline.service.agent_reach_evidence",
-        lambda *_args: [
-            Evidence(
-                id="ev-002",
-                claim="Agent Reach result",
-                excerpt="A customer pilot was announced.",
-                source_url="https://news.example/agentdesk",
-                source_title="Customer pilot",
-                source_type="agent_reach",
-                trust_tier="open_web",
-                verification="third_party_search",
-            )
-        ],
-    )
-    client = BedrockClient()
     run_dir = tmp_path / "run"
-    result = Pipeline(bedrock_client=client).run(
-        topic="AI agents for SMBs",
-        batch=None,
-        limit=None,
-        output=run_dir,
-        source_file=source,
-        request_id="req-first-run",
-        now=NOW,
-    )
-    assert result.succeeded == 1
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "analyses").mkdir(parents=True, exist_ok=True)
+    (run_dir / "evidence").mkdir(parents=True, exist_ok=True)
 
-    # Remove the rendered memos to verify replay re-generates them
-    memo_md = run_dir / "memos" / "agentdesk.md"
-    memo_pdf = run_dir / "memos" / "agentdesk.pdf"
-    assert memo_md.exists()
-    assert memo_pdf.exists()
-    memo_md.unlink()
-    memo_pdf.unlink()
-    assert not memo_md.exists()
-    assert not memo_pdf.exists()
+    (run_dir / "candidates.json").write_text(
+        json.dumps([candidate_record()]), encoding="utf-8"
+    )
+    analysis = Analysis(
+        company="AgentDesk",
+        thesis="Strong fit with evidence gaps. [ev-001]",
+        summary="Strong fit with evidence gaps. [ev-001]",
+        team="Unknown",
+        product="AI support automation. [ev-001]",
+        market="SMB support. [ev-001]",
+        why_now="AI adoption. [ev-001]",
+        financials=Financials(),
+        risks=["Retention is unknown. [ev-001]"],
+        open_questions=["What is retention?"],
+        changes_mind=["Verified retention", "Customer references"],
+        score=71.0,
+        confidence=0.6,
+        recommendation=Recommendation.WATCH,
+        analysis_mode=AnalysisMode.BEDROCK,
+    )
+    (run_dir / "analyses" / "agentdesk.json").write_text(
+        json.dumps(analysis.model_dump(mode="json")),
+        encoding="utf-8",
+    )
+    (run_dir / "evidence" / "agentdesk.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "ev-001",
+                    "claim": "YC Company Profile",
+                    "excerpt": "AgentDesk support automation platform.",
+                    "source_url": "https://ycombinator.com/companies/agentdesk",
+                    "source_title": "YC Directory",
+                    "source_type": "yc_directory",
+                    "trust_tier": "curated_directory",
+                    "verification": "third_party",
+                    "status": "verified",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
 
     # Any LLM or network call during replay must raise an error
     def forbidden(*_args, **_kwargs):
@@ -231,42 +246,60 @@ def test_pipeline_replay_regenerates_markdown_and_pdf_without_llm_or_network(
     assert replay_summary.succeeded == 1
     assert replay_summary.failed == 0
     assert replay_summary.selected == 1
-    assert memo_md.exists()
-    assert memo_pdf.exists()
-    assert memo_pdf.stat().st_size > 0
-    assert "[INVESTMENT COMMITTEE MEMO]" in memo_md.read_text(encoding="utf-8")
+    pdf_path = run_dir / "agentdesk.pdf"
+    assert pdf_path.exists()
+    assert pdf_path.stat().st_size > 0
 
 
 def test_pipeline_run_offline_invokes_replay_when_run_artifacts_exist(
     tmp_path: Path, monkeypatch
 ) -> None:
-    source = tmp_path / "yc.json"
-    source.write_text(json.dumps([record()]), encoding="utf-8")
-
-    monkeypatch.setattr(
-        "app.pipeline.service.agent_reach_evidence",
-        lambda *_args: [
-            Evidence(
-                id="ev-002",
-                claim="Agent Reach result",
-                excerpt="A customer pilot was announced.",
-                source_url="https://news.example/agentdesk",
-                source_title="Customer pilot",
-                source_type="agent_reach",
-                trust_tier="open_web",
-                verification="third_party_search",
-            )
-        ],
-    )
     run_dir = tmp_path / "run"
-    Pipeline(bedrock_client=BedrockClient()).run(
-        topic="AI agents for SMBs",
-        batch=None,
-        limit=None,
-        output=run_dir,
-        source_file=source,
-        request_id="req-first-run",
-        now=NOW,
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "analyses").mkdir(parents=True, exist_ok=True)
+    (run_dir / "evidence").mkdir(parents=True, exist_ok=True)
+
+    (run_dir / "candidates.json").write_text(
+        json.dumps([candidate_record()]), encoding="utf-8"
+    )
+    analysis = Analysis(
+        company="AgentDesk",
+        thesis="Strong fit with evidence gaps. [ev-001]",
+        summary="Strong fit. [ev-001]",
+        team="Unknown",
+        product="AI support. [ev-001]",
+        market="SMB support. [ev-001]",
+        why_now="AI. [ev-001]",
+        financials=Financials(),
+        risks=["Retention is unknown. [ev-001]"],
+        open_questions=["What is retention?"],
+        changes_mind=["Verified retention", "Customer references"],
+        score=71.0,
+        confidence=0.6,
+        recommendation=Recommendation.WATCH,
+        analysis_mode=AnalysisMode.BEDROCK,
+    )
+    (run_dir / "analyses" / "agentdesk.json").write_text(
+        json.dumps(analysis.model_dump(mode="json")),
+        encoding="utf-8",
+    )
+    (run_dir / "evidence" / "agentdesk.json").write_text(
+        json.dumps(
+            [
+                {
+                    "id": "ev-001",
+                    "claim": "YC Profile",
+                    "excerpt": "Snippet",
+                    "source_url": "https://ycombinator.com",
+                    "source_title": "YC",
+                    "source_type": "yc_directory",
+                    "trust_tier": "curated_directory",
+                    "verification": "third_party",
+                    "status": "verified",
+                }
+            ]
+        ),
+        encoding="utf-8",
     )
 
     # Calling run with offline=True on existing run directory should succeed via replay
@@ -279,4 +312,4 @@ def test_pipeline_run_offline_invokes_replay_when_run_artifacts_exist(
     )
     assert result.succeeded == 1
     assert result.failed == 0
-
+    assert (run_dir / "agentdesk.pdf").exists()

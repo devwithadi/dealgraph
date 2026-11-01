@@ -137,7 +137,7 @@ def test_console_reporter_output_formatting(capsys, tmp_path: Path) -> None:
         "decision": "Take a meeting",
         "score": 88.0,
         "confidence": 0.85,
-        "memo_path": str(tmp_path / "memos" / "agentflow.md"),
+        "pdf_memo_path": str(tmp_path / "agentflow.pdf"),
     })
 
     # Summary table
@@ -283,11 +283,12 @@ def test_pipeline_run_with_progress_callback_and_model_aliases(tmp_path: Path, m
     assert result.failed == 0
     # Model aliases resolved
     assert models_called == ["amazon.nova-micro-v1:0", "us.meta.llama3-3-70b-instruct-v1:0"]
+    assert (tmp_path / "run" / "agentdesk.pdf").exists()
 
-    # Manifest contains resolved models
-    manifest = json.loads((tmp_path / "run" / "manifest.json").read_text())
-    assert manifest["screening_model"] == "amazon.nova-micro-v1:0"
-    assert manifest["synthesis_model"] == "us.meta.llama3-3-70b-instruct-v1:0"
+    # Header event contains resolved models
+    header_data = events_received[0][1]
+    assert header_data["screening_model"] == "amazon.nova-micro-v1:0"
+    assert header_data["synthesis_model"] == "us.meta.llama3-3-70b-instruct-v1:0"
 
     # Events emitted in sequence
     event_names = [name for name, _ in events_received]
@@ -431,8 +432,7 @@ def test_console_reporter_deep_diligence_events(capsys) -> None:
         "decision": "Take a meeting",
         "score": 88.5,
         "confidence": 0.82,
-        "memo_path": "/tmp/memos/nexus-ai.md",
-        "pdf_memo_path": "/tmp/memos/nexus-ai.pdf",
+        "pdf_memo_path": "/tmp/results/nexus-ai.pdf",
     })
     reporter("summary_table", {})
 
@@ -447,8 +447,8 @@ def test_console_reporter_deep_diligence_events(capsys) -> None:
     assert "Diligence [Hop 1 Complete]: +2 new evidence (3 total) | Gaps: 2 resolved, 2 pending" in output
     assert "All 4-pillar information gaps resolved for Nexus AI in hop 2." in output
     assert "Diligence (Offline): Evaluated 1 local evidence items for Nexus AI (4 gaps)." in output
-    assert "PDF Memo:      /tmp/memos/nexus-ai.pdf" in output
-    assert "open /tmp/memos/nexus-ai.pdf" in output
+    assert "PDF Memo:     /tmp/results/nexus-ai.pdf" in output
+    assert "open /tmp/results/nexus-ai.pdf" in output
 
 
 def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> None:
@@ -529,9 +529,6 @@ def test_pipeline_run_with_deep_diligence_mode(tmp_path: Path, monkeypatch) -> N
 
     assert result.succeeded == 1
     assert result.failed == 0
-
-    manifest = json.loads((tmp_path / "run_dd" / "manifest.json").read_text())
-    assert manifest["deep_diligence"] is True
-    assert manifest["max_hops"] == 2
-    assert "Deep Diligence multi-hop research" in manifest["evidence_sources"]
+    assert (tmp_path / "run_dd" / "agentdesk.pdf").exists()
+    assert (tmp_path / "run_dd" / "agentdesk.pdf").stat().st_size > 0
 

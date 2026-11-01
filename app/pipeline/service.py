@@ -13,7 +13,6 @@ from app.analysis.diligence import DeepDiligenceAgent
 from app.analysis.providers import (
     create_bedrock_client,
     model_for,
-    model_name_for_artifact,
     screening_model_for,
     validate_provider_config,
 )
@@ -22,23 +21,17 @@ from app.core.errors import AppError
 from app.core.logging import bind_request_id, request_headers
 from app.domain.enums import AIProvider, AnalysisMode, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, RunSummary, ScreeningDecision
-from app.reporting.memo import render_memo
 from app.reporting.pdf import render_pdf_memo
 from app.sourcing.candidates import (
     discover_candidates,
     load_candidates,
     lookback_days_from_env,
-    select_candidates,
 )
 from app.sourcing.evidence import agent_reach_evidence, yc_evidence
-from app.sourcing.registry import YC_URL, enabled_manifest_sources, source_enabled
+from app.sourcing.registry import YC_URL, source_enabled
 
 LOGGER = logging.getLogger("dealgraph.pipeline")
 SCREENING_BATCH_SIZE = 20
-
-
-def _write_json(path: Path, value: object) -> None:
-    path.write_text(json.dumps(value, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def _summarize_modes(modes: set[AnalysisMode]) -> AnalysisMode | None:
@@ -123,8 +116,7 @@ class Pipeline:
         effective_now = now or datetime.now(timezone.utc)
         cutoff = effective_now - timedelta(days=lookback_days)
         output = output.resolve()
-        for name in ("evidence", "analyses", "memos"):
-            (output / name).mkdir(parents=True, exist_ok=True)
+        output.mkdir(parents=True, exist_ok=True)
 
         _emit(
             progress_callback,
@@ -194,19 +186,6 @@ class Pipeline:
             },
         )
 
-        _write_json(
-            output / "input.json",
-            {
-                "topic": topic,
-                "batch": batch,
-                "lookback_days": lookback_days,
-                "cutoff": cutoff.isoformat(),
-                "limit": limit,
-                "source": source,
-            },
-        )
-        _write_json(output / "candidates.json", [item.model_dump(mode="json") for item in candidates])
-
         bedrock_client = self.bedrock_client
         if provider == AIProvider.BEDROCK and candidates and bedrock_client is None:
             bedrock_client = create_bedrock_client()
@@ -263,7 +242,6 @@ class Pipeline:
                             "error": _safe_stage_error(error, "screening"),
                         }
                     )
-        _write_json(output / "screenings.json", [item.model_dump(mode="json") for item in screenings])
 
         candidate_by_slug = {candidate.slug: candidate for candidate in candidates}
         finalists = [candidate_by_slug[item.slug] for item in screenings if item.advance]
@@ -334,16 +312,7 @@ class Pipeline:
                     bedrock_client=bedrock_client,
                 )
                 modes.add(result.analysis_mode)
-                _write_json(
-                    output / "evidence" / f"{candidate.slug}.json",
-                    [item.model_dump(mode="json") for item in evidence],
-                )
-                _write_json(output / "analyses" / f"{candidate.slug}.json", result.model_dump(mode="json"))
-                memo_file = output / "memos" / f"{candidate.slug}.md"
-                memo_file.write_text(
-                    render_memo(candidate, result, evidence), encoding="utf-8"
-                )
-                pdf_file = output / "memos" / f"{candidate.slug}.pdf"
+                pdf_file = output / f"{candidate.slug}.pdf"
                 render_pdf_memo(candidate, result, evidence, pdf_file)
                 if result.recommendation != Recommendation.PASS:
                     shortlist.append(
@@ -364,7 +333,6 @@ class Pipeline:
                         "decision": result.recommendation.value,
                         "score": result.score,
                         "confidence": result.confidence,
-                        "memo_path": str(memo_file),
                         "pdf_memo_path": str(pdf_file),
                     },
                 )
@@ -389,39 +357,9 @@ class Pipeline:
                     },
                 )
                 LOGGER.warning("candidate failed stage=finalist candidate=%r", candidate.slug)
-        _write_json(output / "shortlist.json", shortlist)
         _emit(progress_callback, "summary_table", {})
 
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        manifest = {
-            "run_id": run_id,
-            "request_id": request_id,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "topic": topic,
-            "batch": batch,
-            "lookback_days": lookback_days,
-            "cutoff": cutoff.isoformat(),
-            "candidate_source": source,
-            "evidence_sources": enabled_manifest_sources(
-                ["yc", "agent_reach", "deep_diligence"] if deep_diligence else ["yc", "agent_reach"]
-            ),
-            "deep_diligence": deep_diligence,
-            "max_hops": max_hops if deep_diligence else 1,
-            "provider": provider,
-            "analysis_mode": _summarize_modes(modes),
-            "screening_model": model_name_for_artifact(resolved_screening_model),
-            "synthesis_model": model_name_for_artifact(resolved_synthesis_model),
-            "screening_prompt_version": "screening-v5",
-            "synthesis_prompt_version": "synthesis-v4",
-            "candidates": len(candidates),
-            "screened": len(screenings),
-            "finalists": len(finalists),
-            "selected": len(shortlist),
-            "succeeded": succeeded,
-            "failed": len(failed_slugs),
-            "evidence_gaps": gaps,
-        }
-        _write_json(output / "manifest.json", manifest)
         summary = RunSummary(
             run_id=run_id,
             request_id=request_id,
@@ -450,7 +388,7 @@ class Pipeline:
         progress_callback: Callable[[str, dict[str, Any]], None] | None = None,
         request_id: str | None = None,
     ) -> RunSummary:
-        """Re-generate both markdown and PDF investment memos from stored run artifacts."""
+        """Re-generate PDF investment memos from stored run artifacts."""
         run_dir = run_dir.resolve()
         if not run_dir.is_dir():
             raise AppError(f"run directory not found: {run_dir}", exit_code=2)
@@ -458,7 +396,6 @@ class Pipeline:
         candidates_file = run_dir / "candidates.json"
         analyses_dir = run_dir / "analyses"
         evidence_dir = run_dir / "evidence"
-        memos_dir = run_dir / "memos"
 
         if not candidates_file.is_file():
             raise AppError(f"missing candidates.json in {run_dir}", exit_code=2)
@@ -466,8 +403,6 @@ class Pipeline:
             raise AppError(f"missing analyses directory in {run_dir}", exit_code=2)
         if not evidence_dir.is_dir():
             raise AppError(f"missing evidence directory in {run_dir}", exit_code=2)
-
-        memos_dir.mkdir(parents=True, exist_ok=True)
 
         try:
             candidates_data = json.loads(candidates_file.read_text(encoding="utf-8"))
@@ -514,12 +449,8 @@ class Pipeline:
                 evidence_data = json.loads(evidence_file.read_text(encoding="utf-8"))
                 evidence = [Evidence.model_validate(e) for e in evidence_data]
 
-                # Render markdown memo
-                md_path = memos_dir / f"{slug}.md"
-                md_path.write_text(render_memo(candidate, analysis, evidence), encoding="utf-8")
-
-                # Render PDF memo
-                pdf_path = memos_dir / f"{slug}.pdf"
+                # Render PDF memo directly to run_dir / f"{slug}.pdf"
+                pdf_path = run_dir / f"{slug}.pdf"
                 render_pdf_memo(candidate, analysis, evidence, pdf_path)
 
                 if analysis.recommendation != Recommendation.PASS:
@@ -543,7 +474,6 @@ class Pipeline:
                         "decision": analysis.recommendation.value,
                         "score": analysis.score,
                         "confidence": analysis.confidence,
-                        "memo_path": str(md_path),
                         "pdf_memo_path": str(pdf_path),
                     },
                 )
@@ -551,28 +481,10 @@ class Pipeline:
                 failed += 1
                 LOGGER.warning("failed to replay memo for %s: %s", slug, error)
 
-        # Update shortlist.json if present
-        if (run_dir / "shortlist.json").exists() or shortlist:
-            _write_json(run_dir / "shortlist.json", shortlist)
+        _emit(progress_callback, "summary_table", {})
 
-        # Update manifest.json if present
-        manifest_file = run_dir / "manifest.json"
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         req_id = request_id or "replay"
-        if manifest_file.is_file():
-            try:
-                manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
-                run_id = manifest_data.get("run_id", run_id)
-                req_id = request_id or manifest_data.get("request_id", req_id)
-                manifest_data["replayed_at"] = datetime.now(timezone.utc).isoformat()
-                manifest_data["succeeded"] = succeeded
-                manifest_data["failed"] = failed
-                manifest_data["selected"] = selected
-                _write_json(manifest_file, manifest_data)
-            except Exception:
-                pass
-
-        _emit(progress_callback, "summary_table", {})
 
         summary = RunSummary(
             run_id=run_id,
