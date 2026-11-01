@@ -26,6 +26,10 @@ def bind_request_id(request_id: str | None = None) -> str:
     return value
 
 
+def current_request_id() -> str:
+    return _request_id.get()
+
+
 def request_headers(extra: Mapping[str, str] | None = None) -> dict[str, str]:
     reserved = {"user-agent", "x-kong-request-id"}
     supplied = {key: value for key, value in (extra or {}).items() if key.lower() not in reserved}

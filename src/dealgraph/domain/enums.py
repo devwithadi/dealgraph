@@ -14,6 +14,13 @@ class Recommendation(ValueEnum):
     TAKE_A_MEETING = "Take a meeting"
 
 
+class AIProvider(ValueEnum):
+    BEDROCK = "bedrock"
+    OPENAI = "openai"
+    DETERMINISTIC = "deterministic"
+
+
 class AnalysisMode(ValueEnum):
     DETERMINISTIC_FALLBACK = "deterministic_fallback"
+    BEDROCK = "bedrock"
     OPENAI = "openai"

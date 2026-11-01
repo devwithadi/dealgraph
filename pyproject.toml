@@ -5,6 +5,7 @@ description = "Replayable public-data startup sourcing and investment memo pipel
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "boto3>=1.43.0",
     "pydantic>=2.6.0",
     "httpx>=0.27.0",
 ]
