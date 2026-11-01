@@ -57,6 +57,8 @@ class Pipeline:
         LOGGER.info("run started limit=%d offline=%s", limit, offline)
         if not topic.strip():
             raise AppError("topic cannot be empty", exit_code=2)
+        if offline and source_file is None:
+            raise AppError("offline mode requires a local source file", exit_code=2)
         output = output.resolve()
         for name in ("evidence", "analyses", "memos"):
             (output / name).mkdir(parents=True, exist_ok=True)

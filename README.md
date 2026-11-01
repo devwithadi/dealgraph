@@ -39,6 +39,8 @@ uv run dealgraph run \
   --output data/runs/replay
 ```
 
+`--offline` requires `--source-file`; DealGraph fails before making any request when the local input is missing.
+
 Use `--json` for automation and `--verbose` for operational logs. JSON and summaries go to stdout; logs and errors go to stderr, so redirects remain safe:
 
 ```bash

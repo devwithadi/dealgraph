@@ -37,3 +37,10 @@ AI produced the implementation and tests. The scoring thesis, trust policy, and 
 - `550094e`: RED — added request-ID injection and verbose lifecycle requirements.
 - `fc8181e` and `e9b304b`: RED — covered safe artifact names, partial failures, reserved headers, OpenAI tracking, and fully offline analysis.
 - `22a8f28`: GREEN — added standard-library logging and error modules, one validated request ID across logs/artifacts/outbound requests, concise default output, JSON/verbose modes, connection retries, pool limits, and safe source-load failures. Final verification: 34 tests and 89.94% coverage.
+
+## 2026-08-21 — DealGraph modular package
+
+- Applied the requested ECC TDD flow and Ponytail constraint: domain boundaries without repositories, factories, interfaces, or new dependencies.
+- `18bd65d`: RED — tests defined the `src/dealgraph` package, domain imports, central enum values, and agent-workflow contract.
+- `d4cc528`: GREEN — moved the working application into `core`, `domain`, `sourcing`, `analysis`, `reporting`, `pipeline`, and `cli` packages without changing external behavior.
+- Split the two mixed-responsibility hotspots: sourcing into registry/candidates/policy/evidence and analysis into scoring/service.
