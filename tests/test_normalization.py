@@ -204,7 +204,7 @@ def test_synthesize_preserves_thesis_and_recomputes_dimension_score() -> None:
     assert "ev-002" in analysis.financials.evidence_ids
 
 
-def test_synthesize_self_heals_missing_narrative_citations_and_missing_citations_list() -> None:
+def test_synthesize_rejects_payload_without_scoring_dimensions() -> None:
     class UntaggedPayloadBedrockClient:
         def converse(self, **_kwargs):
             # LLM omitted [ev-XXX] tags and citations list
@@ -227,20 +227,11 @@ def test_synthesize_self_heals_missing_narrative_citations_and_missing_citations
             return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
 
     client = UntaggedPayloadBedrockClient()
-    analysis = synthesize(
-        _candidate(),
-        _evidence(),
-        httpx.Client(),
-        provider=AIProvider.BEDROCK,
-        bedrock_client=client,
-    )
-
-    # All narrative fields should have been auto-healed with [ev-001]
-    assert "[ev-001]" in analysis.summary
-    assert "[ev-001]" in analysis.team
-    assert "[ev-001]" in analysis.product
-    assert "[ev-001]" in analysis.market
-    assert "[ev-001]" in analysis.why_now
-    assert all("[ev-001]" in r for r in analysis.risks)
-    assert analysis.score == 82.0
-    assert analysis.recommendation == Recommendation.TAKE_A_MEETING
+    with pytest.raises(ValueError, match="five required scoring dimensions"):
+        synthesize(
+            _candidate(),
+            _evidence(),
+            httpx.Client(),
+            provider=AIProvider.BEDROCK,
+            bedrock_client=client,
+        )
