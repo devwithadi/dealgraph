@@ -9,7 +9,7 @@ import pytest
 from app.domain.enums import AIProvider, AnalysisMode, CitationTag, EvidenceStatus, Recommendation
 from app.domain.models import Analysis, Candidate, Evidence, Financials
 from app.reporting.memo import _build_evidence_map, _format_source_category, _resolve_evidence_entry
-from app.reporting.pdf import NumberedCanvas, _transform_citations_for_pdf, render_pdf_memo
+from app.reporting.pdf import NumberedCanvas, _cap_text, _transform_citations_for_pdf, render_pdf_memo
 
 
 @pytest.fixture
@@ -164,6 +164,17 @@ def test_citation_transformation() -> None:
     assert "&#8599;" not in pdf_transformed
     assert '<font color="#64748B"><b>[EV-999]</b></font>' in pdf_transformed
     assert _transform_citations_for_pdf("", ev_map) == ""
+
+
+def test_cap_text_prefers_a_complete_sentence_over_dangling_ellipsis() -> None:
+    text = (
+        "Gini automates tasks, answers questions, and maintains company knowledge bases. "
+        "Its credit pricing includes several options for teams with different requirements."
+    )
+
+    assert _cap_text(text, 100) == (
+        "Gini automates tasks, answers questions, and maintains company knowledge bases."
+    )
 
 
 def test_source_category_mapping(sample_evidence: list[Evidence]) -> None:
