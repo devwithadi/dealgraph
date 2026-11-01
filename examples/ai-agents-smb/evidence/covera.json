@@ -1,10 +1,10 @@
 [
   {
-    "claim": "YC company profile",
+    "claim": "YC profile",
     "excerpt": "AI-native OS for insurance brokers Covera builds AI agents for insurance brokers. Our ready-to-use agents take over the day-to-day servicing work: submission intake, carrier quoting, quote comparison, claims handling, past-due collections, and account rounding. That means brokers can spend their time advising and selling clients instead of doing data entry. We work with agencies of every size and connect natively to the tools they already use. Reported team size: 2. YC marks the company as hiring.",
     "id": "ev-001",
     "published_at": "2026-08-21T14:58:58Z",
-    "retrieved_at": "2026-08-24T15:33:44.513001Z",
+    "retrieved_at": "2026-08-24T16:30:45.700207Z",
     "source_title": "YC profile: Covera",
     "source_type": "yc_directory",
     "source_url": "https://www.ycombinator.com/companies/covera",
@@ -17,7 +17,7 @@
     "excerpt": "[PRICING & TIERS]: Ready-to-use agents handle intake, quoting, claims, and collections. Your team stays focused on advising and selling.\n[TEAM & FOUNDERS]: Google Drive • Yes. Covera connects to your agency management system (Applied Epic, AMS360, EZLynx, HawkSoft) and your CRM (Salesforce, HubSpot), as well as your email and storage (Gmail, Outlook, Google Drive, SharePoint).\n[INTEGRATIONS & ECOSYSTEM]: Salesforce • HubSpot • Yes. Covera connects to your agency management system (Applied Epic, AMS360, EZLynx, HawkSoft) and your CRM (Salesforce, HubSpot), as well as your email and storage (Gmail, Outlook, Google Drive, SharePoint).\n\nCoveraAgentsSecurityFAQContact ENFRBook a demo AI agents for insurance brokers Less admin, more selling. Ready-to-use agents handle intake, quoting, claims, and collections. Your team stays focused on advising and selling. Book a demo→See the agents app.covera-agents.com DashboardIntakeQuotingCompareClaimsCollectionsCross-sell DashboardSubmission intakeCarrier quotingComparisonClaimsCollectionsAccount rounding Dashboard 17 hrs saved 12× ROI on quoting 320 files handled 12 follow-ups to approve 9:12 AMQuote sent to 4 carriersQuoting 8:47 AM7 documents extracted from incoming emailIntake 8:30 AMCoverage proposal generated, The Hartford recommendedComparison 8:12 AMAMS360 sync completeAMS360 The agents Agents that follow your client's journey From the first request through the life of the policy, each agent takes on one specific servicing task and hands you the result, ready to approve. 01 Submission intake From a prospect's request, the agent derives the exact list of documents to collect for the coverage, checks what has come in, and drafts the follow-up email to the client. Missing documents 02 Carrier quoting It enters the risk profile into each carrier portal to request quotes, mapping fields from one carrier to the next. No more double entry. Re-keying across carrier portals 03 Quote comparison It reads the quotes that come back, compares coverages, deductibles, and exclusions, and produces a sourced coverage proposal, ready to present to the client. Tedious comparison 04 Claims handling It triages the claim, checks coverage, lists the exact documents needed, tracks what is received, and drafts the follow-up ready to send. Time-consuming files 05 Past-due collections It flags unpaid premiums, applies the escalation (reminder, notice, final notice) on the balance due, and drafts the notice ready to send, every action sourced.",
     "id": "ev-002",
     "published_at": null,
-    "retrieved_at": "2026-08-24T15:33:46.646121Z",
+    "retrieved_at": "2026-08-24T16:30:46.889785Z",
     "source_title": "Covera · AI agents for insurance brokers",
     "source_type": "web_scraper",
     "source_url": "https://www.covera-agents.com/",

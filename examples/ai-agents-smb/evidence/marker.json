@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Platform and FDEs for rebuilding businesses agent-first Marker embeds with companies, learns how their organization actually works, and ships custom AI agents into production in weeks via the Marker Command Center. Each agent deepens our understanding, so the next one launches faster until the whole org is agent-first. Reported team size: 3.",
+    "id": "ev-001",
+    "published_at": "2026-08-18T01:36:31Z",
+    "retrieved_at": "2026-08-24T16:31:11.085091Z",
+    "source_title": "YC profile: Marker",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/marker",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Marker - the AI-native consultancy rebuilding businesses with AI agentsMarker",
+    "excerpt": "[PRICING & TIERS]: The spreadsheets, reports, and queues your team already knows. No new software to learn.\n\nSkip to main content Marker ProblemSolutionProofWhat we doBook a call BACKED BY Y COMBINATOR Your AI transformation, actually shipped We embed with your company, ship agents in weeks, and don't stop until your transformation is complete. How it worksBook a call 95% grunt workGrowth is bottleneckedHeadcount scales with workload Automated WorkflowProcesses run end-to-end Operational EfficiencyStreamlines operations Onboarding120days → 60days 95% lessless manual QA First agentWeeks → Days THE PROBLEM You can see where this is going You know AI should transform how your company works. 95% of AI initiatives still fail. We watched why from inside Gap. You're not short on ambition. You're short on time, expertise, and a map of what's possible. CONDITION How work really happens lives in people's heads, not documentation. PRESENT Knowing what AI can actually do, and getting it all the way into production. THE ALTERNATIVES The usual paths don't ship Do nothing.The gap compounds. Against you. Hire for it.The people who have actually done this are rare. Recruiting them takes quarters. Call in a consultancy.The good ones ship real systems now. In quarters. And they leave. THEY LEAVEENGAGED We sold our lastcompany to Gap and founded their Office of AI. That expertise embeds with you on day one, and the first agents are live in weeks. THE SOLUTION AI agents that understand your company, then transform it We embed with your teams, learn how the work actually happens, and build custom agents on the Marker Command Center. The first agents go live in weeks. Then a week. Then days.We keep going until you're running an AI-native organization. They work the way you already work.The spreadsheets, reports, and queues your team already knows. No new software to learn. PROOF What this looks liketoday FORTUNE 500 RETAILER8-FIGURE PROP-TECH COMPANY Manual work, down by 80%. In product operations, automated on the systems they already run. Next up: assortment and buying, reimagined from the ground up. PRODUCT OPSMANUAL WORK DOWN 80% NEXT UPASSORTMENT & BUYING, REBUILT GROUND-UP APPROACHEMBEDDED INSIDE, ON EXISTING SYSTEMS 80% Onboarding, 120 days to 60. Client onboarding, automated end-to-end on the systems they already run. Next up: manual QA down 95%, and the first agent live in days. ONBOARDING120 DAYS 60 DAYS NEXT UPMANUAL QA, DOWN 95% APPROACHEMBEDDED INSIDE, ON REAL DATA ",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T16:31:12.171817Z",
+    "source_title": "Marker - the AI-native consultancy rebuilding businesses with AI agentsMarker",
+    "source_type": "web_scraper",
+    "source_url": "https://onmarker.com/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

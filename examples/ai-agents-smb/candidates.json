@@ -178,5 +178,189 @@
     ],
     "team_size": 4,
     "website": "https://www.lantern.md"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Callbook AI is a collections agency operated by AI. We collect late stage portfolios by finding, contacting and negotiating with borrowers.",
+    "industry": "B2B",
+    "is_hiring": false,
+    "launched_at": "2026-08-18T03:17:57Z",
+    "name": "Callbook AI",
+    "one_liner": "AI collections agency for late stage portfolios",
+    "slug": "callbook-ai",
+    "source_url": "https://www.ycombinator.com/companies/callbook-ai",
+    "tags": [
+      "AI"
+    ],
+    "team_size": 7,
+    "website": "https://callbook.ai"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Grocalo (S26) is an AI brain that runs content for creators. We understand their audiences, using video understanding and deep platform analytics to bottle up the taste behind each creator and personalize and distribute content to creator specific audiences.\r\n\r\nGrocalo generated 2B views and gained 4M followers for our creators in the last 2 months. Our clients include Jimmy O. Yang (Comedian, 11M followers), King Bach (72M followers), Leenda Dong (28M followers), Steven He (30M followers), Sheena Melwani (18M followers), and Jeannie Mai (TV host, 6M followers).\r\n\r\nContent should be personalized and data-driven. We’re developing the most advanced AI brain capable of replicating virality for any given audience. \r\n",
+    "industry": "Consumer -> Content",
+    "is_hiring": false,
+    "launched_at": "2026-08-18T03:07:45Z",
+    "name": "Grocalo",
+    "one_liner": "AI brain that runs content for creators",
+    "slug": "grocalo",
+    "source_url": "https://www.ycombinator.com/companies/grocalo",
+    "tags": [
+      "Artificial Intelligence",
+      "Entertainment",
+      "Creator Economy"
+    ],
+    "team_size": 0,
+    "website": "https://grocalo.com/"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Marker embeds with companies, learns how their organization actually works, and ships custom AI agents into production in weeks via the Marker Command Center. Each agent deepens our understanding, so the next one launches faster until the whole org is agent-first.",
+    "industry": "B2B -> Productivity",
+    "is_hiring": false,
+    "launched_at": "2026-08-18T01:36:31Z",
+    "name": "Marker",
+    "one_liner": "Platform and FDEs for rebuilding businesses agent-first",
+    "slug": "marker",
+    "source_url": "https://www.ycombinator.com/companies/marker",
+    "tags": [
+      "Artificial Intelligence",
+      "Generative AI",
+      "SaaS",
+      "B2B",
+      "Workflow Automation"
+    ],
+    "team_size": 3,
+    "website": "https://onmarker.com"
+  },
+  {
+    "batch": "Fall 2026",
+    "description": "antimattr builds a voice-first hardware interface for human-agent interaction that includes a ring and a pair of earphones. Designed to make more of your voice, the ring can record and summarise your conversations, capture thoughts on the go, or control your agents. The earphones use proprietary voice isolation technology to block out background noise entirely, so you can take a clear call from a loud pub or dictate with real accuracy.\r\n\r\nReserve early access at https://www.antimattr.one/project-mnemosyne\r\n[use code YC at checkout]",
+    "industry": "Consumer -> Consumer Electronics",
+    "is_hiring": false,
+    "launched_at": "2026-08-16T23:20:49Z",
+    "name": "antimattr",
+    "one_liner": "voice-first hardware interface for human-agent interaction",
+    "slug": "antimattr",
+    "source_url": "https://www.ycombinator.com/companies/antimattr",
+    "tags": [
+      "Hardware",
+      "Consumer",
+      "AI"
+    ],
+    "team_size": 2,
+    "website": "https://antimattr.one/"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "We are building the future of chip manufacturing.\r\n\r\nChips are more advanced than ever, and the features inside them keep getting smaller. But the cleanroom infrastructure supporting their manufacture has not scaled at the same pace. Intel, TSMC, Samsung, and others spend billions building and operating massive cleanrooms, only to isolate their most advanced wafers from the surrounding facility as much as possible.\r\n\r\nWe think that architecture is backwards. Instead of making the entire building cleaner, why not make the machinery itself as clean as possible?\r\n\r\nTalos is our proprietary tool-integrated purification system. It sits directly inside semiconductor equipment and continuously destroys airborne molecular contaminants before they reach the wafer. Instead of fighting contamination by constantly flooding tools with ultra-high-purity nitrogen, Talos keeps the environment inside the machine 10–100x cleaner, without the massive purge-gas bill.\r\n\r\nTalos is powerful on its own, but it is also the foundation for a much bigger vision: the Cleanpipe.\r\n\r\nThe Aerogen Systems Cleanpipe is an ultra-clean interconnect infrastructure that protects wafers as they move from machine to machine across the fab. Rather than relying on a billion-dollar cleanroom to protect every cubic foot of factory space, Cleanpipe creates a controlled environment only where cleanliness actually matters: around the wafer.\r\n\r\nTalos cleans the tools. Cleanpipe connects them. Eventually, we delete the cleanroom and build more advanced chips, at greater scale, with radically less infrastructure. With cleanpipes connecting tools, chip fabs can exist anywhere.",
+    "industry": "Industrials",
+    "is_hiring": false,
+    "launched_at": "2026-08-16T17:08:46Z",
+    "name": "Aerogen Systems",
+    "one_liner": "Building the future of advanced chip manufacturing.",
+    "slug": "aerogen-systems",
+    "source_url": "https://www.ycombinator.com/companies/aerogen-systems",
+    "tags": [
+      "Hard Tech",
+      "B2B",
+      "Manufacturing",
+      "Semiconductors"
+    ],
+    "team_size": 4,
+    "website": "https://www.aerogensystems.com/"
+  },
+  {
+    "batch": "Fall 2026",
+    "description": "Billions of people need tourist visas to travel the world. We use AI agents to prepare applications, verify documents, secure appointments, and handle the visa process end to end.\r\n",
+    "industry": "Consumer -> Travel, Leisure and Tourism",
+    "is_hiring": false,
+    "launched_at": "2026-08-16T05:35:36Z",
+    "name": "Veeza AI",
+    "one_liner": "AI travel agent for people with weak passports, starting with visas.",
+    "slug": "veeza-ai",
+    "source_url": "https://www.ycombinator.com/companies/veeza-ai",
+    "tags": [
+      "AIOps",
+      "Consumer",
+      "AI"
+    ],
+    "team_size": 1,
+    "website": "https://veeza.ai"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "We make radar seekers for interceptors. The seeker — the sensor that finds and locks onto targets — is the most critical and costly component in every interceptor. Developing a radar seeker takes a 200+ person team at Raytheon and hundreds of millions of dollars. We’ve built a pipeline which automates their entire engineering pipeline, and can produce working seekers in weeks, not years.",
+    "industry": "Industrials -> Defense",
+    "is_hiring": false,
+    "launched_at": "2026-08-15T16:55:46Z",
+    "name": "Vernius Systems, Inc.",
+    "one_liner": "Autonomous radar guidance for interceptors",
+    "slug": "vernius-systems-inc",
+    "source_url": "https://www.ycombinator.com/companies/vernius-systems-inc",
+    "tags": [
+      "Hard Tech",
+      "Drones",
+      "Radar",
+      "Aerospace",
+      "Defense"
+    ],
+    "team_size": 3,
+    "website": "https://www.vernius.systems"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Snap Poker is the first social poker app, a real-money platform with a feed built in. Players post hands as interactive reels with voiceover and build a following, and we take zero rake because we monetize like a game rather than a casino. We're bringing everyone to online poker.",
+    "industry": "Consumer -> Social",
+    "is_hiring": false,
+    "launched_at": "2026-08-14T22:01:16Z",
+    "name": "Snap Poker",
+    "one_liner": "The social network for online poker",
+    "slug": "snap-poker",
+    "source_url": "https://www.ycombinator.com/companies/snap-poker",
+    "tags": [
+      "Consumer",
+      "Gaming",
+      "Social Media"
+    ],
+    "team_size": 3,
+    "website": "https://playsnappoker.com"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Mass Magnetics turns recycled rare-earth scrap into high-performance permanent magnets, made in America. The materials we supply are the backbone of electric motors, sensors, speakers, hard drives, and electronics.\r\nOur process enables DFARS-compliant magnets for defense, aerospace, and industrial manufacturers who demand domestic supply without compromising on quality.\r\nOperations in Greater Boston, MA (Greentown Labs) and Columbus, IN.",
+    "industry": "Industrials -> Defense",
+    "is_hiring": false,
+    "launched_at": "2026-08-14T19:30:39Z",
+    "name": "Mass Magnetics",
+    "one_liner": "USA-made magnetics for aerospace, robotics, and defense. ",
+    "slug": "mass-magnetics",
+    "source_url": "https://www.ycombinator.com/companies/mass-magnetics",
+    "tags": [
+      "Hard Tech",
+      "Drones",
+      "Manufacturing"
+    ],
+    "team_size": 3,
+    "website": "https://massmagnetics.com/"
+  },
+  {
+    "batch": "Summer 2026",
+    "description": "Touchy is your personal AI assistant that lives on your iPhone. One button press and you're talking to an assistant that sees what you see, remembers what you tell it, and takes action across 1,000+ apps--so you can get back to living in the moment.",
+    "industry": "Consumer",
+    "is_hiring": false,
+    "launched_at": "2026-08-14T18:34:57Z",
+    "name": "Touchy",
+    "one_liner": "AI voice assistant that understands the world around you",
+    "slug": "touchy",
+    "source_url": "https://www.ycombinator.com/companies/touchy",
+    "tags": [
+      "Artificial Intelligence",
+      "Consumer",
+      "Productivity",
+      "AI Assistant"
+    ],
+    "team_size": 3,
+    "website": "https://touchyapp.com"
   }
 ]
