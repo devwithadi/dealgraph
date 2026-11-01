@@ -22,7 +22,44 @@ agent-reach doctor --json
 uv run dealgraph run --topic "AI agents for SMBs" --output data/runs/latest
 ```
 
-By default, DealGraph screens every active YC company launched in the last 30 days. Use `--batch W26` to restrict a YC batch, or `--limit 50` as an optional emergency cap after date selection. There is no default count cap.
+By default, DealGraph screens active YC companies launched in the last 30 days. Use `--batch W26` to restrict to a specific YC batch, or `--limit 50` as an emergency cap after date selection.
+
+### Offline Replay Mode
+
+Re-generate both `.md` and `.pdf` investment memos from stored run artifacts without making network or LLM calls:
+
+```bash
+uv run dealgraph replay --run-dir data/runs/latest
+```
+
+---
+
+## AI Workflow & Technical Architecture
+
+For a deep-dive on the engineering journey, prompt evolution (v1-v5 screening, v1-v4 synthesis), empirical multi-model benchmarks, failure modes & defensive guardrails, and AI agent co-engineering log, see:
+
+📖 **[docs/AI_WORKFLOW.md](docs/AI_WORKFLOW.md)**
+
+---
+
+## Model Selection & Providers
+
+DealGraph supports seamless multi-provider execution with built-in model aliasing:
+
+| Provider | CLI `--provider` | Default Screening | Default Synthesis | Model Aliases |
+|---|---|---|---|---|
+| **AWS Bedrock** (default) | `bedrock` | `amazon.nova-micro-v1:0` | `amazon.nova-lite-v1:0` | `nova-micro`, `nova-lite`, `nova-pro`, `llama-3.3-70b`, `claude-3.5-sonnet` |
+| **OpenAI** | `openai` | `gpt-4.1-nano` | `gpt-4.1-mini` | Standard OpenAI models |
+| **OpenRouter** | `openrouter` | `qwen/qwen-2.5-72b-instruct` | `qwen/qwen-2.5-72b-instruct` | `qwen-2.5-72b`, `qwen-2.5-32b` |
+| **DeepSeek** | `deepseek` | `deepseek-chat` | `deepseek-chat` | `deepseek-v3`, `deepseek-r1` |
+| **DashScope (Alibaba)** | `dashscope` | `qwen-turbo` | `qwen-plus` | `qwen-max`, `qwen-plus`, `qwen-turbo` |
+| **Zhipu AI (GLM)** | `zhipu` | `glm-4-air` | `glm-4-plus` | `glm-4`, `glm-4-plus`, `glm-4-air`, `glm-5` |
+
+Specify custom models via `--model`, `--screening-model`, or `--synthesis-model`:
+
+```bash
+uv run dealgraph run --topic "AI infrastructure" --provider bedrock --model llama-3.3-70b
+```
 
 ## Configuration
 
@@ -119,7 +156,9 @@ data/runs/latest/
 ├── manifest.json
 ├── evidence/<finalist>.json
 ├── analyses/<finalist>.json
-└── memos/<finalist>.md
+└── memos/
+    ├── <finalist>.md     # Cited Markdown investment memo
+    └── <finalist>.pdf    # Double-column vector PDF memo (ReportLab)
 ```
 
 The manifest records the launch cutoff, eligible/screened/finalist/selected/memo counts, both model IDs, provider, Agent Reach source, failures, and one validated request ID. YC and OpenAI HTTP requests receive `X-Kong-Request-ID`; Bedrock calls receive the same ID in `requestMetadata`. The Agent Reach subprocess receives it as `DEALGRAPH_REQUEST_ID` for local correlation.
@@ -134,9 +173,13 @@ Request ID: req-5ae470bb25d84a87
 
 Use `--json` for automation and `--verbose` for operational logs.
 
-## Offline behavior
+## Offline Behavior & Replay
 
-Fresh screening is intentionally LLM-only. Consequently, `--offline` fails before making any HTTP, model, or Agent Reach request instead of silently substituting heuristic judgments. A future recorded-artifact replay can restore offline memo generation without weakening that guarantee.
+Fresh candidate screening requires LLM semantic triage. When re-generating investment memos from previously recorded runs, use `dealgraph replay` to produce both Markdown and vector PDF memos without network or LLM calls:
+
+```bash
+uv run dealgraph replay --run-dir data/runs/latest
+```
 
 ## Verify
 

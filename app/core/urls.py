@@ -21,6 +21,7 @@ def validate_public_url(
     ports: Collection[int],
     blocked_hosts: Collection[str] = (),
     resolver: Callable[[str], list[str]] = resolve_host,
+    allow_local: bool = False,
 ) -> str:
     parsed = urlsplit(url)
     if parsed.scheme not in schemes or not parsed.hostname:
@@ -45,6 +46,9 @@ def validate_public_url(
     if not addresses:
         raise PublicUrlError(f"Host did not resolve: {host}")
     for address in addresses:
-        if not ipaddress.ip_address(address).is_global:
+        ip_obj = ipaddress.ip_address(address)
+        if allow_local and (ip_obj.is_loopback or host == "localhost"):
+            continue
+        if not ip_obj.is_global:
             raise PublicUrlError(f"Non-public target rejected: {address}")
     return url

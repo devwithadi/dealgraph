@@ -77,3 +77,25 @@ def test_cli_returns_failure_when_any_candidate_fails(monkeypatch, tmp_path: Pat
     monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-test")
     monkeypatch.setattr("app.cli.main.Pipeline.run", lambda *_args, **_kwargs: summary(tmp_path, failed=1))
     assert main(["run", "--topic", "AI"]) == 1
+
+
+def test_cli_replay_subcommand_invokes_pipeline_replay(monkeypatch, tmp_path: Path, capsys) -> None:
+    monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-replay-test")
+    monkeypatch.setattr("app.cli.main.Pipeline.replay", lambda self, run_dir, **_kwargs: summary(run_dir))
+
+    assert main(["replay", "--run-dir", str(tmp_path)]) == 0
+    output = capsys.readouterr().out
+    assert "Screened 25/25 companies; created 3/3 finalist memos; selected 2." in output
+    assert f"Memos: {tmp_path / 'memos'}" in output
+
+
+def test_cli_replay_json_output(monkeypatch, tmp_path: Path, capsys) -> None:
+    monkeypatch.setattr("app.cli.main.new_request_id", lambda: "req-replay-test")
+    monkeypatch.setattr("app.cli.main.Pipeline.replay", lambda self, run_dir, **_kwargs: summary(run_dir))
+
+    assert main(["replay", "--run-dir", str(tmp_path), "--json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["screened"] == 25
+    assert payload["finalists"] == 3
+    assert payload["succeeded"] == 3
+

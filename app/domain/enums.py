@@ -15,9 +15,30 @@ class Recommendation(ValueEnum):
 class AIProvider(ValueEnum):
     BEDROCK = "bedrock"
     OPENAI = "openai"
+    OPENROUTER = "openrouter"
+    DEEPSEEK = "deepseek"
+    DASHSCOPE = "dashscope"
+    ZHIPU = "zhipu"
+    OLLAMA = "ollama"
 
 
 class AnalysisMode(ValueEnum):
     BEDROCK = "bedrock"
     OPENAI = "openai"
+    OPENROUTER = "openrouter"
+    DEEPSEEK = "deepseek"
+    DASHSCOPE = "dashscope"
+    ZHIPU = "zhipu"
+    OLLAMA = "ollama"
     MIXED = "mixed"
+    DETERMINISTIC_FALLBACK = "deterministic_fallback"
+
+
+class CitationTag(ValueEnum):
+    VERIFIED = "verified"
+    TRUSTED = "trusted"
+    CLAIMED = "claimed"
+
+
+EvidenceStatus = CitationTag
+
