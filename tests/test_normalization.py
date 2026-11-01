@@ -148,10 +148,11 @@ def test_normalize_changes_mind() -> None:
     assert from_str[0] == "Single string condition"
 
 
-def test_synthesize_normalizes_integer_confidence_and_single_changes_mind() -> None:
+def test_synthesize_preserves_thesis_and_recomputes_dimension_score() -> None:
     class MockBedrockClient:
         def converse(self, **_kwargs):
             payload = {
+                "thesis": "AgentFlow owns the SMB workflow layer through embedded integrations [ev-001].",
                 "summary": "AgentFlow automates SMB workflows. [ev-001]",
                 "team": "Not disclosed",
                 "product": "Agentic automation platform. [ev-001]",
@@ -160,9 +161,16 @@ def test_synthesize_normalizes_integer_confidence_and_single_changes_mind() -> N
                 "risks": ["Retention risk in competitive market. [ev-002]"],
                 "open_questions": ["What is gross margin?"],
                 "changes_mind": ["Verified $1M ARR milestone"],  # Only 1 item returned
-                "score": "88",  # String score
+                "score": "12",  # Deliberately contradictory; runtime recomputes it.
+                "dimensions": [
+                    {"name": "workflow_pain", "score": 9, "weight": 25, "rationale": "Frequent support work [ev-001]", "evidence_ids": ["ev-001"]},
+                    {"name": "speed_to_value", "score": 8, "weight": 20, "rationale": "Fast deployment [ev-001]", "evidence_ids": ["ev-001"]},
+                    {"name": "compounding_advantage", "score": 7, "weight": 20, "rationale": "Embedded integrations [ev-001]", "evidence_ids": ["ev-001"]},
+                    {"name": "team_execution", "score": 6, "weight": 15, "rationale": "Team details are limited [ev-002]", "evidence_ids": ["ev-002"]},
+                    {"name": "market_distribution", "score": 8, "weight": 20, "rationale": "Large SMB market [ev-002]", "evidence_ids": ["ev-002"]},
+                ],
                 "confidence": 85,  # Integer 0-100 confidence
-                "recommendation": "take_a_meeting",  # Snake case recommendation
+                "recommendation": "pass",  # Deliberately contradictory.
                 "citations": ["ev-001", "ev-002"],
             }
             return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
@@ -177,9 +185,19 @@ def test_synthesize_normalizes_integer_confidence_and_single_changes_mind() -> N
     )
 
     assert analysis.company == "AgentFlow"
-    assert analysis.score == 88.0
+    assert analysis.thesis == (
+        "AgentFlow owns the SMB workflow layer through embedded integrations [ev-001]."
+    )
+    assert analysis.score == 77.5
     assert analysis.confidence == 0.85
     assert analysis.recommendation == Recommendation.TAKE_A_MEETING
+    assert [item["name"] for item in analysis.dimensions] == [
+        "workflow_pain",
+        "speed_to_value",
+        "compounding_advantage",
+        "team_execution",
+        "market_distribution",
+    ]
     assert len(analysis.changes_mind) == 2
     assert analysis.changes_mind[0] == "Verified $1M ARR milestone"
     assert analysis.financials.revenue == "$50k"
@@ -226,4 +244,3 @@ def test_synthesize_self_heals_missing_narrative_citations_and_missing_citations
     assert all("[ev-001]" in r for r in analysis.risks)
     assert analysis.score == 82.0
     assert analysis.recommendation == Recommendation.TAKE_A_MEETING
-
