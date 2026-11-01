@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from app.analysis import calculate_score, recommendation_for, validate_citations
+from app.analysis import calculate_score, evidence_confidence, recommendation_for, validate_citations
 from app.models import DimensionScore, Evidence
 from app.sources import SOURCE_REGISTRY, SourcePolicyError, load_candidates, validate_public_url
 
@@ -80,3 +80,24 @@ def test_source_registry_disables_licensed_scraping() -> None:
     assert SOURCE_REGISTRY["yc"]["access"] == "public_api"
     assert SOURCE_REGISTRY["pitchbook"]["enabled"] is False
     assert SOURCE_REGISTRY["pitchbook"]["access"] == "licensed_api_only"
+
+
+def test_confidence_counts_independent_sources_not_page_count() -> None:
+    def item(identifier: str, source_type: str) -> Evidence:
+        return Evidence(
+            id=identifier,
+            claim="claim",
+            excerpt="excerpt",
+            source_url=f"https://example.com/{identifier}",
+            source_title="source",
+            source_type=source_type,
+            trust_tier="test",
+            verification="test",
+        )
+
+    first_party_only = [item("ev-001", "yc_directory")] + [
+        item(f"ev-00{number}", "company_website") for number in range(2, 6)
+    ]
+    independent = first_party_only + [item("ev-006", "hacker_news")]
+    assert evidence_confidence(first_party_only) == 0.55
+    assert evidence_confidence(independent) == 0.7
