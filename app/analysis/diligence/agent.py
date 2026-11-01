@@ -5,9 +5,16 @@ import subprocess
 from collections.abc import Callable
 from typing import Any
 
-from app.analysis.diligence.evaluator import evaluate_evidence_gaps, generate_followup_queries
-from app.analysis.diligence.models import DiligencePlan, DiligenceState, InformationGap, SearchQuery
-from app.analysis.diligence.planner import generate_diligence_plan
+from app.analysis.diligence.constants import DILIGENCE
+from app.analysis.diligence.models import (
+    DiligenceEvaluation,
+    DiligencePillar,
+    DiligencePlan,
+    DiligenceState,
+    GapSeverity,
+    InformationGap,
+    SearchQuery,
+)
 from app.analysis.diligence.tools.ranker import EvidenceRanker
 from app.analysis.diligence.tools.scraper import WebFetchTool
 from app.analysis.diligence.tools.search import SearchTool, is_allowed_url
@@ -19,6 +26,7 @@ from app.sourcing.policy import SourcePolicyError
 LOGGER = logging.getLogger("dealgraph.diligence")
 
 _is_allowed_url = is_allowed_url
+EvaluationFn = Callable[[Candidate, list[Evidence], str, int], DiligenceEvaluation]
 
 
 def default_live_search(
@@ -38,7 +46,8 @@ class DeepDiligenceAgent:
     def __init__(
         self,
         *,
-        max_hops: int = 2,
+        evaluation_fn: EvaluationFn,
+        max_hops: int = DILIGENCE.default_max_hops,
         search_fn: Callable[[Candidate, SearchQuery, int], list[Evidence]] | None = None,
         runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
         search_tool: SearchTool | None = None,
@@ -46,7 +55,10 @@ class DeepDiligenceAgent:
         ranker: EvidenceRanker | None = None,
         progress_callback: Callable[[str, dict[str, Any]], None] | None = None,
     ) -> None:
-        self.max_hops = max(1, max_hops)
+        if max_hops < DILIGENCE.initial_hop:
+            raise ValueError("max_hops must be positive")
+        self.max_hops = max_hops
+        self.evaluation_fn = evaluation_fn
         self.runner = runner
         self.search_fn = search_fn
         self.search_tool = search_tool or SearchTool(runner=runner, custom_search_fn=search_fn)
@@ -69,7 +81,16 @@ class DeepDiligenceAgent:
     ) -> DiligenceState:
         """Execute the iterative 4-pillar multi-hop deep diligence research workflow."""
         base_evidence = list(initial_evidence or [])
-        plan = generate_diligence_plan(candidate, topic, base_evidence)
+        current_evaluation = self.evaluation_fn(
+            candidate, base_evidence, topic, DILIGENCE.initial_hop
+        )
+        plan = DiligencePlan(
+            candidate_slug=candidate.slug,
+            candidate_name=candidate.name,
+            topic=topic,
+            queries=current_evaluation.followup_queries,
+            focus_areas=[gap.description for gap in current_evaluation.gaps if not gap.resolved],
+        )
 
         self._emit(
             "diligence_plan_generated",
@@ -81,11 +102,11 @@ class DeepDiligenceAgent:
             },
         )
 
-        initial_gaps = evaluate_evidence_gaps(candidate, base_evidence, topic)
+        initial_gaps = current_evaluation.gaps
         state = DiligenceState(
             candidate=candidate,
             topic=topic,
-            current_hop=0,
+            current_hop=DILIGENCE.unstarted_hop,
             max_hops=self.max_hops,
             plan=plan,
             evidence=base_evidence,
@@ -101,11 +122,11 @@ class DeepDiligenceAgent:
         seen_urls = {ev.source_url for ev in current_evidence}
         current_gaps = list(initial_gaps)
         availability_gap: InformationGap | None = None
-        hop = 0
+        hop = DILIGENCE.unstarted_hop
 
         # Phase 1: Direct multi-page candidate website scraping
         if candidate.website and candidate.website.strip():
-            subpages_list = ["/", "/pricing", "/about", "/product", "/docs", "/security", "/faq", "/blog"]
+            subpages_list = list(DILIGENCE.website_subpages)
             self._emit(
                 "diligence_scrape_start",
                 {
@@ -141,7 +162,10 @@ class DeepDiligenceAgent:
                     new_scraped.append(item)
 
             current_evidence.extend(new_scraped)
-            current_gaps = evaluate_evidence_gaps(candidate, current_evidence, topic)
+            current_evaluation = self.evaluation_fn(
+                candidate, current_evidence, topic, DILIGENCE.initial_hop
+            )
+            current_gaps = current_evaluation.gaps
             self._emit(
                 "diligence_scrape_complete",
                 {
@@ -152,12 +176,9 @@ class DeepDiligenceAgent:
                 },
             )
 
-        for hop_idx in range(1, self.max_hops + 1):
+        for hop_idx in range(DILIGENCE.initial_hop, self.max_hops + 1):
             hop = hop_idx
-            if hop == 1:
-                pending_queries = list(plan.queries)
-            else:
-                pending_queries = generate_followup_queries(candidate, current_gaps, hop=hop, topic=topic)
+            pending_queries = list(current_evaluation.followup_queries)
 
             if not pending_queries:
                 self._emit(
@@ -195,24 +216,30 @@ class DeepDiligenceAgent:
                     if self.search_fn is not None:
                         results = self.search_fn(candidate, q, start_id)
                     else:
-                        results = self.search_tool.search(candidate, q, start_id, num_results=5)
+                        results = self.search_tool.search(
+                            candidate,
+                            q,
+                            start_id,
+                            num_results=DILIGENCE.search_results_per_query,
+                        )
                 except SourcePolicyError as error:
-                    if str(error) != "Independent search rate limited":
+                    if str(error) != DILIGENCE.search_rate_limited_error:
                         raise
                     availability_gap = InformationGap(
-                        pillar="Research availability",
-                        description=(
-                            "Independent search was rate limited; the memo uses available "
-                            "baseline and first-party sources."
-                        ),
-                        severity="high",
+                        pillar=DiligencePillar.RESEARCH_AVAILABILITY,
+                        description=DILIGENCE.search_unavailable_gap_description,
+                        severity=GapSeverity.HIGH,
                         resolved=False,
-                        rationale="Search provider returned a quota response; no provider body was retained.",
+                        rationale=DILIGENCE.search_unavailable_gap_rationale,
                     )
                     executed_queries.append(q.model_copy(update={"executed": True}))
                     self._emit(
                         "diligence_search_unavailable",
-                        {"candidate": candidate.name, "slug": candidate.slug, "status": "rate_limited"},
+                        {
+                            "candidate": candidate.name,
+                            "slug": candidate.slug,
+                            "status": DILIGENCE.search_rate_limited_status,
+                        },
                     )
                     break
 
@@ -246,7 +273,13 @@ class DeepDiligenceAgent:
                 )
 
             current_evidence.extend(hop_new_evidence)
-            current_gaps = evaluate_evidence_gaps(candidate, current_evidence, topic)
+            current_evaluation = self.evaluation_fn(
+                candidate,
+                current_evidence,
+                topic,
+                hop + DILIGENCE.initial_hop,
+            )
+            current_gaps = current_evaluation.gaps
             resolved_count = sum(1 for g in current_gaps if g.resolved)
             unresolved_count = sum(1 for g in current_gaps if not g.resolved)
 
@@ -266,7 +299,7 @@ class DeepDiligenceAgent:
                 },
             )
 
-            if unresolved_count == 0:
+            if unresolved_count == DILIGENCE.empty_results_count:
                 self._emit(
                     "diligence_all_gaps_resolved",
                     {"candidate": candidate.name, "hop": hop},
@@ -275,7 +308,7 @@ class DeepDiligenceAgent:
 
         # Final ranking, deduplication, and citation tag assignment
         final_evidence = self.ranker.rank_and_reorder(current_evidence, topic)
-        final_gaps = evaluate_evidence_gaps(candidate, final_evidence, topic)
+        final_gaps = current_evaluation.gaps
         if availability_gap is not None:
             final_gaps = [*final_gaps, availability_gap]
 

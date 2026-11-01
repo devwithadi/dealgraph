@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import re
 from urllib.parse import urlsplit
 
-from app.analysis.diligence.evaluator import PILLAR_KEYWORDS
-from app.analysis.diligence.models import DiligencePillar
+from app.analysis.diligence.constants import DILIGENCE
 from app.domain.enums import CitationTag
 from app.domain.models import Evidence
 
@@ -66,24 +64,19 @@ class EvidenceRanker:
     def score_relevance(self, item: Evidence, topic: str = "") -> float:
         """Score evidence relevance based on text length, pillar keywords, and topic overlap."""
         text = f"{item.claim} {item.excerpt} {item.source_title}".lower()
-        score = 1.0
+        score = DILIGENCE.relevance_base_score
 
         # Topic match boost
         if topic and any(token in text for token in topic.lower().split()):
-            score += 2.0
-
-        # Pillar coverage boost
-        for pillar_name, kws in PILLAR_KEYWORDS.items():
-            if any(re.search(rf"\b{re.escape(kw)}\b", text) or (kw == "$" and "$" in text) for kw in kws):
-                score += 1.0
+            score += DILIGENCE.topic_match_score
 
         # Quality factors
-        if len(item.excerpt.strip()) > 100:
-            score += 0.5
+        if len(item.excerpt.strip()) > DILIGENCE.detailed_excerpt_characters:
+            score += DILIGENCE.detailed_excerpt_score
         if item.status == CitationTag.VERIFIED:
-            score += 2.0
+            score += DILIGENCE.verified_score
         elif item.status == CitationTag.TRUSTED:
-            score += 1.0
+            score += DILIGENCE.trusted_score
 
         return score
 
@@ -136,17 +129,17 @@ class EvidenceRanker:
         deduped = self.deduplicate(evidence_list)
 
         def sort_key(item: Evidence) -> tuple[int, float]:
-            tag_priority = {
-                CitationTag.VERIFIED: 0,
-                CitationTag.TRUSTED: 1,
-                CitationTag.CLAIMED: 2,
-            }.get(item.status, 3)
+            tag_priority = (
+                DILIGENCE.citation_priority.index(item.status)
+                if item.status in DILIGENCE.citation_priority
+                else len(DILIGENCE.citation_priority)
+            )
             relevance = self.score_relevance(item, topic)
             return (tag_priority, -relevance)
 
         scored = sorted(deduped, key=sort_key)
         ranked: list[Evidence] = []
-        for priority in range(4):
+        for priority in range(len(DILIGENCE.citation_priority) + 1):
             remaining = [item for item in scored if sort_key(item)[0] == priority]
             while remaining:
                 seen_hosts: set[str] = set()

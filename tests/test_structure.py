@@ -8,9 +8,9 @@ def test_prompts_are_segregated_by_llm_stage() -> None:
     prompt_root = ROOT / "app" / "prompts"
     assert {
         path.name for path in prompt_root.iterdir() if path.name != "__pycache__"
-    } == {"__init__.py", "screening", "synthesis"}
+    } == {"__init__.py", "diligence", "screening", "synthesis"}
 
-    for stage in ("screening", "synthesis"):
+    for stage in ("diligence", "screening", "synthesis"):
         assert {
             path.name
             for path in (prompt_root / stage).iterdir()
@@ -49,3 +49,22 @@ def test_submission_docs_describe_the_live_pdf_pipeline() -> None:
     assert "PDF" in docs["doc/README.md"]
     assert "one-page PDF" in docs["doc/pipeline-data-flow.html"]
     assert "PDF" in docs["doc/system-architecture.html"]
+
+
+def test_readme_links_deep_architecture_diagrams() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    architecture = (ROOT / "doc" / "system-architecture.html").read_text(
+        encoding="utf-8"
+    )
+    data_flow = (ROOT / "doc" / "pipeline-data-flow.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert "doc/system-architecture.html" in readme
+    assert "doc/pipeline-data-flow.html" in readme
+    assert "app/pipeline/service.py" in architecture
+    assert "Per-company failure isolation" in architecture
+    assert "X-Kong-Request-ID" in data_flow
+    assert "Boto3 Converse" in data_flow
+    assert "SSRF" in data_flow
+    assert "atomic" in data_flow

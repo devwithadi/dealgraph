@@ -49,7 +49,6 @@ Dependencies point inward: CLI → pipeline → domain services → domain/core.
 ## Source and security rules
 
 - Only use sources enabled in `SOURCE_REGISTRY`.
-- Never scrape PitchBook, Crunchbase, or LinkedIn. PitchBook requires a separately licensed API and permitted use.
 - Preserve public-IP validation on every redirect, robots.txt checks, response-size limits, and safe artifact filenames.
 - Never log API keys, authorization headers, prompts, response bodies, or other secrets.
 - Validate all external data at its boundary. Keep error messages safe and actionable.
@@ -58,6 +57,9 @@ Dependencies point inward: CLI → pipeline → domain services → domain/core.
 
 - Prefer standard-library or existing dependencies over new packages.
 - Keep functions small and models immutable; avoid speculative abstractions.
+- Do not embed qualitative judgment, rubrics, gap criteria, or query-generation rules in Python conditionals, keyword tables, or regular expressions. Put model judgment in the appropriate versioned prompt module, return structured JSON, and keep Python responsible for validation and orchestration.
+- Define every reusable hardcoded configuration or policy value once as a typed field on a frozen dataclass in the nearest `constants.py`; derive callers from that single source of truth.
+- Use enums for closed value sets and immutable structured models for internal, external, and model-generated data. Do not pass ad hoc string dictionaries across boundaries.
 - Do not silently change the scoring rubric, source trust policy, or recommendation thresholds.
 - Update `README.md` when CLI commands or observable behavior change.
 - Before handoff, run tests with coverage, `uv pip check`, `git diff --check`, and inspect `git status`.

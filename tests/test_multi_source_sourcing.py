@@ -26,6 +26,7 @@ from app.sourcing.discovery import (
     parse_url_seed_candidates,
     search_agent_reach_candidates,
 )
+from app.sourcing.constants import AGENT_REACH
 
 
 def test_make_candidate_slug() -> None:
@@ -143,6 +144,149 @@ Highlights: SynthFlow provides conversational voice agents for SMB customer supp
 
     assert candidates[1].name == "SynthFlow"
     assert candidates[1].website == "https://synthflow.ai"
+
+
+def test_search_agent_reach_candidates_accepts_model_structured_json(monkeypatch) -> None:
+    mock_process = MagicMock()
+    mock_process.returncode = 0
+    mock_process.stdout = "unstructured Exa result"
+    validated_urls: list[str] = []
+    monkeypatch.setattr(
+        "app.sourcing.discovery.validate_public_url",
+        lambda url: validated_urls.append(url) or url,
+    )
+
+    candidates = search_agent_reach_candidates(
+        "AI agents for SMBs",
+        runner=lambda *args, **kwargs: mock_process,
+        structured_output=lambda raw: {
+            "candidates": [
+                {
+                    "slug": "dock",
+                    "name": "Dock",
+                    "website": "https://trydock.ai",
+                    "one_liner": "AI teammates for SMB teams",
+                    "description": "Product Hunt listing says Dock provides AI teammates.",
+                    "batch": "Product Hunt Launch",
+                    "industry": "AI agents for SMBs",
+                    "tags": ["Agent Reach", "Product Hunt"],
+                    "team_size": None,
+                    "launched_at": None,
+                    "is_hiring": False,
+                    "source_url": "https://www.producthunt.com/products/dock",
+                }
+            ]
+        },
+    )
+
+    assert len(candidates) == 1
+    assert validated_urls == ["https://trydock.ai", "https://www.producthunt.com/products/dock"]
+    assert candidates[0].model_dump(mode="json") == {
+        "slug": "dock",
+        "name": "Dock",
+        "website": "https://trydock.ai",
+        "one_liner": "AI teammates for SMB teams",
+        "description": "Product Hunt listing says Dock provides AI teammates.",
+        "batch": "Product Hunt Launch",
+        "industry": "AI agents for SMBs",
+        "tags": ["Agent Reach", "Product Hunt"],
+        "team_size": None,
+        "launched_at": None,
+        "is_hiring": False,
+        "source_url": "https://www.producthunt.com/products/dock",
+    }
+
+
+@pytest.mark.parametrize(
+    "directory_url",
+    [
+        "https://crunchbase.com/organization/blocked",
+        "https://pitchbook.com/profiles/company/blocked",
+        "https://linkedin.com/company/blocked",
+    ],
+)
+def test_search_agent_reach_candidates_accepts_directory_source_urls(monkeypatch, directory_url: str) -> None:
+    mock_process = MagicMock()
+    mock_process.returncode = 0
+    mock_process.stdout = "unstructured Exa result"
+
+    monkeypatch.setattr("app.sourcing.discovery.validate_public_url", lambda url: url)
+    candidates = search_agent_reach_candidates(
+        "AI agents for SMBs",
+        runner=lambda *args, **kwargs: mock_process,
+        structured_output=lambda raw: {
+            "candidates": [
+                {
+                    "slug": "blocked",
+                    "name": "Blocked",
+                    "website": directory_url,
+                    "one_liner": "Directory source",
+                    "description": "",
+                    "batch": "Agent Reach Discovery",
+                    "industry": "AI",
+                    "tags": ["Agent Reach"],
+                    "team_size": None,
+                    "launched_at": None,
+                    "is_hiring": False,
+                    "source_url": directory_url,
+                }
+            ]
+        },
+    )
+
+    assert len(candidates) == 1
+    assert candidates[0].website == ""
+    assert candidates[0].source_url == directory_url
+
+
+def test_search_agent_reach_candidates_fallback_keeps_pitchbook_as_source_only() -> None:
+    mock_process = MagicMock()
+    mock_process.returncode = 0
+    mock_process.stdout = """Title: Blocked - Commercial profile
+URL: https://pitchbook.com/profiles/company/blocked
+Highlights: Commercial directory profile without an official company website.
+"""
+
+    candidates = search_agent_reach_candidates(
+        "AI agents for SMBs",
+        runner=lambda *args, **kwargs: mock_process,
+    )
+
+    assert len(candidates) == 1
+    assert candidates[0].website == ""
+    assert candidates[0].source_url == "https://pitchbook.com/profiles/company/blocked"
+    assert candidates[0].batch == AGENT_REACH.pitchbook_batch
+
+
+def test_agent_reach_query_includes_commercial_directories() -> None:
+    captured: list[str] = []
+    mock_process = MagicMock(returncode=0, stdout="")
+
+    def runner(command, **kwargs):
+        captured.extend(command)
+        return mock_process
+
+    assert search_agent_reach_candidates("AI agents", runner=runner) == []
+    query = json.loads(captured[captured.index("--args") + 1])["query"]
+    assert "site:pitchbook.com" in query
+    assert "site:crunchbase.com" in query
+    assert "site:linkedin.com/company" in query
+
+
+def test_search_agent_reach_candidates_rejects_oversized_output() -> None:
+    mock_process = MagicMock()
+    mock_process.returncode = 0
+    mock_process.stdout = "x" * (AGENT_REACH.max_output_bytes + 1)
+    structured_output = MagicMock()
+
+    candidates = search_agent_reach_candidates(
+        "AI agents for SMBs",
+        runner=lambda *args, **kwargs: mock_process,
+        structured_output=structured_output,
+    )
+
+    assert candidates == []
+    structured_output.assert_not_called()
 
 
 def test_search_agent_reach_candidates_error_handling() -> None:

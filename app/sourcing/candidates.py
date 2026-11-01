@@ -5,7 +5,7 @@ import logging
 import os
 import re
 import subprocess
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -21,6 +21,7 @@ from app.sourcing.discovery import (
     parse_url_seed_candidates,
     search_agent_reach_candidates,
 )
+from app.sourcing.constants import AGENT_REACH
 from app.sourcing.registry import YC_URL, source_enabled
 
 LOGGER = logging.getLogger("dealgraph.sourcing.candidates")
@@ -140,6 +141,7 @@ def discover_candidates(
     client: httpx.Client | None = None,
     yc_records: Iterable[dict] | None = None,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    structured_output: Callable[[str], Mapping[str, object]] | None = None,
     now: datetime | None = None,
     limit: int | None = None,
 ) -> list[Candidate]:
@@ -158,7 +160,11 @@ def discover_candidates(
     # Source 2: Hacker News (Show HN), when explicitly enabled.
     if source_enabled("hacker_news"):
         try:
-            hn_cands = fetch_hn_candidates(topic, client=client, limit=15)
+            hn_cands = fetch_hn_candidates(
+                topic,
+                client=client,
+                limit=AGENT_REACH.discovery_candidate_limit,
+            )
             all_candidates.extend(hn_cands)
         except Exception as error:
             LOGGER.warning("failed to fetch HN candidates error=%s", error)
@@ -166,7 +172,12 @@ def discover_candidates(
     # Source 3: Agent Reach / Exa Multi-Source Discovery (Product Hunt, TechCrunch, GitHub)
     if source_enabled("agent_reach"):
         try:
-            reach_cands = search_agent_reach_candidates(topic, runner=runner, limit=15)
+            reach_cands = search_agent_reach_candidates(
+                topic,
+                runner=runner,
+                structured_output=structured_output,
+                limit=AGENT_REACH.discovery_candidate_limit,
+            )
             all_candidates.extend(reach_cands)
         except Exception as error:
             LOGGER.warning("failed to search Agent Reach candidates error=%s", error)

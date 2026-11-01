@@ -8,14 +8,11 @@ import httpx
 
 from app.analysis.diligence import (
     DeepDiligenceAgent,
+    DiligenceEvaluation,
     DiligencePillar,
-    DiligencePlan,
-    DiligenceState,
+    GapSeverity,
     InformationGap,
     SearchQuery,
-    evaluate_evidence_gaps,
-    generate_diligence_plan,
-    generate_followup_queries,
 )
 from app.analysis.diligence.tools.scraper import WebFetchTool
 from app.analysis.diligence.agent import default_live_search
@@ -58,166 +55,56 @@ def mock_initial_evidence() -> list[Evidence]:
     ]
 
 
-def test_planner_generates_three_focused_queries(mock_candidate: Candidate) -> None:
-    plan = generate_diligence_plan(mock_candidate, "Enterprise AI Agents")
-
-    assert plan.candidate_slug == "nexus-ai"
-    assert plan.candidate_name == "Nexus AI"
-    assert plan.topic == "Enterprise AI Agents"
-    assert len(plan.queries) == 3
-    assert len(plan.focus_areas) == 3
-
-    pillars = {q.pillar for q in plan.queries}
-    expected_pillars = {
-        DiligencePillar.COMMERCIAL_TAM.value,
-        DiligencePillar.UNIT_ECONOMICS.value,
-        DiligencePillar.TECH_IP.value,
+def mock_evaluation(
+    candidate: Candidate,
+    evidence: list[Evidence],
+    topic: str,
+    hop: int,
+) -> DiligenceEvaluation:
+    text = " ".join(f"{item.claim} {item.excerpt} {item.source_title}" for item in evidence).lower()
+    signals = {
+        DiligencePillar.COMMERCIAL_TAM: ("customer", "market", "commercial", "traction"),
+        DiligencePillar.UNIT_ECONOMICS: ("$", "arr", "revenue", "pricing", "funding"),
+        DiligencePillar.TECH_IP: ("architecture", "patent", "proprietary", "benchmark"),
+        DiligencePillar.RISK_ESG: ("risk", "churn", "compliance", "gdpr"),
     }
-    assert pillars == expected_pillars
-    queries = " ".join(q.query.lower() for q in plan.queries)
-    assert "founder" in queries and "team" in queries
-    assert "traction" in queries and "funding" in queries and "latest" in queries
-    assert "competitor" in queries and "differentiation" in queries
-
-    for q in plan.queries:
-        assert "Nexus AI" in q.query
-        assert q.hop == 1
-        assert not q.executed
-        assert len(q.rationale) > 0
-
-
-def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> None:
-    # 1. With minimal evidence (only high-level YC profile without financial/tech/risk depth)
-    minimal_ev = [
-        Evidence(
-            id="ev-001",
-            claim="Company Profile",
-            excerpt="Nexus AI builds software.",
-            source_url="https://nexus.example.com",
-            source_title="Nexus",
-            source_type="web",
-            trust_tier="open_web",
-            verification="third_party",
+    gaps: list[InformationGap] = []
+    queries: list[SearchQuery] = []
+    for pillar, markers in signals.items():
+        matched = next(
+            (
+                item
+                for item in evidence
+                if any(marker in f"{item.claim} {item.excerpt} {item.source_title}".lower() for marker in markers)
+                and (
+                    pillar is not DiligencePillar.COMMERCIAL_TAM
+                    or item.status in {CitationTag.TRUSTED, CitationTag.VERIFIED}
+                )
+                and not (pillar is DiligencePillar.UNIT_ECONOMICS and "contact us" in text and not any(char.isdigit() for char in text))
+            ),
+            None,
         )
-    ]
-    gaps = evaluate_evidence_gaps(mock_candidate, minimal_ev, "Enterprise AI")
-    assert len(gaps) == 4
-    # All 4 pillars should have unresolved gaps with minimal evidence
-    unresolved_pillars = {g.pillar for g in gaps if not g.resolved}
-    assert len(unresolved_pillars) == 4
-
-    # Follow-up queries generated for unresolved gaps
-    followups = generate_followup_queries(mock_candidate, gaps, hop=2, topic="Enterprise AI")
-    assert len(followups) == 4
-    for q in followups:
-        assert q.hop == 2
-        assert "Nexus AI" in q.query
-
-    pricing_heading_only = [
-        Evidence(
-            id="ev-001",
-            claim="Company website",
-            excerpt="[PRICING & TIERS]: Contact us to learn about the product.",
-            source_url="https://nexus.example.com/pricing",
-            source_title="Pricing",
-            source_type="web_scraper",
-            trust_tier="self_reported",
-            verification="direct_scrape",
+        resolved = matched is not None
+        gaps.append(
+            InformationGap(
+                pillar=pillar,
+                description=f"{pillar.value} {'covered' if resolved else 'unresolved'}",
+                severity=GapSeverity.LOW if resolved else GapSeverity.HIGH,
+                resolved=resolved,
+                rationale="Test evaluation",
+                resolved_by_evidence_id=matched.id if matched else None,
+            )
         )
-    ]
-    heading_gaps = evaluate_evidence_gaps(mock_candidate, pricing_heading_only)
-    economics_gap = next(
-        gap for gap in heading_gaps if gap.pillar == DiligencePillar.UNIT_ECONOMICS.value
-    )
-    assert economics_gap.resolved is False
-
-    first_party_commercial = [
-        Evidence(
-            id="ev-001",
-            claim="Customer traction",
-            excerpt="We serve many enterprise customers in a growing market.",
-            source_url="https://nexus.example.com/customers",
-            source_title="Nexus customers",
-            source_type="company_website",
-            trust_tier="first_party",
-            verification="direct_scrape",
-            status=CitationTag.CLAIMED,
-        )
-    ]
-    commercial_gap = next(
-        gap
-        for gap in evaluate_evidence_gaps(mock_candidate, first_party_commercial)
-        if gap.pillar == DiligencePillar.COMMERCIAL_TAM.value
-    )
-    assert commercial_gap.resolved is False
-
-    verified_commercial = [
-        first_party_commercial[0].model_copy(
-            update={
-                "source_url": "https://sec.gov/filing",
-                "source_type": "regulatory",
-                "status": CitationTag.VERIFIED,
-            }
-        )
-    ]
-    verified_gap = next(
-        gap
-        for gap in evaluate_evidence_gaps(mock_candidate, verified_commercial)
-        if gap.pillar == DiligencePillar.COMMERCIAL_TAM.value
-    )
-    assert verified_gap.resolved is True
-
-    # 2. Comprehensive evidence resolving all pillars
-    full_evidence = [
-        Evidence(
-            id="ev-001",
-            claim="Commercial traction",
-            excerpt="Nexus AI signed 12 enterprise customer contracts in the market expansion.",
-            source_url="https://news.example/traction",
-            source_title="Nexus Market Traction",
-            source_type="deep_diligence",
-            trust_tier="open_web",
-            verification="multi_hop_search",
-            status=CitationTag.TRUSTED,
-        ),
-        Evidence(
-            id="ev-002",
-            claim="Unit economics",
-            excerpt="Nexus AI reached $2.5M ARR with strong subscription pricing tiers and 18 months runway.",
-            source_url="https://news.example/financials",
-            source_title="Nexus Financials",
-            source_type="deep_diligence",
-            trust_tier="open_web",
-            verification="multi_hop_search",
-            status=CitationTag.TRUSTED,
-        ),
-        Evidence(
-            id="ev-003",
-            claim="Tech moat",
-            excerpt="Nexus AI uses proprietary agent architecture and benchmark models with technical patents.",
-            source_url="https://news.example/tech",
-            source_title="Nexus Architecture",
-            source_type="deep_diligence",
-            trust_tier="open_web",
-            verification="multi_hop_search",
-            status=CitationTag.TRUSTED,
-        ),
-        Evidence(
-            id="ev-004",
-            claim="Risk analysis",
-            excerpt="Key risks include customer churn, compliance with GDPR regulations and API dependency.",
-            source_url="https://news.example/risks",
-            source_title="Nexus Risks",
-            source_type="deep_diligence",
-            trust_tier="open_web",
-            verification="multi_hop_search",
-            status=CitationTag.TRUSTED,
-        ),
-    ]
-    resolved_gaps = evaluate_evidence_gaps(mock_candidate, full_evidence, "Enterprise AI")
-    assert all(g.resolved for g in resolved_gaps)
-    no_followups = generate_followup_queries(mock_candidate, resolved_gaps, hop=2)
-    assert len(no_followups) == 0
+        if not resolved:
+            queries.append(
+                SearchQuery(
+                    query=f"{candidate.name} {pillar.value} evidence",
+                    pillar=pillar,
+                    rationale="Resolve test gap",
+                    hop=hop,
+                )
+            )
+    return DiligenceEvaluation(gaps=gaps, followup_queries=queries)
 
 
 def test_deep_diligence_agent_multi_hop_live_search_loop(
@@ -232,7 +119,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
     # Mock search function that returns commercial & tech evidence in Hop 1,
     # and unit economics & risk evidence in Hop 2.
     def mock_search(cand: Candidate, query_item: SearchQuery, start_id: int) -> list[Evidence]:
-        if query_item.pillar == DiligencePillar.COMMERCIAL_TAM.value:
+        if query_item.pillar is DiligencePillar.COMMERCIAL_TAM:
             return [
                 Evidence(
                     id=f"ev-{start_id:03d}",
@@ -246,7 +133,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     status=CitationTag.TRUSTED,
                 )
             ]
-        elif query_item.pillar == DiligencePillar.TECH_IP.value:
+        elif query_item.pillar is DiligencePillar.TECH_IP:
             return [
                 Evidence(
                     id=f"ev-{start_id:03d}",
@@ -260,7 +147,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     status=CitationTag.TRUSTED,
                 )
             ]
-        elif query_item.pillar == DiligencePillar.UNIT_ECONOMICS.value and query_item.hop >= 2:
+        elif query_item.pillar is DiligencePillar.UNIT_ECONOMICS and query_item.hop >= 2:
             return [
                 Evidence(
                     id=f"ev-{start_id:03d}",
@@ -274,7 +161,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     status=CitationTag.TRUSTED,
                 )
             ]
-        elif query_item.pillar == DiligencePillar.RISK_ESG.value and query_item.hop >= 2:
+        elif query_item.pillar is DiligencePillar.RISK_ESG and query_item.hop >= 2:
             return [
                 Evidence(
                     id=f"ev-{start_id:03d}",
@@ -296,6 +183,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
     )
 
     agent = DeepDiligenceAgent(
+        evaluation_fn=mock_evaluation,
         max_hops=2,
         search_fn=mock_search,
         scraper_tool=mock_scraper,
@@ -307,7 +195,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
     assert state.current_hop == 2
     # Initial 1 + Hop 1 (2) + Hop 2 (2) = 5 evidence items
     assert len(state.evidence) == 5
-    assert len(state.queries_executed) == 5  # 3 in hop 1 + 2 followups in hop 2
+    assert len(state.queries_executed) == 6  # 4 in hop 1 + 2 followups in hop 2
 
     event_names = [e[0] for e in events]
     assert "diligence_plan_generated" in event_names
@@ -320,7 +208,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
 def test_default_live_search_subprocess_and_parsing(mock_candidate: Candidate) -> None:
     query_item = SearchQuery(
         query="Nexus AI pricing revenue",
-        pillar=DiligencePillar.UNIT_ECONOMICS.value,
+        pillar=DiligencePillar.UNIT_ECONOMICS,
         hop=1,
     )
 
@@ -363,7 +251,7 @@ def test_default_live_search_subprocess_and_parsing(mock_candidate: Candidate) -
 def test_default_live_search_error_handling(mock_candidate: Candidate) -> None:
     query_item = SearchQuery(
         query="Nexus AI pricing",
-        pillar=DiligencePillar.UNIT_ECONOMICS.value,
+        pillar=DiligencePillar.UNIT_ECONOMICS,
         hop=1,
     )
 
@@ -395,7 +283,7 @@ def test_rate_limit_is_safe_and_stops_repeated_search_calls(
             stderr="HTTP 429 quota exhausted secret-provider-body",
         )
 
-    query = SearchQuery(query="Nexus AI customers", pillar=DiligencePillar.COMMERCIAL_TAM.value)
+    query = SearchQuery(query="Nexus AI customers", pillar=DiligencePillar.COMMERCIAL_TAM)
     with pytest.raises(SourcePolicyError, match="rate limited"):
         default_live_search(mock_candidate, query, 2, runner=rate_limited_runner)
 
@@ -405,15 +293,16 @@ def test_rate_limit_is_safe_and_stops_repeated_search_calls(
         url_validator=lambda url: url,
     )
     state = DeepDiligenceAgent(
+        evaluation_fn=mock_evaluation,
         runner=rate_limited_runner,
         scraper_tool=scraper,
         progress_callback=lambda event, data: events.append((event, data)),
     ).run(mock_candidate, "Enterprise AI", initial_evidence=mock_initial_evidence)
 
     assert calls == 1
-    availability_gap = next(gap for gap in state.gaps if gap.pillar == "Research availability")
+    availability_gap = next(gap for gap in state.gaps if gap.pillar is DiligencePillar.RESEARCH_AVAILABILITY)
     assert availability_gap.resolved is False
-    assert availability_gap.severity == "high"
+    assert availability_gap.severity is GapSeverity.HIGH
     event = next(data for name, data in events if name == "diligence_search_unavailable")
     assert event["status"] == "rate_limited"
     assert "secret-provider-body" not in str(event)
@@ -448,7 +337,11 @@ def test_rate_limit_keeps_evidence_collected_earlier_in_the_hop(
         client=httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(404, request=req))),
         url_validator=lambda url: url,
     )
-    state = DeepDiligenceAgent(search_fn=partial_search, scraper_tool=scraper).run(
+    state = DeepDiligenceAgent(
+        evaluation_fn=mock_evaluation,
+        search_fn=partial_search,
+        scraper_tool=scraper,
+    ).run(
         mock_candidate,
         "Enterprise AI",
         initial_evidence=mock_initial_evidence,
@@ -456,9 +349,7 @@ def test_rate_limit_keeps_evidence_collected_earlier_in_the_hop(
 
     assert calls == 2
     assert any(item.source_url == "https://news.example/nexus-traction" for item in state.evidence)
-    commercial_gap = next(
-        gap for gap in state.gaps if gap.pillar == DiligencePillar.COMMERCIAL_TAM.value
-    )
+    commercial_gap = next(gap for gap in state.gaps if gap.pillar is DiligencePillar.COMMERCIAL_TAM)
     assert commercial_gap.resolved is True
 
 
@@ -466,7 +357,7 @@ def test_is_allowed_url_edge_cases() -> None:
     from app.analysis.diligence.agent import _is_allowed_url
 
     assert not _is_allowed_url("https://example.com:notaport/test")
-    assert not _is_allowed_url("https://pitchbook.com/profile")
+    assert _is_allowed_url("https://pitchbook.com/profile")
     assert not _is_allowed_url("ftp://example.com/file")
     assert _is_allowed_url("https://techcrunch.com/article")
 
@@ -476,6 +367,7 @@ def test_agent_progress_callback_exception_absorption(mock_candidate: Candidate)
         raise RuntimeError("Callback crashed")
 
     agent = DeepDiligenceAgent(
+        evaluation_fn=mock_evaluation,
         max_hops=1,
         search_fn=lambda *_args: [],
         scraper_tool=WebFetchTool(

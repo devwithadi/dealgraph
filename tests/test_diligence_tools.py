@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 import httpx
@@ -12,6 +13,7 @@ from app.analysis.diligence.tools.scraper import ScraperTool, WebFetchTool, extr
 from app.analysis.diligence.tools.search import SearchTool, _parse_search_output, _resolve_status_for_url, is_allowed_url
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
+from app.sourcing.constants import AGENT_REACH
 from app.sourcing.policy import SourcePolicyError
 
 
@@ -41,10 +43,9 @@ def test_search_tool_url_allowlist_and_status_resolution() -> None:
     assert is_allowed_url("http://127.0.0.1/private") is False
     assert is_allowed_url("http://169.254.169.254/latest/meta-data") is False
 
-    # Blocked hosts
-    assert is_allowed_url("https://pitchbook.com/profiles/123") is False
-    assert is_allowed_url("https://www.linkedin.com/in/founder") is False
-    assert is_allowed_url("https://crunchbase.com/org/strata") is False
+    assert is_allowed_url("https://pitchbook.com/profiles/123", public) is True
+    assert is_allowed_url("https://www.linkedin.com/in/founder", public) is True
+    assert is_allowed_url("https://crunchbase.com/org/strata", public) is True
 
     # Status resolution
     assert _resolve_status_for_url("https://sec.gov/filing") == CitationTag.VERIFIED
@@ -76,7 +77,7 @@ Highlights: LinkedIn employee directory.
     ev_list = _parse_search_output(
         sample_stdout, query, start_id=1, resolver=lambda _host: ["93.184.216.34"]
     )
-    assert len(ev_list) == 2  # LinkedIn blocked
+    assert len(ev_list) == 3
 
     assert ev_list[0].id == "ev-001"
     assert ev_list[0].status == CitationTag.TRUSTED
@@ -86,6 +87,9 @@ Highlights: LinkedIn employee directory.
     assert ev_list[1].id == "ev-002"
     assert ev_list[1].status == CitationTag.VERIFIED
     assert "sec.gov" in ev_list[1].source_url
+    assert "linkedin.com" in ev_list[2].source_url
+    assert ev_list[2].status == CitationTag.CLAIMED
+    assert ev_list[2].trust_tier == "commercial_directory"
 
 
 def test_search_results_from_company_domain_are_claimed(test_candidate: Candidate) -> None:
@@ -142,6 +146,46 @@ def test_search_tool_handles_subprocess_failure(test_candidate: Candidate) -> No
     tool = SearchTool(runner=failing_runner)
     results = tool.search(test_candidate, query, start_id=1)
     assert results == []
+
+
+def test_search_tool_uses_shared_agent_reach_constants(
+    monkeypatch: pytest.MonkeyPatch,
+    test_candidate: Candidate,
+) -> None:
+    configured = replace(
+        AGENT_REACH,
+        mcporter_timeout_milliseconds=111,
+        subprocess_timeout_seconds=7,
+        max_output_bytes=10,
+    )
+    captured: dict[str, object] = {}
+    query = SearchQuery(query="Strata Data pricing", pillar=DiligencePillar.UNIT_ECONOMICS.value)
+
+    def runner(command, **kwargs):
+        captured["command"] = command
+        captured["timeout"] = kwargs["timeout"]
+        return subprocess.CompletedProcess(
+            args=command,
+            returncode=0,
+            stdout=(
+                "Title: Strata Pricing\n"
+                "URL: https://techcrunch.com/strata-pricing\n"
+                "Highlights: This payload is intentionally longer than ten bytes.\n"
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr("app.analysis.diligence.tools.search.AGENT_REACH", configured, raising=False)
+
+    results = SearchTool(runner=runner, resolver=lambda _host: ["93.184.216.34"]).search(
+        test_candidate,
+        query,
+        start_id=1,
+    )
+
+    assert results == []
+    assert captured["command"][-1] == "111"
+    assert captured["timeout"] == 7
 
 
 def test_scraper_extract_html_text() -> None:

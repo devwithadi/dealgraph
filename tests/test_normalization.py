@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 from datetime import datetime, timezone
 
 import httpx
@@ -119,10 +120,9 @@ def test_normalize_changes_mind() -> None:
     assert from_str[0] == "Single string condition"
 
 
-def test_synthesize_preserves_thesis_and_recomputes_dimension_score() -> None:
-    class MockBedrockClient:
-        def converse(self, **_kwargs):
-            payload = {
+def test_synthesize_preserves_thesis_and_recomputes_dimension_score(monkeypatch) -> None:
+    def fake_completion(**_kwargs):
+        payload = {
                 "thesis": "AgentFlow owns the SMB workflow layer through embedded integrations [ev-001].",
                 "summary": "AgentFlow automates SMB workflows. [ev-001]",
                 "team": "Not disclosed",
@@ -144,15 +144,15 @@ def test_synthesize_preserves_thesis_and_recomputes_dimension_score() -> None:
                 "recommendation": "pass",  # Deliberately contradictory.
                 "citations": ["ev-001", "ev-002"],
             }
-            return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+        )
 
-    client = MockBedrockClient()
+    monkeypatch.setattr("app.analysis.providers.completion", fake_completion)
     analysis = synthesize(
         _candidate(),
         _evidence(),
-        httpx.Client(),
         provider=AIProvider.BEDROCK,
-        bedrock_client=client,
     )
 
     assert analysis.company == "AgentFlow"
@@ -175,11 +175,10 @@ def test_synthesize_preserves_thesis_and_recomputes_dimension_score() -> None:
     assert "ev-002" in analysis.financials.evidence_ids
 
 
-def test_synthesize_rejects_payload_without_scoring_dimensions() -> None:
-    class UntaggedPayloadBedrockClient:
-        def converse(self, **_kwargs):
-            # LLM omitted [ev-XXX] tags and citations list
-            payload = {
+def test_synthesize_rejects_payload_without_scoring_dimensions(monkeypatch) -> None:
+    def fake_completion(**_kwargs):
+        # LLM omitted [ev-XXX] tags and citations list
+        payload = {
                 "summary": "AgentFlow automates SMB workflows without tags.",
                 "team": "Strong founding team from top AI labs.",
                 "product": "Agentic automation platform with integrations.",
@@ -195,14 +194,14 @@ def test_synthesize_rejects_payload_without_scoring_dimensions() -> None:
                 "confidence": 0.8,
                 "recommendation": "Take a meeting",
             }
-            return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+        )
 
-    client = UntaggedPayloadBedrockClient()
+    monkeypatch.setattr("app.analysis.providers.completion", fake_completion)
     with pytest.raises(ValueError, match="five required scoring dimensions"):
         synthesize(
             _candidate(),
             _evidence(),
-            httpx.Client(),
             provider=AIProvider.BEDROCK,
-            bedrock_client=client,
         )

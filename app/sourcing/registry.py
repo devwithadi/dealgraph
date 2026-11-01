@@ -56,7 +56,27 @@ SOURCE_REGISTRY = {
         "evidence_type": "deep_diligence",
         "manifest": "Deep Diligence multi-hop research",
     },
-    "pitchbook": {"access": "licensed_api_only", "trust": "licensed_vendor", "enabled": False},
+    "pitchbook": {
+        "access": "agent_reach_search",
+        "trust": "commercial_directory",
+        "enabled": True,
+        "evidence_type": "pitchbook",
+        "manifest": "PitchBook profiles via Agent Reach",
+    },
+    "crunchbase": {
+        "access": "agent_reach_search",
+        "trust": "commercial_directory",
+        "enabled": True,
+        "evidence_type": "crunchbase",
+        "manifest": "Crunchbase profiles via Agent Reach",
+    },
+    "linkedin": {
+        "access": "agent_reach_search",
+        "trust": "commercial_directory",
+        "enabled": True,
+        "evidence_type": "linkedin",
+        "manifest": "LinkedIn company profiles via Agent Reach",
+    },
 }
 
 

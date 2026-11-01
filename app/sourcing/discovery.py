@@ -5,7 +5,7 @@ import logging
 import os
 import re
 import subprocess
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
 
@@ -13,7 +13,8 @@ import httpx
 
 from app.core.logging import current_request_id
 from app.domain.models import Candidate
-from app.sourcing.policy import BLOCKED_HOSTS
+from app.sourcing.constants import AGENT_REACH, AgentReachDirectorySource
+from app.sourcing.policy import validate_public_url
 
 LOGGER = logging.getLogger("dealgraph.sourcing.discovery")
 
@@ -26,13 +27,22 @@ AGGREGATOR_DOMAINS = {
     "x.com",
     "github.com",
     "techcrunch.com",
-    "crunchbase.com",
     "medium.com",
-    "linkedin.com",
     "substack.com",
     "youtube.com",
     "reddit.com",
-}
+} | set(AGENT_REACH.directory_hosts)
+
+
+def _is_aggregator_host(host: str) -> bool:
+    return host in AGGREGATOR_DOMAINS or any(host.endswith(f".{domain}") for domain in AGGREGATOR_DOMAINS)
+
+
+def _directory_source_for_host(host: str) -> AgentReachDirectorySource | None:
+    for source in AGENT_REACH.directory_sources:
+        if host == source.host or host.endswith(f".{source.host}"):
+            return source
+    return None
 
 
 def make_candidate_slug(name_or_domain: str) -> str:
@@ -101,7 +111,7 @@ def extract_website_from_text(text: str, fallback_domain: str = "") -> str:
         host = (parsed.hostname or "").lower()
         if host.startswith("www."):
             host = host[4:]
-        if host and host not in AGGREGATOR_DOMAINS and not any(host.endswith(f".{d}") for d in AGGREGATOR_DOMAINS):
+        if host and not _is_aggregator_host(host):
             # Clean trailing punctuation
             clean_url = url.rstrip(".,;)\"'>")
             return f"{parsed.scheme}://{parsed.netloc}"
@@ -114,7 +124,7 @@ def fetch_hn_candidates(
     topic: str,
     client: httpx.Client | None = None,
     *,
-    limit: int = 15,
+    limit: int = AGENT_REACH.discovery_candidate_limit,
 ) -> list[Candidate]:
     """Source candidate startups from Hacker News Show HN launches using the public Algolia API."""
     candidates: list[Candidate] = []
@@ -154,12 +164,12 @@ def fetch_hn_candidates(
 
         # Resolve website
         website = ""
-        if story_url and not any(d in story_url for d in AGGREGATOR_DOMAINS):
-            website = story_url
+        story_host = normalize_domain(story_url)
+        if story_url and story_host and not _is_aggregator_host(story_host):
+            parsed_story = urlsplit(story_url)
+            website = f"{parsed_story.scheme}://{parsed_story.netloc}"
         if not website and story_text:
             website = extract_website_from_text(story_text)
-        if not website:
-            website = f"https://{make_candidate_slug(name)}.ai"
 
         launched_at: datetime | None = None
         if created_at_str:
@@ -199,12 +209,15 @@ def search_agent_reach_candidates(
     topic: str,
     *,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
-    limit: int = 15,
+    structured_output: Callable[[str], Mapping[str, object]] | None = None,
+    limit: int = AGENT_REACH.discovery_candidate_limit,
 ) -> list[Candidate]:
     """Source candidate startups across Product Hunt, TechCrunch, and web via Agent Reach / Exa."""
+    directory_filters = " OR ".join(AGENT_REACH.directory_site_filters)
     query = (
         f"Promising new startup products and launches for {topic}: "
-        f"site:producthunt.com/products OR site:news.ycombinator.com/item OR site:techcrunch.com "
+        f"site:producthunt.com/products OR site:news.ycombinator.com/item OR site:techcrunch.com OR "
+        f"{directory_filters} "
         f"product name, official website, founders, launch, and funding"
     )
     command = [
@@ -212,11 +225,11 @@ def search_agent_reach_candidates(
         "call",
         "exa.web_search_exa",
         "--args",
-        json.dumps({"query": query, "numResults": min(limit * 2, 20)}),
+        json.dumps({"query": query, "numResults": min(limit * 2, AGENT_REACH.discovery_max_search_results)}),
         "--output",
         "text",
         "--timeout",
-        "30000",
+        str(AGENT_REACH.mcporter_timeout_milliseconds),
     ]
     allowed_env = {
         key: os.environ[key]
@@ -230,7 +243,7 @@ def search_agent_reach_candidates(
             command,
             capture_output=True,
             text=True,
-            timeout=35,
+            timeout=AGENT_REACH.subprocess_timeout_seconds,
             check=False,
             env=allowed_env,
         )
@@ -240,6 +253,41 @@ def search_agent_reach_candidates(
 
     if completed.returncode != 0 or not completed.stdout:
         return []
+    if len(completed.stdout.encode("utf-8")) > AGENT_REACH.max_output_bytes:
+        LOGGER.warning("Agent Reach candidate discovery output exceeded 200 KB")
+        return []
+
+    if structured_output is not None:
+        try:
+            payload = structured_output(completed.stdout)
+            raw_candidates = payload.get("candidates")
+            if not isinstance(raw_candidates, list):
+                raise ValueError("discovery response must contain a candidates array")
+            candidates = []
+            for item in raw_candidates[:limit]:
+                if not isinstance(item, dict):
+                    continue
+                candidate = Candidate.model_validate(item)
+                website_host = normalize_domain(candidate.website)
+                website = (
+                    validate_public_url(candidate.website)
+                    if candidate.website and not _is_aggregator_host(website_host)
+                    else ""
+                )
+                candidates.append(
+                    candidate.model_copy(
+                        update={
+                            "website": website,
+                            "source_url": validate_public_url(candidate.source_url),
+                        }
+                    )
+                )
+            if not candidates:
+                raise ValueError("discovery response contained no valid candidates")
+            LOGGER.info("sourced %d structured candidates from Agent Reach topic=%r", len(candidates), topic)
+            return candidates
+        except Exception as error:
+            LOGGER.warning("Agent Reach structured discovery failed topic=%r error=%s", topic, error)
 
     candidates: list[Candidate] = []
     for block in re.split(r"\n-{3,}\n", completed.stdout):
@@ -260,28 +308,31 @@ def search_agent_reach_candidates(
             source_host = source_host[4:]
 
         website = ""
-        if source_host not in AGGREGATOR_DOMAINS and not any(source_host.endswith(f".{d}") for d in AGGREGATOR_DOMAINS):
+        if not _is_aggregator_host(source_host):
             website = f"{parsed_source.scheme}://{parsed_source.netloc}"
         elif highlights:
             website = extract_website_from_text(highlights)
-        if not website:
-            website = f"https://{make_candidate_slug(name)}.ai"
 
         # Determine origin source
-        batch = "Agent Reach Discovery"
-        tags = ["Agent Reach", "Discovery", "AI"]
+        batch = AGENT_REACH.default_batch
+        tags = list(AGENT_REACH.default_tags)
         if "producthunt.com" in source_url:
-            batch = "Product Hunt Launch"
+            batch = AGENT_REACH.product_hunt_batch
             tags.append("Product Hunt")
         elif "ycombinator.com" in source_url:
             batch = "Hacker News"
             tags.append("Hacker News")
         elif "techcrunch.com" in source_url:
-            batch = "TechCrunch Featured"
+            batch = AGENT_REACH.techcrunch_batch
             tags.append("TechCrunch")
+        else:
+            directory_source = _directory_source_for_host(source_host)
+            if directory_source is not None:
+                batch = directory_source.batch
+                tags.append(directory_source.tag)
 
         is_hiring = bool("hiring" in highlights.lower() or "join our team" in highlights.lower())
-        long_desc = f"{one_liner}. {highlights[:350]}".strip()
+        long_desc = f"{one_liner}. {highlights[:AGENT_REACH.highlight_max_characters]}".strip()
 
         slug = make_candidate_slug(normalize_domain(website) or name)
         candidate = Candidate(

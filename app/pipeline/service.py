@@ -2,17 +2,19 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 import httpx
 
-from app.analysis.diligence import DeepDiligenceAgent
+from app.analysis.diligence import DeepDiligenceAgent, evaluate_diligence
+from app.analysis.diligence.constants import DILIGENCE
 from app.analysis.providers import (
     create_bedrock_client,
     model_for,
+    model_json,
     model_name_for_artifact,
     screening_model_for,
     validate_provider_config,
@@ -22,12 +24,14 @@ from app.core.errors import AppError
 from app.core.logging import bind_request_id, request_headers
 from app.domain.enums import AIProvider, AnalysisMode, Recommendation
 from app.domain.models import RunSummary, ScreeningDecision
+from app.prompts.screening import build_discovery_prompt
 from app.reporting.pdf import render_pdf_memo
 from app.sourcing.candidates import (
     discover_candidates,
     load_candidates,
     lookback_days_from_env,
 )
+from app.sourcing.constants import AGENT_REACH
 from app.sourcing.evidence import agent_reach_evidence, candidate_evidence
 from app.sourcing.registry import YC_URL, source_enabled
 
@@ -77,7 +81,7 @@ class Pipeline:
     def __init__(
         self,
         client: httpx.Client | None = None,
-        bedrock_client=None,
+        bedrock_client: Any = None,
     ) -> None:
         self.client = client or httpx.Client(
             timeout=httpx.Timeout(10, connect=5),
@@ -101,7 +105,7 @@ class Pipeline:
         progress_callback: Callable[[str, dict[str, Any]], None] | None = None,
         now: datetime | None = None,
         deep_diligence: bool = False,
-        max_hops: int = 2,
+        max_hops: int = DILIGENCE.default_max_hops,
     ) -> RunSummary:
         request_id = bind_request_id(request_id)
         LOGGER.info("run started deep_diligence=%s", deep_diligence)
@@ -188,12 +192,22 @@ class Pipeline:
             except (httpx.HTTPError, KeyError, TypeError, ValueError) as error:
                 LOGGER.warning("YC candidate feed error=%s; falling back to multi-source discovery", error)
 
+            def structured_agent_reach_output(raw_results: str) -> Mapping[str, object]:
+                return model_json(
+                    build_discovery_prompt(raw_results, topic),
+                    provider=provider,
+                    model=resolved_screening_model,
+                    max_tokens=AGENT_REACH.discovery_model_max_tokens,
+                    stage="discovery",
+                )
+
             candidates = discover_candidates(
                 topic=topic,
                 batch=batch,
                 lookback_days=lookback_days,
                 client=self.client,
                 yc_records=yc_records,
+                structured_output=structured_agent_reach_output,
                 now=effective_now,
                 limit=limit,
             )
@@ -307,7 +321,20 @@ class Pipeline:
             try:
                 baseline_ev = candidate_evidence(candidate)
                 if deep_diligence:
+                    def evaluate(candidate_to_evaluate, evidence_to_evaluate, evaluation_topic, hop):
+                        return evaluate_diligence(
+                            candidate_to_evaluate,
+                            evidence_to_evaluate,
+                            evaluation_topic,
+                            hop,
+                            self.client,
+                            provider=provider,
+                            model=resolved_screening_model,
+                            bedrock_client=bedrock_client,
+                        )
+
                     agent = DeepDiligenceAgent(
+                        evaluation_fn=evaluate,
                         max_hops=max_hops,
                         progress_callback=progress_callback,
                     )

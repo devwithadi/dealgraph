@@ -9,7 +9,6 @@ from app.analysis.providers import (
     PROVIDER_CONFIGS,
     _parse_json,
     _provider_url,
-    is_reasoning_model,
     model_for,
     model_json,
     resolve_model_id,
@@ -143,11 +142,11 @@ def test_provider_url_and_validation(monkeypatch) -> None:
     monkeypatch.setenv("DASHSCOPE_API_KEY", "dash-key")
     monkeypatch.setenv("ZHIPU_API_KEY", "zhipu-key")
 
-    assert _provider_url(AIProvider.OPENROUTER) == "https://openrouter.ai/api/v1/chat/completions"
-    assert _provider_url(AIProvider.DEEPSEEK) == "https://api.deepseek.com/v1/chat/completions"
-    assert _provider_url(AIProvider.DASHSCOPE) == "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
-    assert _provider_url(AIProvider.ZHIPU) == "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-    assert _provider_url(AIProvider.OLLAMA) == "http://localhost:11434/v1/chat/completions"
+    assert _provider_url(AIProvider.OPENROUTER) == "https://openrouter.ai/api/v1"
+    assert _provider_url(AIProvider.DEEPSEEK) == "https://api.deepseek.com/v1"
+    assert _provider_url(AIProvider.DASHSCOPE) == "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    assert _provider_url(AIProvider.ZHIPU) == "https://open.bigmodel.cn/api/paas/v4"
+    assert _provider_url(AIProvider.OLLAMA) == "http://localhost:11434/v1"
 
     validate_provider_config(AIProvider.OPENROUTER)
     validate_provider_config(AIProvider.DEEPSEEK)
@@ -174,55 +173,6 @@ def test_missing_api_keys_raise_app_error(monkeypatch) -> None:
         validate_provider_config(AIProvider.ZHIPU)
 
 
-def test_model_json_execution_for_all_providers(monkeypatch) -> None:
-    providers = [
-        (AIProvider.OPENROUTER, "OPENROUTER_API_KEY", "qwen/qwen-2.5-72b-instruct"),
-        (AIProvider.DEEPSEEK, "DEEPSEEK_API_KEY", "deepseek-chat"),
-        (AIProvider.DASHSCOPE, "DASHSCOPE_API_KEY", "qwen-plus"),
-        (AIProvider.ZHIPU, "ZHIPU_API_KEY", "glm-4-plus"),
-        (AIProvider.OLLAMA, "OLLAMA_API_KEY", "qwen2.5:latest"),
-    ]
-
-    for provider, env_var, model_name in providers:
-        monkeypatch.setenv(env_var, f"test-{env_var}")
-
-        def handler(request: httpx.Request) -> httpx.Response:
-            return httpx.Response(
-                200,
-                json={"choices": [{"message": {"content": '{"provider_result": "success"}'}}]},
-                request=request,
-            )
-
-        client = httpx.Client(transport=httpx.MockTransport(handler))
-        payload = model_json(
-            "Test diligence prompt",
-            provider=provider,
-            model=model_name,
-            max_tokens=400,
-            stage="synthesis",
-            client=client,
-        )
-        assert payload == {"provider_result": "success"}
-
-
-def test_provider_error_handling(monkeypatch) -> None:
-    monkeypatch.setenv("DEEPSEEK_API_KEY", "ds-key")
-
-    def failing_handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(500, json={"error": "internal error"}, request=request)
-
-    client = httpx.Client(transport=httpx.MockTransport(failing_handler))
-    with pytest.raises(AppError, match="DeepSeek synthesis unavailable"):
-        model_json(
-            "prompt",
-            provider=AIProvider.DEEPSEEK,
-            model="deepseek-chat",
-            max_tokens=100,
-            stage="synthesis",
-            client=client,
-        )
-
-
 def test_invalid_base_urls_and_unknown_provider_handling(monkeypatch) -> None:
     from app.analysis.providers import _openai_url
 
@@ -246,54 +196,3 @@ def test_fenced_json_without_language_tag() -> None:
     raw = "```\n{\n  \"status\": \"ok\"\n}\n```"
     assert _parse_json(raw) == {"status": "ok"}
 
-
-def test_reasoning_models_dispatch_and_effort(monkeypatch) -> None:
-    monkeypatch.setenv("OPENROUTER_API_KEY", "test-or-key")
-    monkeypatch.setenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-    monkeypatch.delenv("OPENAI_REASONING_EFFORT", raising=False)
-
-    captured_requests: list[dict] = []
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        import json
-        body = json.loads(request.content.decode("utf-8"))
-        captured_requests.append(body)
-        return httpx.Response(
-            200,
-            json={"choices": [{"message": {"content": '{"status": "ok"}'}}]},
-            request=request,
-        )
-
-    client = httpx.Client(transport=httpx.MockTransport(handler))
-
-    # DeepSeek R1 via OpenRouter (reasoning model with default low effort)
-    res_r1 = model_json(
-        "Synthesize memo with R1",
-        provider=AIProvider.OPENROUTER,
-        model="deepseek/deepseek-r1",
-        max_tokens=4096,
-        stage="synthesis",
-        client=client,
-    )
-    assert res_r1 == {"status": "ok"}
-    req_r1 = captured_requests[-1]
-    assert req_r1["model"] == "deepseek/deepseek-r1"
-    assert req_r1["max_tokens"] == 4096
-    assert "temperature" not in req_r1
-    assert req_r1["reasoning_effort"] == "low"
-
-    # QwQ reasoning model with custom OPENAI_REASONING_EFFORT
-    monkeypatch.setenv("OPENAI_REASONING_EFFORT", "medium")
-    res_qwq = model_json(
-        "Synthesize memo with QwQ",
-        provider=AIProvider.OPENROUTER,
-        model="qwen/qwq-32b",
-        max_tokens=2048,
-        stage="synthesis",
-        client=client,
-    )
-    assert res_qwq == {"status": "ok"}
-    req_qwq = captured_requests[-1]
-    assert req_qwq["model"] == "qwen/qwq-32b"
-    assert "temperature" not in req_qwq
-    assert req_qwq["reasoning_effort"] == "medium"

@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import re
 from datetime import date
+from typing import Any
 from urllib.parse import urlsplit
-
-import httpx
 
 from app.analysis.providers import model_for, model_json, screening_model_for
 from app.analysis.scoring import THESIS, normalize_dimensions, validate_citations
@@ -111,11 +110,11 @@ def _evidence_confidence(evidence: list[Evidence]) -> float:
 def screen_candidates(
     candidates: list[Candidate],
     topic: str,
-    client: httpx.Client,
+    client: Any = None,
     *,
-    provider: AIProvider,
+    provider: AIProvider = AIProvider.BEDROCK,
     model: str | None = None,
-    bedrock_client=None,
+    bedrock_client: Any = None,
 ) -> list[ScreeningDecision]:
     if not candidates:
         return []
@@ -198,11 +197,11 @@ def _validate_narrative_citations(analysis: Analysis, citations: list[str]) -> A
 def synthesize(
     candidate: Candidate,
     evidence: list[Evidence],
-    client: httpx.Client,
+    client: Any = None,
     *,
     provider: AIProvider = AIProvider.BEDROCK,
     model: str | None = None,
-    bedrock_client=None,
+    bedrock_client: Any = None,
 ) -> Analysis:
     resolved_model = model_for(provider, model) or ""
     payload = dict(

@@ -9,10 +9,8 @@ review surface small enough to inspect quickly.
 
 | View | Explains | Use it when you need to |
 | --- | --- | --- |
-| [System architecture](system-architecture.html) | All application modules, external integrations, trust boundaries, and ownership of artifacts | Understand where a behavior belongs in the codebase |
-| [Run lifecycle](run-lifecycle.html) | Live execution, enrichment failure isolation, provider validation, and exit behavior | Trace one command from input validation to summary |
-| [Run artifacts](run-artifacts.html) | The exact output tree and the contract of every generated file | Inspect, debug, or consume a finished run |
-| [Pipeline data flow](pipeline-data-flow.html) | The transformations from source records to evidence, analysis, and memos | Follow the payloads rather than the Python modules |
+| [High-level system architecture](system-architecture.html) | Nine major components, external integrations, dependency direction, evidence-to-decision flow, and artifact ownership | Understand where a behavior belongs in the codebase |
+| [Technical pipeline data flow](pipeline-data-flow.html) | Request-ID propagation, source and provider trust boundaries, payload transformations, deterministic scoring, atomic persistence, and failure isolation | Trace one command and its data contracts end to end |
 
 ## Application map
 
