@@ -181,6 +181,10 @@ def test_hn_evidence_prefers_matching_candidate_domain() -> None:
 def test_openai_request_keeps_run_request_id(monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("OPENAI_BASE_URL", "https://gateway.example/custom/v1/")
+    monkeypatch.setattr(
+        "dealgraph.core.urls.socket.getaddrinfo",
+        lambda *_args: [(None, None, None, None, ("93.184.216.34", 443))],
+    )
     bind_request_id("req-openai")
     candidate = Candidate(
         slug="agentdesk",
