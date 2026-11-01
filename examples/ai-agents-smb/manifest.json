@@ -1,0 +1,29 @@
+{
+  "artifacts": {
+    "analyses": "analyses/",
+    "candidates": "candidates.json",
+    "evidence": "evidence/",
+    "gaps": "gaps.json",
+    "input": "input.json",
+    "screenings": "screenings.json",
+    "shortlist": "shortlist.json"
+  },
+  "created_at": "2026-08-24T15:19:18.816268+00:00",
+  "provider": "bedrock",
+  "request_id": "req-f65abf914a504204",
+  "run_id": "20260824T151918Z",
+  "screening_model": "amazon.nova-lite-v1:0",
+  "summary": {
+    "candidates": 10,
+    "failed": 0,
+    "finalists": 2,
+    "output": ".",
+    "request_id": "req-f65abf914a504204",
+    "run_id": "20260824T151918Z",
+    "screened": 10,
+    "selected": 2,
+    "succeeded": 2
+  },
+  "synthesis_model": "amazon.nova-pro-v1:0",
+  "topic": "AI agents for SMBs"
+}

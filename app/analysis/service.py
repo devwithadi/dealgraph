@@ -7,7 +7,7 @@ import httpx
 
 from app.analysis.providers import model_for, model_json, screening_model_for
 from app.analysis.scoring import THESIS, normalize_dimensions, validate_citations
-from app.domain.enums import AIProvider, AnalysisMode, Recommendation
+from app.domain.enums import AIProvider, AnalysisMode
 from app.domain.models import Analysis, Candidate, Evidence, Financials, ScreeningDecision
 from app.prompts.screening import build_screening_prompt
 from app.prompts.synthesis import build_synthesis_prompt
@@ -27,33 +27,6 @@ def _normalize_confidence(value: object) -> float:
     if num > 1.0:
         num = num / 100.0
     return max(0.0, min(1.0, num))
-
-
-def _normalize_score(value: object) -> float:
-    if isinstance(value, (int, float)):
-        num = float(value)
-    elif isinstance(value, str):
-        try:
-            num = float(value.strip())
-        except ValueError:
-            num = 50.0
-    else:
-        num = 50.0
-    return max(0.0, min(100.0, num))
-
-
-def _normalize_recommendation(value: object) -> Recommendation:
-    if isinstance(value, Recommendation):
-        return value
-    if isinstance(value, str):
-        val = value.strip().lower().replace("_", " ").replace("-", " ")
-        if val in {"take a meeting", "meet", "meeting"}:
-            return Recommendation.TAKE_A_MEETING
-        if val in {"watch", "monitoring"}:
-            return Recommendation.WATCH
-        if val in {"pass", "reject"}:
-            return Recommendation.PASS
-    return Recommendation.WATCH
 
 
 def _normalize_changes_mind(value: object) -> list[str]:
@@ -283,12 +256,9 @@ def synthesize(
     ]
 
     dimension_result = normalize_dimensions(payload.get("dimensions"), evidence)
-    if dimension_result:
-        dimensions, score, recommendation = dimension_result
-    else:
-        dimensions = []
-        score = _normalize_score(payload.get("score"))
-        recommendation = _normalize_recommendation(payload.get("recommendation"))
+    if dimension_result is None:
+        raise ValueError("dimensions must contain the five required scoring dimensions")
+    dimensions, score, recommendation = dimension_result
 
     mode = AnalysisMode(provider.value)
     analysis = Analysis.model_validate(

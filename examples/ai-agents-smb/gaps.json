@@ -1,0 +1,74 @@
+[
+  {
+    "candidate": "covera",
+    "description": "Commercial and market demand evidence identified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "Found commercial evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
+  },
+  {
+    "candidate": "covera",
+    "description": "No verified pricing structure, revenue milestones, funding rounds, or burn figures for Covera.",
+    "pillar": "Unit Economics",
+    "rationale": "No financial or unit economics data points extracted.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "covera",
+    "description": "Technical architecture and defensibility evidence identified.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "Found technical evidence in ev-001.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-001",
+    "severity": "low"
+  },
+  {
+    "candidate": "covera",
+    "description": "Risk factors and regulatory context identified.",
+    "pillar": "Risk / ESG",
+    "rationale": "Found risk evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
+  },
+  {
+    "candidate": "gini",
+    "description": "Commercial and market demand evidence identified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "Found commercial evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
+  },
+  {
+    "candidate": "gini",
+    "description": "Financial and unit economics data identified.",
+    "pillar": "Unit Economics",
+    "rationale": "Found economics evidence in ev-003.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-003",
+    "severity": "low"
+  },
+  {
+    "candidate": "gini",
+    "description": "Technical architecture and defensibility evidence identified.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "Found technical evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
+  },
+  {
+    "candidate": "gini",
+    "description": "Risk factors and regulatory context identified.",
+    "pillar": "Risk / ESG",
+    "rationale": "Found risk evidence in ev-002.",
+    "resolved": true,
+    "resolved_by_evidence_id": "ev-002",
+    "severity": "low"
+  }
+]

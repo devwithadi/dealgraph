@@ -32,3 +32,20 @@ def test_env_example_documents_bedrock_without_containing_a_key() -> None:
     assert "AWS_REGION=us-east-1" in example
     assert "BEDROCK_SCREENING_MODEL_ID=" in example
     assert "BEDROCK_MODEL_ID=" in example
+
+
+def test_submission_docs_describe_the_live_pdf_pipeline() -> None:
+    docs = {
+        "doc/README.md": (ROOT / "doc" / "README.md").read_text(encoding="utf-8"),
+        "doc/pipeline-data-flow.html": (ROOT / "doc" / "pipeline-data-flow.html").read_text(encoding="utf-8"),
+        "doc/system-architecture.html": (ROOT / "doc" / "system-architecture.html").read_text(encoding="utf-8"),
+    }
+
+    for name, content in docs.items():
+        lowered = content.lower()
+        assert "replay" not in lowered, name
+        assert "--offline" not in content, name
+
+    assert "PDF" in docs["doc/README.md"]
+    assert "one-page PDF" in docs["doc/pipeline-data-flow.html"]
+    assert "PDF" in docs["doc/system-architecture.html"]

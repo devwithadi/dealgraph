@@ -60,6 +60,22 @@ class BedrockClient:
                 "open_questions": ["What is retention?"],
                 "changes_mind": ["Verified retention", "Customer references"],
                 "score": 71,
+                "dimensions": [
+                    {
+                        "name": name,
+                        "score": 6.5,
+                        "weight": weight,
+                        "rationale": "Supported by evidence [ev-001]",
+                        "evidence_ids": ["ev-001"],
+                    }
+                    for name, weight in (
+                        ("workflow_pain", 25),
+                        ("speed_to_value", 20),
+                        ("compounding_advantage", 20),
+                        ("team_execution", 15),
+                        ("market_distribution", 20),
+                    )
+                ],
                 "confidence": 0.6,
                 "recommendation": "Watch",
                 "citations": ["ev-001", "ev-002"],

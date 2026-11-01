@@ -400,6 +400,22 @@ def test_bedrock_uses_small_model_for_screening_and_main_model_for_synthesis(mon
                     "open_questions": ["What is retention?"],
                     "changes_mind": ["Verified retention", "Customer references"],
                     "score": 78,
+                    "dimensions": [
+                        {
+                            "name": name,
+                            "score": 7.8,
+                            "weight": weight,
+                            "rationale": "Supported by evidence [ev-001]",
+                            "evidence_ids": ["ev-001"],
+                        }
+                        for name, weight in (
+                            ("workflow_pain", 25),
+                            ("speed_to_value", 20),
+                            ("compounding_advantage", 20),
+                            ("team_execution", 15),
+                            ("market_distribution", 20),
+                        )
+                    ],
                     "confidence": 0.7,
                     "recommendation": "Take a meeting",
                     "citations": ["ev-001"],

@@ -1,0 +1,62 @@
+[
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Silicon production in space is unrelated to AI agents for SMBs.",
+    "slug": "ethos-space-resources"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "AI traders in trading firms do not directly apply to AI agents for SMB workflows.",
+    "slug": "spectre-intelligence"
+  },
+  {
+    "advance": false,
+    "fit_score": 0.0,
+    "rationale": "Military exoskeletons are not related to AI agents for SMBs.",
+    "slug": "edgerun"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "AI agents for insurance brokers directly match the requested topic and investment thesis.",
+    "slug": "covera"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "AI in mental health services does not align with AI agents for SMBs.",
+    "slug": "allia-health"
+  },
+  {
+    "advance": false,
+    "fit_score": 0.0,
+    "rationale": "Infrastructure demand in government is not related to AI agents for SMBs.",
+    "slug": "capveon"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Market prediction models do not match the requested topic of AI agents for SMBs.",
+    "slug": "studio"
+  },
+  {
+    "advance": true,
+    "fit_score": 90.0,
+    "rationale": "An AI coworker in collaboration tools aligns with AI agents for SMB workflows.",
+    "slug": "gini"
+  },
+  {
+    "advance": false,
+    "fit_score": 0.0,
+    "rationale": "Hardware testing tools are not related to AI agents for SMBs.",
+    "slug": "hilstart"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Automated recruiting platforms do not match the requested topic of AI agents for SMBs.",
+    "slug": "lantern-ai"
+  }
+]
