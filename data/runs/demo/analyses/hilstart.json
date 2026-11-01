@@ -1,0 +1,96 @@
+{
+  "company": "Hilstart",
+  "thesis": "Pre-seed and seed B2B AI companies that replace a frequent, expensive SMB workflow, show value quickly, and compound an advantage through integrations, data, or distribution.",
+  "summary": "Hilstart addresses autonomous hardware testing. Public evidence is limited to first-party and directory claims.",
+  "team": "YC reports a team size of 0.",
+  "product": "We build physical agent harnesses to enable AI to debug, validate, and ship functional hardware and software.",
+  "market": "Industrials -> Manufacturing and Robotics",
+  "why_now": "The timing case is not yet supported by enough public evidence.",
+  "financials": {
+    "revenue": null,
+    "burn": null,
+    "runway": null,
+    "funding": null,
+    "pricing": null,
+    "evidence_ids": []
+  },
+  "risks": [
+    "Revenue, burn, runway, and retention are Unknown.",
+    "First-party product claims require customer validation."
+  ],
+  "open_questions": [
+    "What measurable customer ROI and retention can the founders demonstrate?",
+    "Which distribution channel can scale without founder-led sales?"
+  ],
+  "changes_mind": [
+    "Verified usage, retention, or revenue evidence.",
+    "Reference calls confirming fast deployment and durable ROI.",
+    "Evidence that integrations or proprietary data improve the moat over time."
+  ],
+  "dimensions": [
+    {
+      "name": "pain_roi",
+      "score": 45.0,
+      "weight": 25,
+      "rationale": "Recurring pain, quantified ROI, pricing, and customer proof.",
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ]
+    },
+    {
+      "name": "differentiation",
+      "score": 75.0,
+      "weight": 20,
+      "rationale": "Technical specificity and evidence of a compounding product advantage.",
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ]
+    },
+    {
+      "name": "team",
+      "score": 80.0,
+      "weight": 20,
+      "rationale": "Public team, technical-depth, and hiring signals.",
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ]
+    },
+    {
+      "name": "distribution",
+      "score": 40.0,
+      "weight": 15,
+      "rationale": "Observable paths to customers and community attention.",
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ]
+    },
+    {
+      "name": "market",
+      "score": 55.0,
+      "weight": 10,
+      "rationale": "Specific buyer category and plausible expansion surface.",
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ]
+    },
+    {
+      "name": "traction",
+      "score": 40.0,
+      "weight": 10,
+      "rationale": "Freshness, hiring, and Hacker News engagement.",
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ]
+    }
+  ],
+  "score": 57.8,
+  "confidence": 0.55,
+  "recommendation": "Pass",
+  "analysis_mode": "deterministic_fallback"
+}

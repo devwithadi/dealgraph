@@ -4,8 +4,9 @@ from pathlib import Path
 import httpx
 import pytest
 
+from app.models import Candidate
 from app.pipeline import Pipeline
-from app.sources import SafeFetcher, SourcePolicyError
+from app.sources import SafeFetcher, SourcePolicyError, hn_evidence
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -123,3 +124,83 @@ def test_offline_pipeline_never_uses_network(tmp_path: Path) -> None:
         "pricing": None,
         "evidence_ids": [],
     }
+
+
+def test_hn_evidence_ignores_unrelated_hits() -> None:
+    candidate = Candidate(
+        slug="agentdesk",
+        name="AgentDesk",
+        website="https://agentdesk.example",
+        one_liner="AI agents for support teams",
+        source_url="https://www.ycombinator.com/companies/agentdesk",
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "hn.algolia.com"
+        return httpx.Response(
+            200,
+            json={
+                "hits": [
+                    {
+                        "objectID": "999",
+                        "title": "Agent desk setup tips",
+                        "url": "https://other.example/post",
+                        "points": 999,
+                        "num_comments": 999,
+                        "created_at": "2026-08-01T00:00:00Z",
+                    },
+                    {
+                        "objectID": "42",
+                        "title": "Show HN: AgentDesk",
+                        "url": "https://agentdesk.example/blog/launch",
+                        "points": 12,
+                        "num_comments": 3,
+                        "created_at": "2026-08-02T00:00:00Z",
+                    },
+                ]
+            },
+            request=request,
+        )
+
+    evidence = hn_evidence(
+        candidate,
+        httpx.Client(transport=httpx.MockTransport(handler)),
+        evidence_id=2,
+    )
+
+    assert evidence[0].source_url == "https://news.ycombinator.com/item?id=42"
+
+
+def test_pipeline_fetches_yc_feed_when_source_file_is_omitted(tmp_path: Path) -> None:
+    with FIXTURE.open() as handle:
+        yc_payload = json.load(handle)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.host == "yc-oss.github.io":
+            return httpx.Response(200, json=yc_payload, request=request)
+        if request.url.host == "agentdesk.example" and request.url.path == "/robots.txt":
+            return httpx.Response(200, text="User-agent: *\nAllow: /", request=request)
+        if request.url.host == "agentdesk.example":
+            return httpx.Response(
+                200,
+                text="<html><head><title>AgentDesk</title></head><body>Support automation for SMBs</body></html>",
+                headers={"content-type": "text/html"},
+                request=request,
+            )
+        if request.url.host == "hn.algolia.com":
+            return httpx.Response(200, json={"hits": []}, request=request)
+        raise AssertionError(f"Unexpected request: {request.url}")
+
+    result = Pipeline(
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        resolver=lambda _host: ["93.184.216.34"],
+    ).run(
+        topic="AI agents for SMBs",
+        batch="W25",
+        limit=1,
+        output=tmp_path,
+    )
+
+    assert result.succeeded == 1
+    manifest = json.loads((tmp_path / "manifest.json").read_text())
+    assert manifest["candidate_source"] == "https://yc-oss.github.io/api/companies/all.json"

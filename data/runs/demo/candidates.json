@@ -1,0 +1,171 @@
+[
+  {
+    "slug": "trynearby",
+    "name": "TryNearby",
+    "website": "https://trynearby.com",
+    "one_liner": "Local creators for local businesses",
+    "description": "TryNearby connects local businesses with creators who live nearby. Restaurants subscribe monthly and automatically get booked visits from local creators who film, edit, and post a review to the local algorithm. This creates a steady stream of content that compounds into discovery on TikTok, Instagram, and increasingly AI search. Over 100 restaurants and thousands of creators are on the platform across Southern California, with AI agents handling matching, booking, and every creator conversation.",
+    "batch": "Summer 2026",
+    "industry": "B2B -> Marketing",
+    "tags": [
+      "Restaurant Tech",
+      "Marketing",
+      "Creator Economy",
+      "SMB"
+    ],
+    "team_size": 5,
+    "launched_at": "2026-08-11T22:48:00Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/trynearby"
+  },
+  {
+    "slug": "last-accounting-company",
+    "name": "Last Accounting Company",
+    "website": "https://lastaccountingcompany.com/",
+    "one_liner": "Agent-native accounting firm.",
+    "description": "Last Accounting Company (LAC) is a full-stack AI accounting firm. We sell the same service (bookkeeping, tax filings, etc.) as a traditional accounting firm, but underneath agents handle everything and a certified accountant signs off. Our service is faster, cheaper, and fully integrated, allowing our clients to focus on what matters, not accounting admin.\r\n\r\nLAC replaces both outsourced accountants and legacy accounting software for startups and SMBs. Our system is fully proprietary, from the general ledger to the accounting agents. This allows us to create powerful self-reinforcing loops and ultimately provide a state-of-the-art accounting service.",
+    "batch": "Summer 2026",
+    "industry": "B2B -> Finance and Accounting",
+    "tags": [
+      "Artificial Intelligence",
+      "Fintech",
+      "Finance"
+    ],
+    "team_size": 4,
+    "launched_at": "2026-07-20T19:16:55Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/last-accounting-company"
+  },
+  {
+    "slug": "kinro",
+    "name": "Kinro",
+    "website": "https://www.kinro.com/",
+    "one_liner": "Autonomous insurance brokerage for small businesses",
+    "description": "We are building the first autonomous insurance brokerage.\r\n\r\nWe hit $1M in annual revenue building insurance workflows for brokers. Then we realized the bigger opportunity was replacing them.\r\n\r\nIn the US, there are 36 million SMBs, and 77% are underinsured because distribution is broken. Brokers can’t serve low-premium SMBs profitably: a $2K policy takes almost as much work as a $20K one.\r\n\r\nKinro changes that. Our AI agents handle the full broker workflow 24/7, from finding prospects to binding policies.\r\n\r\nIn 3 weeks, we got licensed in 24 states and appointed by 10 carriers. Last week, our agents autonomously bound 9 policies.\r\n\r\nBefore Kinro, Pierre was an AI researcher at DeepMind. Corentin was Chief Insurance Officer at an insurtech. Parth built ML systems at Zoox.",
+    "batch": "Spring 2026",
+    "industry": "Fintech -> Insurance",
+    "tags": [],
+    "team_size": 3,
+    "launched_at": "2026-03-19T18:28:58Z",
+    "is_hiring": true,
+    "source_url": "https://www.ycombinator.com/companies/kinro"
+  },
+  {
+    "slug": "getbalance",
+    "name": "Balance",
+    "website": "https://getbalance.ai",
+    "one_liner": "Full-Stack AI Accounting",
+    "description": "Balance is an AI accounting firm that helps SMBs close their monthly books. Our agents do the work of an in-house finance hire, reconciling books in real time and flagging issues before they become problems.",
+    "batch": "Winter 2026",
+    "industry": "B2B -> Finance and Accounting",
+    "tags": [],
+    "team_size": 4,
+    "launched_at": "2026-01-21T06:21:12Z",
+    "is_hiring": true,
+    "source_url": "https://www.ycombinator.com/companies/getbalance"
+  },
+  {
+    "slug": "boom-ai",
+    "name": "Boom AI",
+    "website": "https://useboom.ai",
+    "one_liner": "AI agents that recover lost revenue through real conversations.",
+    "description": "Boom reaches out to your customers before you lose them.\r\n\r\nWe run proactive outbound conversations at scale: recovering churned users, re-engaging drop-offs, and protecting revenue you thought was gone. AI agents hold real conversations with your customers over SMS, email, WhatsApp, or phone, in their language, on the channel they actually answer.\r\n\r\nEvery month, companies lose 5-15% of revenue to churn, and more walks out through abandoned signups and failed onboarding. The tools built to fix this don't work. Win-back emails get ignored. Cancel flows only catch people at the door. Hiring humans doesn't scale. Boom does the one thing that works: a real conversation. 1,000x the reach of manual outreach, and the customer can reply.",
+    "batch": "Fall 2025",
+    "industry": "B2B",
+    "tags": [
+      "Artificial Intelligence",
+      "B2B",
+      "E-commerce",
+      "SMB",
+      "AI"
+    ],
+    "team_size": 3,
+    "launched_at": "2025-10-19T00:46:08Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/boom-ai"
+  },
+  {
+    "slug": "lua-global-inc",
+    "name": "Lua Global Inc",
+    "website": "https://heylua.ai/",
+    "one_liner": "The mid-market agent platform",
+    "description": "Lua is the mid-market agent platform.\r\n\r\nWe deliver enterprise reliability with the speed, flexibility, and economics that mid-market companies demand - helping them deploy AI agents that drive sales, support, and operations across everyday channels and tools.\r\n\r\nWe scale through developer agencies and channel partners, enabling rapid distribution without a large enterprise sales motion or scaled forward deployed teams. We think of Lua as an agentOS that abstracts all of the complexity required to launch enterprise grade agents and combine it with the tools needed for these agents to succeed in the real world.\r\n\r\nLua was founded by Lorcan O Cathain (CEO) and Stefan Kruger (CTO)- experienced founders who have spent 15 - 20 years each scaling technology companies across emerging markets.\r\n\r\nWe sell to mid-market enterprises and developer agencies in the US and internationally. Developers are increasingly our primary ICP but we run SMB & enterprise sales motions to accelerate our learnings and further develop our product:\r\n- SMB ($25- 1k per month): fully automated self-serve agents that handle sales and support for eCommerce companies, hotels, restaurants and general service businesses. If you’ve been on our website you’ve likely seen this.\r\n- Enterprise: We directly sell to mid-market (~ $50M- $1BN) businesses across the US and internationally to eat our own dog food and strengthen our platform.\r\n",
+    "batch": "Fall 2025",
+    "industry": "B2B",
+    "tags": [],
+    "team_size": 5,
+    "launched_at": "2025-09-16T07:57:44Z",
+    "is_hiring": true,
+    "source_url": "https://www.ycombinator.com/companies/lua-global-inc"
+  },
+  {
+    "slug": "boton",
+    "name": "Boton",
+    "website": "https://www.botonapp.com/",
+    "one_liner": "Accounting software with an AI agent",
+    "description": "SMBs in Latam use Boton to get real-time financial statements prepared by an autonomous agent. We match you with a partner accountant that may review your books and answer your questions.",
+    "batch": "Summer 2022",
+    "industry": "B2B -> Finance and Accounting",
+    "tags": [
+      "SaaS",
+      "AI"
+    ],
+    "team_size": 3,
+    "launched_at": "2022-07-19T00:50:41Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/boton"
+  },
+  {
+    "slug": "sprites",
+    "name": "Sprites",
+    "website": "https://sprites.ai/",
+    "one_liner": "The AI performance marketing agent for entrepreneurs and growth teams",
+    "description": "Sprites AI automates customer acquisition and demand generation for entrepreneurs and growth teams. Our AI agent handles managing paid ad campaigns on Meta, Google, LinkedIn, Reddit, TikTok, and runs your SEO and AEO gameplan with a content engine —unlocking growth channels that normally require hiring multiple people or agencies. \r\n\r\nTeams using our platform acquire customers much faster and scale their growth funnel without the overhead of hiring large teams of specialists or hiring expensive agencies. \r\n\r\nThe result: heads of marketing, SMBs, and founders can now scale revenue like they have a full marketing department.\r\n\r\nWe're arming businesses with systematic customer acquisition run by AI- so they can focus on the important things that make their offering unique. ",
+    "batch": "Winter 2022",
+    "industry": "B2B -> Marketing",
+    "tags": [
+      "Artificial Intelligence",
+      "B2B",
+      "Marketing",
+      "Advertising",
+      "SEO"
+    ],
+    "team_size": 5,
+    "launched_at": "2022-02-24T09:06:18Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/sprites"
+  },
+  {
+    "slug": "pideaky",
+    "name": "Pideaky",
+    "website": "https://pideaky.com/en/",
+    "one_liner": "We help offline LatAm SMBs manage and accelerate their cash-flow ",
+    "description": "Pideaky helps offline LatAm SMBs manage and accelerate their cash flow through AI collection agents, which remind, collect, and negotiate bills on behalf of SMBS in Latam.\r\nWe focus on the massively underserved $70B/year customer segment as our wedge — Mexican corner shops and corner shop providers:",
+    "batch": "Summer 2021",
+    "industry": "Fintech -> Payments",
+    "tags": [
+      "Fintech"
+    ],
+    "team_size": 3,
+    "launched_at": "2021-06-25T05:15:52Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/pideaky"
+  },
+  {
+    "slug": "hilstart",
+    "name": "Hilstart",
+    "website": "https://hilstart.io/",
+    "one_liner": "Autonomous Hardware Testing",
+    "description": "We build physical agent harnesses to enable AI to debug, validate, and ship functional hardware and software.",
+    "batch": "Summer 2026",
+    "industry": "Industrials -> Manufacturing and Robotics",
+    "tags": [
+      "Developer Tools",
+      "Hardware"
+    ],
+    "team_size": 0,
+    "launched_at": "2026-08-18T19:23:10Z",
+    "is_hiring": false,
+    "source_url": "https://www.ycombinator.com/companies/hilstart"
+  }
+]

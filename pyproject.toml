@@ -1,0 +1,39 @@
+[project]
+name = "investment-decision-assistant"
+version = "0.1.0"
+description = "Replayable public-data startup sourcing and investment memo pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.6.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+ida = "app.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=6.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "--strict-markers"
+
+[tool.coverage.run]
+source = ["app"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
