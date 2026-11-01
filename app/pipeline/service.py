@@ -28,7 +28,7 @@ from app.sourcing.candidates import (
     load_candidates,
     lookback_days_from_env,
 )
-from app.sourcing.evidence import agent_reach_evidence, yc_evidence
+from app.sourcing.evidence import agent_reach_evidence, candidate_evidence
 from app.sourcing.registry import YC_URL, source_enabled
 
 LOGGER = logging.getLogger("dealgraph.pipeline")
@@ -305,22 +305,22 @@ class Pipeline:
                 },
             )
             try:
-                yc_ev = yc_evidence(candidate)
+                baseline_ev = candidate_evidence(candidate)
                 if deep_diligence:
                     agent = DeepDiligenceAgent(
                         max_hops=max_hops,
                         progress_callback=progress_callback,
                     )
-                    dstate = agent.run(candidate, topic, initial_evidence=yc_ev)
+                    dstate = agent.run(candidate, topic, initial_evidence=baseline_ev)
                     evidence = dstate.evidence
                     gaps.extend(
                         {"candidate": candidate.slug, **gap.model_dump(mode="json")}
                         for gap in dstate.gaps
                     )
-                    reach_ev_count = len(evidence) - len(yc_ev)
+                    reach_ev_count = len(evidence) - len(baseline_ev)
                 else:
-                    reach_ev = agent_reach_evidence(candidate, topic, len(yc_ev) + 1)
-                    evidence = yc_ev + reach_ev
+                    reach_ev = agent_reach_evidence(candidate, topic, len(baseline_ev) + 1)
+                    evidence = baseline_ev + reach_ev
                     reach_ev_count = len(reach_ev)
 
                 _write_json(
@@ -335,7 +335,7 @@ class Pipeline:
                         "name": candidate.name,
                         "slug": candidate.slug,
                         "count": len(evidence),
-                        "yc_count": len(yc_ev),
+                        "baseline_count": len(baseline_ev),
                         "reach_count": reach_ev_count,
                         "deep_diligence": deep_diligence,
                     },

@@ -245,7 +245,7 @@ def _bedrock_json(prompt: str, model: str, max_tokens: int, stage: str, client=N
             modelId=model,
             system=[{"text": BEDROCK_SYSTEM_GUARD}],
             messages=[{"role": "user", "content": [{"text": prompt}]}],
-            inferenceConfig={"maxTokens": max_tokens},
+            inferenceConfig={"maxTokens": max_tokens, "temperature": 0},
             requestMetadata={
                 "application": "dealgraph",
                 "request_id": current_request_id(),
@@ -321,7 +321,7 @@ def _chat_completion_json(
         }
 
         if not is_reasoning:
-            request_body["temperature"] = 0.1
+            request_body["temperature"] = 0
 
         if provider == AIProvider.OPENAI and _is_newer_openai_model(model):
             request_body["max_completion_tokens"] = max_tokens

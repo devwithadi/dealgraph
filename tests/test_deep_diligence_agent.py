@@ -226,6 +226,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     source_type="deep_diligence",
                     trust_tier="open_web",
                     verification="multi_hop_search",
+                    status=CitationTag.TRUSTED,
                 )
             ]
         elif query_item.pillar == DiligencePillar.TECH_IP.value:
@@ -239,6 +240,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     source_type="deep_diligence",
                     trust_tier="open_web",
                     verification="multi_hop_search",
+                    status=CitationTag.TRUSTED,
                 )
             ]
         elif query_item.pillar == DiligencePillar.UNIT_ECONOMICS.value and query_item.hop >= 2:
@@ -252,6 +254,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     source_type="deep_diligence",
                     trust_tier="open_web",
                     verification="multi_hop_search",
+                    status=CitationTag.TRUSTED,
                 )
             ]
         elif query_item.pillar == DiligencePillar.RISK_ESG.value and query_item.hop >= 2:
@@ -265,6 +268,7 @@ def test_deep_diligence_agent_multi_hop_live_search_loop(
                     source_type="deep_diligence",
                     trust_tier="open_web",
                     verification="multi_hop_search",
+                    status=CitationTag.TRUSTED,
                 )
             ]
         return []

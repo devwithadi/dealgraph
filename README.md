@@ -102,6 +102,10 @@ Missing facts remain `Not disclosed`; they do not receive invented credit. Each 
 breakdown, company-specific thesis, Team/Product/Market assessment, risks, decision-changing proof
 points, and clickable sources on one page.
 
+Displayed confidence is deterministic evidence coverage, not a model self-rating: it rewards
+verified/trusted evidence, an independent source, distinct domains, source diversity, corpus depth,
+and extracted financial facts. First-party claims alone cannot create high confidence.
+
 ## Sources and safety
 
 Candidate discovery uses the enabled YC and Agent Reach/Exa channels. Finalist research uses the
