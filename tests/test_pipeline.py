@@ -6,6 +6,7 @@ import pytest
 
 from dealgraph.core.errors import AppError
 from dealgraph.core.logging import configure_logging
+from dealgraph.domain.enums import AIProvider
 from dealgraph.domain.models import Candidate
 from dealgraph.pipeline.service import Pipeline
 from dealgraph.sourcing.evidence import hn_evidence
@@ -54,9 +55,30 @@ def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
         raise AssertionError(f"Unexpected request: {request.url}")
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
+
+    class BedrockClient:
+        def converse(self, **_kwargs):
+            narrative = {
+                "summary": "Summary",
+                "team": "Unknown",
+                "product": "AI support",
+                "market": "Customer support",
+                "why_now": "AI adoption",
+                "risks": ["Retention is unknown"],
+                "open_questions": ["What is retention?"],
+                "changes_mind": ["Verified retention"],
+                "citations": ["ev-001"],
+            }
+            return {
+                "output": {
+                    "message": {"content": [{"text": json.dumps(narrative)}]}
+                }
+            }
+
     result = Pipeline(
         client=client,
         resolver=lambda _host: ["93.184.216.34"],
+        bedrock_client=BedrockClient(),
     ).run(
         topic="AI agents for SMBs",
         batch="W25",
@@ -75,7 +97,9 @@ def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
     }
     manifest = json.loads((tmp_path / "manifest.json").read_text())
     assert manifest["request_id"] == "req-pipeline-test"
-    assert manifest["analysis_mode"] == "deterministic_fallback"
+    assert manifest["provider"] == "bedrock"
+    assert manifest["analysis_mode"] == "bedrock"
+    assert manifest["model"] == "amazon.nova-micro-v1:0"
     assert (tmp_path / "evidence" / "agentdesk.json").exists()
     assert (tmp_path / "analyses" / "agentdesk.json").exists()
     analysis = json.loads((tmp_path / "analyses" / "agentdesk.json").read_text())
@@ -253,6 +277,7 @@ def test_pipeline_fetches_yc_feed_when_source_file_is_omitted(tmp_path: Path) ->
         batch="W25",
         limit=1,
         output=tmp_path,
+        provider=AIProvider.DETERMINISTIC,
     )
 
     assert result.succeeded == 1
