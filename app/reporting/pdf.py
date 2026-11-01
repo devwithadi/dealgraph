@@ -97,6 +97,22 @@ def _clean_for_xml(text: str) -> str:
     return html.escape(text)
 
 
+def _cap_text(text: str | None, limit: int = 300) -> str:
+    """Fit prose while preferring a complete, still-cited sentence."""
+    clean = re.sub(r"\s+", " ", text or "").strip() or "Not disclosed"
+    if len(clean) <= limit:
+        return clean
+    prefix = clean[:limit]
+    sentence_end = max(prefix.rfind(". "), prefix.rfind("? "), prefix.rfind("! "))
+    if sentence_end >= limit // 2:
+        complete = prefix[: sentence_end + 1]
+        citation = re.search(r"\[ev-\d+\]", clean, re.IGNORECASE)
+        if citation and not re.search(r"\[ev-\d+\]", complete, re.IGNORECASE):
+            complete = f"{complete} {citation.group(0)}"
+        return complete
+    return prefix[: limit - 3].rsplit(" ", 1)[0] + "..."
+
+
 def _transform_citations_for_pdf(text: str, evidence_map: dict[str, Any]) -> str:
     """Transform raw [ev-XXX] or composite citations into compact, clickable ReportLab HTML/XML links."""
     if not text:
@@ -201,14 +217,8 @@ def render_pdf_memo(
     )
     evidence_map = _build_evidence_map(evidence)
 
-    def capped(text: str | None, limit: int = 300) -> str:
-        clean = re.sub(r"\s+", " ", text or "").strip() or "Not disclosed"
-        if len(clean) <= limit:
-            return clean
-        return clean[: limit - 3].rsplit(" ", 1)[0] + "..."
-
     def linked(text: str | None, limit: int = 300) -> Paragraph:
-        return Paragraph(_transform_citations_for_pdf(capped(text, limit), evidence_map), body)
+        return Paragraph(_transform_citations_for_pdf(_cap_text(text, limit), evidence_map), body)
 
     if analysis.recommendation == Recommendation.TAKE_A_MEETING:
         call_color, call_text = COLOR_EMERALD, "TAKE A MEETING"
@@ -273,9 +283,9 @@ def render_pdf_memo(
 
     snapshot = Table([
         [Paragraph("TEAM", label), Paragraph("PRODUCT", label)],
-        [linked(analysis.team, 240), linked(analysis.product, 240)],
+        [linked(analysis.team, 320), linked(analysis.product, 320)],
         [Paragraph("MARKET", label), Paragraph("WHY NOW", label)],
-        [linked(analysis.market, 240), linked(analysis.why_now, 240)],
+        [linked(analysis.market, 320), linked(analysis.why_now, 320)],
     ], colWidths=[270, 270])
     snapshot.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), COLOR_SLATE_LIGHT),
@@ -319,7 +329,7 @@ def render_pdf_memo(
 
     def compact_list(items: list[str], fallback: str) -> Paragraph:
         values = items[:3] or [fallback]
-        lines = [f"- {_transform_citations_for_pdf(capped(item, 145), evidence_map)}" for item in values]
+        lines = [f"- {_transform_citations_for_pdf(_cap_text(item, 145), evidence_map)}" for item in values]
         return Paragraph("<br/>".join(lines), small)
 
     decisions = Table([
@@ -351,10 +361,10 @@ def render_pdf_memo(
             tag_color, tag_text = "#2563EB", "TRUSTED"
         else:
             tag_color, tag_text = "#D97706", "CLAIMED"
-        source_title = _clean_for_xml(capped(item.source_title or item.claim, 70))
+        source_title = _clean_for_xml(_cap_text(item.source_title or item.claim, 70))
         if item.source_url.startswith(("http://", "https://")):
             source_title = f'<a href="{html.escape(item.source_url)}" color="#2563EB"><b>{source_title}</b></a>'
-        support = f"{_format_source_category(item, candidate)}: {capped(item.excerpt, 145)}"
+        support = f"{_format_source_category(item, candidate)}: {_cap_text(item.excerpt, 145)}"
         sources_data.append([
             Paragraph(f'<font color="#2563EB"><b>[{idx}]</b></font>', small),
             Paragraph(f'<font color="{tag_color}"><b>{tag_text}</b></font>', small),
