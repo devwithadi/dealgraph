@@ -141,7 +141,12 @@ class SearchTool:
             LOGGER.warning("Search subprocess failed query=%r error=%s", query_item.query, error)
             return []
 
-        if completed.returncode != 0 or len(completed.stdout.encode("utf-8")) > 200_000:
+        if completed.returncode != 0:
+            stderr = completed.stderr.lower()
+            if "429" in stderr or "rate limit" in stderr or "quota" in stderr:
+                raise SourcePolicyError("Independent search rate limited")
+            return []
+        if len(completed.stdout.encode("utf-8")) > 200_000:
             return []
 
         return _parse_search_output(

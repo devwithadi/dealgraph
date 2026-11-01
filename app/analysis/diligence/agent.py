@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import Any
 
 from app.analysis.diligence.evaluator import evaluate_evidence_gaps, generate_followup_queries
-from app.analysis.diligence.models import DiligencePlan, DiligenceState, SearchQuery
+from app.analysis.diligence.models import DiligencePlan, DiligenceState, InformationGap, SearchQuery
 from app.analysis.diligence.planner import generate_diligence_plan
 from app.analysis.diligence.tools.ranker import EvidenceRanker
 from app.analysis.diligence.tools.scraper import WebFetchTool
@@ -14,6 +14,7 @@ from app.analysis.diligence.tools.search import SearchTool, is_allowed_url
 from app.core.urls import resolve_host
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
+from app.sourcing.policy import SourcePolicyError
 
 LOGGER = logging.getLogger("dealgraph.diligence")
 
@@ -99,6 +100,7 @@ class DeepDiligenceAgent:
         executed_queries: list[SearchQuery] = []
         seen_urls = {ev.source_url for ev in current_evidence}
         current_gaps = list(initial_gaps)
+        availability_gap: InformationGap | None = None
         hop = 0
 
         # Phase 1: Direct multi-page candidate website scraping
@@ -189,10 +191,30 @@ class DeepDiligenceAgent:
                     },
                 )
                 start_id = len(current_evidence) + len(hop_new_evidence) + 1
-                if self.search_fn is not None:
-                    results = self.search_fn(candidate, q, start_id)
-                else:
-                    results = self.search_tool.search(candidate, q, start_id, num_results=5)
+                try:
+                    if self.search_fn is not None:
+                        results = self.search_fn(candidate, q, start_id)
+                    else:
+                        results = self.search_tool.search(candidate, q, start_id, num_results=5)
+                except SourcePolicyError as error:
+                    if str(error) != "Independent search rate limited":
+                        raise
+                    availability_gap = InformationGap(
+                        pillar="Research availability",
+                        description=(
+                            "Independent search was rate limited; the memo uses available "
+                            "baseline and first-party sources."
+                        ),
+                        severity="high",
+                        resolved=False,
+                        rationale="Search provider returned a quota response; no provider body was retained.",
+                    )
+                    executed_queries.append(q.model_copy(update={"executed": True}))
+                    self._emit(
+                        "diligence_search_unavailable",
+                        {"candidate": candidate.name, "slug": candidate.slug, "status": "rate_limited"},
+                    )
+                    break
 
                 unique_results: list[Evidence] = []
                 for res in results:
@@ -223,6 +245,9 @@ class DeepDiligenceAgent:
                     )
                 )
 
+            if availability_gap is not None:
+                break
+
             current_evidence.extend(hop_new_evidence)
             current_gaps = evaluate_evidence_gaps(candidate, current_evidence, topic)
             resolved_count = sum(1 for g in current_gaps if g.resolved)
@@ -251,6 +276,8 @@ class DeepDiligenceAgent:
         # Final ranking, deduplication, and citation tag assignment
         final_evidence = self.ranker.rank_and_reorder(current_evidence, topic)
         final_gaps = evaluate_evidence_gaps(candidate, final_evidence, topic)
+        if availability_gap is not None:
+            final_gaps = [*final_gaps, availability_gap]
 
         final_notes = [
             f"Executed {len(executed_queries)} research queries across {hop} hops.",
