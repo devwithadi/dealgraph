@@ -1,0 +1,79 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer traction and positive feedback.",
+    "Demonstration of a clear competitive advantage or moat in the market."
+  ],
+  "company": "Waybill",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The procurement process for hardware parts is described as complex, time-consuming, and inefficient, indicating a high level of workflow pain [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Waybill claims to significantly reduce the time required for procurement tasks, suggesting a quick path to value for customers [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001",
+        "ev-002"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The service integrates with communication tools and automates end-to-end procurement, which could create a compounding advantage through efficiency and convenience [ev-001][ev-002].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The team has relevant industry experience, but the current execution evidence is limited to the YC profile and website claims [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The target market is identified, but market size and distribution motion are not disclosed, limiting the assessment of market potential [ev-001].",
+      "score": 4.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The target market is hardware teams that require efficient procurement and inventory management. The market size and distribution motion are not disclosed [ev-001].",
+  "open_questions": [
+    "What is the current customer adoption rate and feedback on the service?"
+  ],
+  "product": "Waybill automates the procurement process for hardware parts, handling sourcing, negotiation, freight, customs, delivery, and inventory management. It integrates with communication tools like Slack and Gmail for seamless order initiation [ev-001][ev-002].",
+  "recommendation": "Watch",
+  "risks": [
+    "The risk of not achieving sufficient adoption among hardware teams, which would undermine the value proposition [ev-001]."
+  ],
+  "score": 61.5,
+  "summary": "Waybill offers a comprehensive solution to manage the entire procurement loop for hardware teams, from sourcing to delivery and inventory update, which could significantly reduce the time and effort required for these tasks [ev-001].",
+  "team": "The team is reported to have prior experience in the supply chain industry, having worked at LAT Aerospace and WareIQ. The team size is reported to be 5, and the company is hiring [ev-001].",
+  "thesis": "Waybill aims to streamline and automate the procurement and inventory management process for hardware teams, addressing a complex and time-consuming workflow [ev-001].",
+  "why_now": "The complexity and inefficiency of the current procurement process for hardware parts present a significant opportunity for automation and optimization [ev-001]."
+}

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from app.analysis.diligence.constants import DILIGENCE
 from app.analysis.diligence.models import DiligenceEvaluation, DiligencePillar
 from app.analysis.providers import model_json
@@ -15,11 +13,9 @@ def evaluate_diligence(
     evidence: list[Evidence],
     topic: str,
     hop: int,
-    client: Any = None,
     *,
     provider: AIProvider,
     model: str,
-    bedrock_client: Any = None,
 ) -> DiligenceEvaluation:
     """Ask the configured model for typed evidence gaps and follow-up queries."""
     payload = model_json(
@@ -28,8 +24,6 @@ def evaluate_diligence(
         model=model,
         max_tokens=DILIGENCE.evaluation_max_tokens,
         stage=DILIGENCE.evaluation_stage,
-        client=client,
-        bedrock_client=bedrock_client,
     )
     evaluation = DiligenceEvaluation.model_validate(payload)
 

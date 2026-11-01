@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant adoption by major robotics labs or companies.",
+    "Demonstrated revenue growth or clear monetization strategy."
+  ],
+  "company": "Hebbian Robotics",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Data quality and infrastructure are significant pain points for robotics teams, which Hebbian Robotics aims to address [ev-002].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "speed_to_value",
+      "rationale": "HFlow provides immediate value by enabling teams to scale their data pipelines without managing infrastructure [ev-002].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The open-source nature of HFlow allows for community-driven improvements, potentially compounding its advantage [ev-002].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "team_execution",
+      "rationale": "The team has strong credentials but is small, which may impact execution speed [ev-002].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market for robotics data infrastructure is growing, and Hebbian Robotics has a clear distribution motion through its open-source SDK [ev-002].",
+      "score": 6.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market for robotics data infrastructure is growing, with teams increasingly collecting large volumes of egocentric video data. Hebbian Robotics targets data teams within this market, offering an open-source solution that can be integrated with existing systems like GitHub [ev-002].",
+  "open_questions": [
+    "How will Hebbian Robotics monetize its open-source product?"
+  ],
+  "product": "HFlow is an open-source SDK that provides quality control pipelines for Physical AI data. It allows teams to scale their data pipelines efficiently without managing infrastructure, offering durable execution, observability, and auditability [ev-002].",
+  "recommendation": "Watch",
+  "risks": [
+    "The small team size may limit the company's ability to scale quickly [ev-001]."
+  ],
+  "score": 65.5,
+  "summary": "Hebbian Robotics offers HFlow, an open-source SDK designed to enhance data quality and infrastructure for Physical AI, targeting teams that collect, transform, and curate AI data. The company is backed by Y Combinator and notable angels, and its team has strong credentials from top AI and ECE programs [ev-002].",
+  "team": "The team comprises two members with backgrounds from top embodied AI and ECE programs at Columbia University and the National University of Singapore. They have experience in building infrastructure at Jane Street and Verkada, and have topped Stanford's LLM benchmarks [ev-002].",
+  "thesis": "Hebbian Robotics develops open-source SDKs for quality control pipelines in Physical AI, aiming to streamline data workflows for robotics teams [ev-001].",
+  "why_now": "The increasing demand for high-quality data in robotics and the rising costs associated with data collection and curation make Hebbian Robotics' solution timely. The company's open-source approach also allows for community-driven improvements and broader adoption [ev-002]."
+}

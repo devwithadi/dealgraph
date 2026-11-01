@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Combining open-source AI models for better answers at lower cost Tracer is an AI research lab building more capable and efficient AI through model coordination. We research adaptive inference, ensembling, and systems in which multiple open-source models work together to produce capabilities beyond any single model.\n\nOur work spans reasoning, code, research, and agentic systems, with the goal of making advanced intelligence more accessible and economical. Reported team size: 1.",
+    "id": "ev-001",
+    "published_at": "2026-07-29T02:11:56Z",
+    "retrieved_at": "2026-08-24T19:30:38.818598Z",
+    "source_title": "YC profile: Tracer",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/tracer",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Tracer | Coordinated AI Systems Research",
+    "excerpt": "[PRICING & TIERS]: Could Spirit Aviation's data-and-software package have been underpriced at $10 million? | $10M | $50-200M | The 0.236% PIU and $50-200 million range are conditional scenarios, not measurements of Spirit's data and not an appraisal. Spirit's Capability Alpha has not been empirically measured.\n[TEAM & FOUNDERS]: Live. OpenAI-compatible.\n[INTEGRATIONS & ECOSYSTEM]: View GitHub\n\nTRACER RESEARCH LABREAD OUR RESEARCH Intelligence, ensembled. Tracer builds ensembles of specialist open models that work as one. Echo is our first foundational model built this way: one endpoint, the right amount of intelligence for every task, and it can be customized to your workload. Discover EchoBook a call Live. OpenAI-compatible. YBacked by Y Combinator TRACER OSS 1K+ PAUSE Research / Publications Research on how AI systems allocate work and create value. We publish practical work on model routing, data economics, and the systems that connect technical performance to commercial outcomes. Research 01 / Research paper / August 2026 Pricing Capability Could Spirit Aviation's data-and-software package have been underpriced at $10 million? Capability Alpha measures the performance gain caused by a dataset. Price-Implied Uplift calculates the commercial improvement required to recover an observed price. Explore the research ↗Read the paper 01 DatasetA legally usable proprietary corpus 02 Capability AlphaGain isolated in a controlled evaluation 03 Economic translationExposure x monetization x useful life 04 Buyer valueUse value, PIU, and strategic extensions $10MSelected bid 0.236%PIU at 5% scope $50-200MConditional sensitivity The 0.236% PIU and $50-200 million range are conditional scenarios, not measurements of Spirit's data and not an appraisal. Spirit's Capability Alpha has not been empirically measured. Research 02 / Open-source paper / April 2026 TRACER: Learning When to Defer Can an AI system learn which classification calls still need an LLM? TRACER trains a lightweight surrogate from the model's own production traces. An acceptor serves predictable inputs locally and defers uncertain cases to the original teacher. Explore the research ↗Read the paperView GitHub 01Production traceInput plus teacher label 02Local surrogateFast fixed-label prediction 03Acceptor gateEstimate teacher agreement ConfidentAnswer locally UncertainAsk the LLM 83.2%Banking77 local .959Teacher agreement 0%MNLI refused Paper results at target alpha .95. CLINC150 reached full local cover",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:30:46.135248Z",
+    "source_title": "Tracer | Coordinated AI Systems Research",
+    "source_type": "web_scraper",
+    "source_url": "https://tracerml.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Blog]: Blog · TRACER",
+    "excerpt": "[PRICING & TIERS]: Find product-market fit on the strongest model, install\n                observability from your first call even on free credits, then route\n                the repetitive traffic to a near-free model. The traces are the asset. | Support inboxes are the most repetitive LLM workload most teams\n                run. Route the intents you can certify to a near-free classifier,\n                defer the rest to the LLM, and cut the bill without losing accuracy.\n[TEAM & FOUNDERS]: · by Adam Rida · MIT-licensed\n[INTEGRATIONS & ECOSYSTEM]: API • GitHub\n\nTRACERRESEARCH LABEchoResearchTRACER OSSBook a callAPINotesTry Echo ↗ Blog Field notes on cheap, certified routing. On the economics of running AI in production: why inference cost decides your margins, how to build cost discipline from day one, and how to route the repetitive traffic to near-free models while holding a parity guarantee. Written for founders and the engineers who own the bill. Method · 2026-06-13 Why clustering your prompts does not tell you what to route Similar prompts do not necessarily share the same prediction boundary. Here is why trace-based agreement is the more useful signal for selective routing. Read → Thesis · 2026-06-13 The AI margin problem: why scale should cut your cost per call AI app margins get squeezed by per-request inference cost, and often worsen as you grow, which caps valuation. Here is how to invert the curve so cost per call falls as volume rises. Read → Playbook · 2026-06-13 A cost playbook for AI startups: strong model first, observability from day one Find product-market fit on the strongest model, install observability from your first call even on free credits, then route the repetitive traffic to a near-free model. The traces are the asset. Read → Use case · 2026-06-13 How to cut LLM costs on customer support ticket triage Support inboxes are the most repetitive LLM workload most teams run. Route the intents you can certify to a near-free classifier, defer the rest to the LLM, and cut the bill without losing accuracy. Read → Use case · 2026-06-13 How to cut LLM costs on sales lead qualification Buyer-intent scoring runs an LLM over every reply. Score the clear-cut leads with a small classifier, defer the borderline ones, and cut the cost of qualifying the bulk of your pipeline. Read → Use case · 2026-06-13 How to cut LLM costs on AI agent tool selection Agents spend most of their tokens deciding which tool to call next, and that decision repeats. Ro",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:30:46.135331Z",
+    "source_title": "Blog · TRACER",
+    "source_type": "web_scraper",
+    "source_url": "https://tracerml.ai/blog",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

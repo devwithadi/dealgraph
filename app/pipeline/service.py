@@ -12,7 +12,6 @@ import httpx
 from app.analysis.diligence import DeepDiligenceAgent, evaluate_diligence
 from app.analysis.diligence.constants import DILIGENCE
 from app.analysis.providers import (
-    create_bedrock_client,
     model_for,
     model_json,
     model_name_for_artifact,
@@ -81,14 +80,12 @@ class Pipeline:
     def __init__(
         self,
         client: httpx.Client | None = None,
-        bedrock_client: Any = None,
     ) -> None:
         self.client = client or httpx.Client(
             timeout=httpx.Timeout(10, connect=5),
             limits=httpx.Limits(max_connections=5, max_keepalive_connections=5),
             transport=httpx.HTTPTransport(retries=2),
         )
-        self.bedrock_client = bedrock_client
 
     def run(
         self,
@@ -111,16 +108,10 @@ class Pipeline:
         LOGGER.info("run started deep_diligence=%s", deep_diligence)
         if not topic.strip():
             raise AppError("topic cannot be empty", exit_code=2)
-        bedrock_client = self.bedrock_client or (
-            create_bedrock_client() if provider == AIProvider.BEDROCK else None
-        )
         validate_provider_config(
             provider,
             screening_model,
             synthesis_model,
-            credentials_required=not (
-                provider == AIProvider.BEDROCK and bedrock_client is not None
-            ),
         )
         resolved_screening_model = screening_model_for(provider, screening_model) or ""
         resolved_synthesis_model = model_for(provider, synthesis_model) or ""
@@ -202,7 +193,6 @@ class Pipeline:
                     model=resolved_screening_model,
                     max_tokens=AGENT_REACH.discovery_model_max_tokens,
                     stage="discovery",
-                    bedrock_client=bedrock_client,
                 )
 
             candidates = discover_candidates(
@@ -253,10 +243,8 @@ class Pipeline:
                 group_decisions = screen_candidates(
                     group,
                     topic,
-                    self.client,
                     provider=provider,
                     model=resolved_screening_model,
-                    bedrock_client=bedrock_client,
                 )
                 screenings.extend(group_decisions)
                 group_candidate_by_slug = {c.slug: c for c in group}
@@ -327,10 +315,8 @@ class Pipeline:
                             evidence_to_evaluate,
                             evaluation_topic,
                             hop,
-                            self.client,
                             provider=provider,
                             model=resolved_screening_model,
-                            bedrock_client=bedrock_client,
                         )
 
                     agent = DeepDiligenceAgent(
@@ -379,10 +365,8 @@ class Pipeline:
                 result = synthesize(
                     candidate,
                     evidence,
-                    self.client,
                     provider=provider,
                     model=resolved_synthesis_model,
-                    bedrock_client=bedrock_client,
                 )
                 _write_json(
                     output / "analyses" / f"{candidate.slug}.json",

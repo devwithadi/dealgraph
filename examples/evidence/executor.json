@@ -1,0 +1,54 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "The open source integration management layer for AI. Executor.sh is an MCP gateway that allows you to sign in once to all of your integrations and use them with any client.\r\n\r\nWe enable you to connect your agents to anything (MCP, GraphQL, OpenAPI) so regardless of what you're trying to connect agents to you're able to.\r\n\r\nIf you're trying to scale agents to access all of your production services, data, etc, you need Executor as a unified management layer. Reported team size: 1.",
+    "id": "ev-001",
+    "published_at": "2026-07-29T17:25:07Z",
+    "retrieved_at": "2026-08-24T19:29:53.037333Z",
+    "source_title": "YC profile: Executor",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/executor",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Executor — The gateway to connect your agent to everything",
+    "excerpt": "[PRICING & TIERS]: Team Jira | Set up once, whole team has it | Hosted Executor. Auth, sync, policies, and your whole team online\n                in five minutes. Free tier to start. | Start free, pay as you | Free | $0\n[TEAM & FOUNDERS]: Executor is an integration platform and MCP gateway for AI agents.\n              It lets you securely connect services such as Google Workspace,\n              GitHub, and Slack, then read data and run the actions you request\n              through one endpoint. • Stripe • // + 503 more Stripe tools • stripe.org.main • Live Stripe account • A native app that runs entirely on your machine. Your\n                integrations, credentials, and sessions never leave the device.\n                MIT licensed.\n[CUSTOMER TESTIMONIALS & TRACTION]: \"You are a helpful assistant.\n[INTEGRATIONS & ECOSYSTEM]: star on github • GitHub • Jira • Slack • // + 713 more GitHub tools • // + 233 more Jira tools\n\nexecutor star on github3.1kDocsBlog Sign inGet started → Executor connects any agent to everything. Executor is an integration platform and MCP gateway for AI agents. It lets you securely connect services such as Google Workspace, GitHub, and Slack, then read data and run the actions you request through one endpoint. Claude Code Cursor Codex SentryOpenAPI GitHubGraphQL LinearMCP For humans For agents Run locally →Try Cloud Set up with your agentRead docs Wiring tools to agents is fiddly, per-client, and easy to get wrong. Executor makes every tool, from any protocol, look the same: one name, one input schema, one output schema, so any agent can call any of them the same way. Context efficiency Thousands of tools, no bloat. Connect everything you use and Executor still shows the model a single tool. It searches your catalog and loads a tool's schema only when the code actually calls it, so the prompt never balloons. Without Executor: 1,640 tools, about 278,800 tokens. With Executor: 1 tool, about 1,044 tokens. Context window Lower is better Without Executor1,640 tools · ~278,800 tok With Executor1 tool · ~1,044 tok GitHub720 toolsStripe510 toolsJira240 toolsSentry170 toolsLinear130 toolsGmail95 toolsNotion80 toolsSlack70 tools Without Executor 1,640 tools · ~278,800 tok\"You are a helpful assistant.Your tools are:createIssue()listPullRequests()mergePullRequest()createRelease()addLabels()createBranch()getCommit()// + 713 more GitHub toolscreateCharge()createCustomer()createRefund()listInvoices()createSubscription()capturePaymentIntent()listPay",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:30:00.788174Z",
+    "source_title": "Executor — The gateway to connect your agent to everything",
+    "source_type": "web_scraper",
+    "source_url": "https://executor.sh/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Docs]: Introduction - Executor",
+    "excerpt": "[PRICING & TIERS]: : hosted, with a free tier; nothing to run yourself | - Executor Cloud: hosted, generous free tier, sign in and start immediately.\n[INTEGRATIONS & ECOSYSTEM]: GitHub • Executor is the open-source integration layer for AI agents: one catalog for every tool, shared across every agent you use. • Configure every integration once (MCP servers, OpenAPI specs, GraphQL\nendpoints) with authentication and per-tool • Prefer to let your coding agent do the setup? Copy this prompt and paste it into\nClaude, Cursor, or any MCP-capable agent. It will help you pick the right form\nof Executor, install it, connect over MCP, and get your first integration\nworking. • Executor is an open source integration layer for AI agents: one place to configure every integration (MCP servers, OpenAPI specs, GraphQL APIs) and connect to them over MCP. • - Integration: anything you add (an MCP server, an OpenAPI spec, a GraphQL API).\n\nDocumentation Index Fetch the complete documentation index at:/docs/llms.txt Use this file to discover all available pages before exploring further. Skip to main content Executor home page Executor Search...⌘K • GitHub • Open Executor • Open Executor Search... Navigation Get started Introduction Get started • Introduction • MCP Proxy Local • CLI • Desktop app Hosted • Executor Cloud • Self Hosted Docker • Self Hosted Cloudflare Concepts • Integrations • Connections • Policies On this page • Get started • Set up with your agent • Concepts Get started Introduction Executor is the open-source integration layer for AI agents: one catalog for every tool, shared across every agent you use. Configure every integration once (MCP servers, OpenAPI specs, GraphQL endpoints) with authentication and per-tool policies, then use that same catalog from any MCP-compatible agent. ​ Get started Choose how to run Executor: • CLI: a background service on your machine, from the terminal • Desktop app: the same runtime, as a desktop app • Executor Cloud: hosted, with a free tier; nothing to run yourself • Self-host: your own infrastructure, via Docker or Cloudflare ​ Set up with your agent Prefer to let your coding agent do the setup? Copy this prompt and paste it into Claude, Cursor, or any MCP-capable agent. It will help you pick the right form of Executor, install it, connect over MCP, and get your first integration working. Setup prompt Help me set up Executor and get my first connection working.Executor is an open source integration layer for AI agents: one pl",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:30:00.788268Z",
+    "source_title": "Introduction - Executor",
+    "source_type": "web_scraper",
+    "source_url": "https://executor.sh/docs",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Blog]: Blog — Executor",
+    "excerpt": "[INTEGRATIONS & ECOSYSTEM]: GitHub\n\nexecutor BlogDocsGitHubGet started → Blog Latest news and updates from Executor • June 25, 2026 Why MCP had so many growing pains MCP shipped before anyone knew how to wire tools to agents, and it caught the blame for it. What actually went wrong, why CLIs aren't the answer, and where MCP goes from here. Read post → executor© 2026 BlogDocsGitHubPrivacyTerms",
+    "id": "ev-004",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:30:00.788306Z",
+    "source_title": "Blog — Executor",
+    "source_type": "web_scraper",
+    "source_url": "https://executor.sh/blog",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

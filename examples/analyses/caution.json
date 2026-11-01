@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer adoption or partnerships with major cloud providers.",
+    "Demonstrated security incident prevention attributed to Caution's platform."
+  ],
+  "company": "Caution",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The problem of unreliable proof of execution in production is severe for high-risk industries, and Caution's solution directly addresses this pain point [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Caution's git-based workflow and integration with existing CI/CD tools suggest a relatively quick path to value, though actual customer testimonials are needed for validation [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The platform's ability to integrate with various cloud providers and attestation backends could provide a compounding advantage as it expands its ecosystem [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The team's prior experience in securing high-risk systems is a strong indicator of their ability to execute on Caution's complex technical vision [ev-001].",
+      "score": 7.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market for Caution's product is credible, but the distribution motion and ICP clarity are not well-defined in the evidence provided [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market for Caution includes industries with high-risk systems such as AI, fintech, healthcare, and regulated data collaboration. The platform is designed to fit into existing workflows rather than replace them, suggesting a broad potential market [ev-001].",
+  "open_questions": [
+    "How will Caution scale its platform to support a variety of attestation backends beyond AWS Nitro Enclaves?"
+  ],
+  "product": "Caution's product is a hosting platform that enables the deployment of workloads to secure enclaves with cryptographic proof of execution. It addresses the gap in tooling for confidential computing by offering a simple, git-based workflow [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "The risk of market adoption, as the platform requires integration with existing systems and a shift in security paradigms [ev-001]."
+  ],
+  "score": 66.5,
+  "summary": "Caution presents a novel approach to securing software deployments through verifiable compute, with a focus on industries where trust is critical. The platform integrates with existing cloud infrastructure and offers a git-based workflow for reproducible deployments [ev-001].",
+  "team": "The team comprises engineers with experience in securing high-risk systems, as evidenced by their previous work with Distrust, involving clients like hedge funds and critical grid operators [ev-001].",
+  "thesis": "Caution offers a verifiable compute platform for sensitive workloads, aiming to solve the problem of unreliable proof of execution in production environments, particularly for high-risk industries [ev-001].",
+  "why_now": "The increasing migration of sensitive data and applications to the cloud, coupled with the inadequacy of 'trust us' security models, creates a timely opportunity for Caution's verifiable compute platform [ev-001]."
+}

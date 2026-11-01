@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "The Agent Control Plane for IT teams Decawork gives IT teams one place to deploy, govern and maintain the AI agents running across their company.\r\n\r\nBuilding internal AI tools and agents is getting easier. Turning them into company-owned systems is still hard. What follows is agent sprawl: deployment gets messy, agents go live with access to real systems and real data, and maintenance falls in the gap. IT can't see any of it, so it does the only two things it can: first ignore, then block. Ignoring piles up risk; blocking kills the productivity people just found. \r\n\r\nWith Decawork, every agent ships one standard way: its own identity and scoped credentials, with IT's sign-off before it goes live. After that, every run is watched - IT is alerted the moment something fails, agents nobody uses get retired. And the whole time, IT sees every agent, controls what it can touch, and audits every action, with approvals gating anything sensitive.\r\n\r\nEvery big shift - cloud, SaaS, the digital workspace - ended with IT running it. Agents aren't just the next shift, they're the next workforce, bigger than the human one. Decawork is what IT will run them with. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-07-28T19:07:10Z",
+    "retrieved_at": "2026-08-24T19:31:01.477281Z",
+    "source_title": "YC profile: Decawork",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/decawork",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Decawork | Control your internal AI agents",
+    "excerpt": "[PRICING & TIERS]: From team-built to company-controlled. | Every team can build. IT keeps one view of what is running. | Team\n[TEAM & FOUNDERS]: OpenAI Agents SDK\n\nSkip to main contentDecaworkBook a demo Backed byCombinator Let teams build AI agents.Give IT control. Decawork gives IT one place to approve internal agents built in any tool, control what they can access and do, and see every action. Book a demo See the product For agents built anywhere • • • • • • • • SOC 2 Any tool in. One control plane out. Built everywhere. Managed in one place. One identity, access policy, and audit trail for every agent your teams ship. Decawork Agent inventory12 managed agents • LinkedIn Content Agent Managed Marketing · ChatGPT • Candidate Briefing Agent Managed Recruiting · Claude Code • New Hire Onboarding Managed People Ops · n8n • Employee Policy Assistant Managed HR · Microsoft Copilot • Access Request Agent Managed IT · Microsoft Agent Framework • Contract Review Agent Managed Legal · OpenAI Agents SDK • Security Triage Agent Managed Security · LangGraph • Invoice Reconciliation Managed Finance · CrewAI • Support Escalation Agent Managed Support · Gemini • Pipeline Hygiene Agent Managed Sales and RevOps · Custom stack • Release Coordinator Managed Engineering · Codex • Renewal Risk Agent Managed Customer Success · Cursor From team-built to company-controlled. Every agent gets an owner, scoped credentials, approval gates, and a complete audit trail. AgentsKnow every agent that is running.See what is live, who owns it, and what it can reach.AccessGive agents safe access to company systems.Short-lived credentials, exact permissions, and approval gates.AuditEvery action, attributable.See what happened, which agent did it, and who approved it. Decawork Control plane OverviewAgentsAccess ApprovalsAudit Integrations Settings Gateway healthyv0.9.4 Decawork/Agents Agent registry Agents across your company Every team can build. IT keeps one view of what is running. 01live LinkedIn Content Agent linkedin-content TeamMarketing Reach3 skills · 7 tools Active4m ago 02live Candidate Briefing Agent candidate-briefing TeamRecruiting Reach2 skills · 5 tools Active11m ago 03live New Hire Onboarding new-hire-onboarding TeamPeople Ops Reach5 skills · 12 tools Active18m ago 04live Employee Policy Assistant policy-assistant TeamHR Reach2 skills · 4 tools Active23m ago 05live Access Request Agent access-requests TeamIT Reach4 skills · 9 tools Active31m ago 06paused Contract Review Agen",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:31:07.869325Z",
+    "source_title": "Decawork | Control your internal AI agents",
+    "source_type": "web_scraper",
+    "source_url": "https://decawork.ai/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Security]: Security | Decawork",
+    "excerpt": "Skip to main content How it worksSecurityDecaworkBook a demoMenuHow it worksSecurityTrustBook a demo Security Every agent ships the same safe way. Agents never hold raw credentials. Tool calls pass through our gateway - agent-scoped, approval-gated for sensitive actions, and fully attributed and logged. Agents get an identity the day they're born. Most agents run on a person's login - full permissions, shared credentials, no trail. On Decawork, every agent gets its own identity and access scoped to just its task. Spending caps set upfront - and IT's sign-off before it ever goes live. Identity, scope, approval. • Own identity. First-class, never borrowed from a person. • Scoped access. Only the systems the task needs. • Approval before go-live. IT signs off before it ships. Nothing runs until IT approves. Access stays revoked while the agent waits. Govern every tool call. Agents never hold raw credentials. Tool calls pass through our gateway - agent-scoped, approval-gated for sensitive actions, and fully attributed and logged. Report a concern. If you believe you found a security issue, emailfounders@decawork.ai with the affected surface, a concise reproduction, and the potential impact. Please do not access data that is not yours or disrupt a live service. See how Decawork keeps agents running Decawork The agent control plane for IT teams. SOC 2View trust center Product How it worksBook a demo Trust SecurityTrust centerPrivacyTerms Company LinkedInXContact © 2026 Scale Technologies Inc. Y Combinator S26. PrivacyTermsfounders@decawork.ai",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:31:07.869389Z",
+    "source_title": "Security | Decawork",
+    "source_type": "web_scraper",
+    "source_url": "https://decawork.ai/security",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

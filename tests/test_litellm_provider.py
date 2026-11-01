@@ -41,7 +41,6 @@ def test_bedrock_model_json_delegates_to_litellm_with_request_metadata(monkeypat
                 {"role": "user", "content": "Evaluate candidate"},
             ],
             "max_tokens": 500,
-            "response_format": {"type": "json_object"},
             "drop_params": True,
             "requestMetadata": {
                 "application": "dealgraph",
@@ -77,6 +76,7 @@ def test_remote_provider_model_json_delegates_to_litellm(
     expected_model: str,
 ) -> None:
     calls: list[dict] = []
+    bind_request_id("req-remote-provider")
     monkeypatch.setenv(key_env, "secret-key")
 
     def fake_completion(**kwargs):
@@ -99,6 +99,7 @@ def test_remote_provider_model_json_delegates_to_litellm(
     assert call["api_key"] == "secret-key"
     assert call["api_base"] == providers._provider_url(provider)
     assert call["num_retries"] == 0
+    assert call["extra_headers"]["X-Kong-Request-ID"] == "req-remote-provider"
     assert "requestMetadata" not in call
 
 
@@ -225,4 +226,3 @@ def test_screen_candidates_slug_normalization_with_whitespace_and_case(monkeypat
     assert decisions[0].advance is True
     assert decisions[1].slug == "beta-labs"
     assert decisions[1].advance is False
-

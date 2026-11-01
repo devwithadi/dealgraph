@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "The Git forge for the next hundred billion commits We are GitCafe and we build GitHub for agents. We're rebuilding the infrastructure for the next hundred billion commits and CI jobs with hundreds of engineers already making the move. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-07-29T05:01:09Z",
+    "retrieved_at": "2026-08-24T19:30:16.788439Z",
+    "source_title": "YC profile: GitCafe",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/gitcafe",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: gitcafe: a git forge, freshly brewed",
+    "excerpt": "[PRICING & TIERS]: Code, review, and ship on a fast independent forge built by one team, all the way down to the git implementation. | Free private repositories while in beta. No credit card. | No git binary and no wrapper around somebody else's engine. One team owns every layer, so there is nowhere for slow paths or broken abstractions to hide. | Private repositories are free while we are in beta. Pricing will be published before that changes.\n[INTEGRATIONS & ECOSYSTEM]: GitHub Actions workflow support\n\ngit.cafeProductOur stackCLIRoadmap Sign inCreate account A git forge,freshly brewed. Code, review, and ship on a fast independent forge built by one team, all the way down to the git implementation. Create your account Explore the live PR Free private repositories while in beta. No credit card. Live productversecafe / ashlar / pull request #1Open full PR This is the public GitCafe application. Browse files, switch diff modes, and inspect the pull request without leaving this page. Used by engineers at CorgialphaXivAthenaHQOpenRelayCerenovusMiso LabsMarengoharmont 01 / One owned stack We wrote our own git. No git binary and no wrapper around somebody else's engine. One team owns every layer, so there is nowhere for slow paths or broken abstractions to hide. libgitzgit engine kilnruntime cafe:gitnative binding gitcafethe forge 02 / First-party CLI The forge belongs in your terminal. Sign in with device flow, configure Git credentials, open pull requests, and install skills for your coding agent from one binary. HTTP + SSH Credential helper Agent skills Quickstart bun i -g @gitcafe/cli install cafe auth login device-flow sign in cafe auth http setup configure git cafe skills install teach your agent cafe pr create open a pull request 03 / Brewing Shipping across the whole stack. What just landed, what is in active development, and what we intend to make next. Planned work is direction, not a promise of timing. Recently shippedJuly 2026 Push-time secret scanning Live merge-readiness Passkeys and passwordless accounts Stacked diffs let you review and merge a sequence of small pull requests natively, with one source of truth. On the menuPlanned GitHub Actions workflow support GitLab CI workflow support One-command repository migration Your next push can feel different. Bring your code to the café. Private repositories are free while we are in beta. Pricing will be published before that changes. Create your account git.cafeTermsPrivacyAcceptable useCopyright Back",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:30:22.270644Z",
+    "source_title": "gitcafe: a git forge, freshly brewed",
+    "source_type": "web_scraper",
+    "source_url": "https://git.cafe/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

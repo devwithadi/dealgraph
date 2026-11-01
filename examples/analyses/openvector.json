@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer traction or partnerships would significantly bolster confidence in the product's market fit [ev-001].",
+    "Demonstrated scalability and integration success with major industry players would indicate strong market potential [ev-001]."
+  ],
+  "company": "OpenVector",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Addresses frequent, costly manual interventions in operational workflows [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Quick setup and immediate action capabilities suggest rapid value realization [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Integration with existing systems and potential for data-driven improvements offer compounding benefits [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-003"
+      ],
+      "name": "team_execution",
+      "rationale": "Experienced founders with relevant technical backgrounds [ev-003].",
+      "score": 7.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Market size and distribution strategy are not clearly defined [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market includes SMBs across industries like manufacturing, retail, and services, though specific market size and distribution strategy are not disclosed [ev-001].",
+  "open_questions": [
+    "How does OpenVector ensure data privacy and security in automated workflows?"
+  ],
+  "product": "The product uses AI to monitor camera feeds and automate actions based on detected events, integrating with existing systems to enhance operational workflows [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "The reliance on camera integration and existing systems could pose technical challenges and limit adoption [ev-001]."
+  ],
+  "score": 66.5,
+  "summary": "OpenVector offers a novel solution by converting existing cameras into automated workers, addressing operational inefficiencies in various industries [ev-001].",
+  "team": "The team comprises founders with backgrounds in AI and embedded systems, including a Harvard PhD dropout and a CMU alum with experience at Tata [ev-003].",
+  "thesis": "OpenVector aims to replace labor-intensive workflows in SMBs with AI-powered camera automation, potentially reducing costs and improving efficiency [ev-001].",
+  "why_now": "The ubiquity of cameras and advancements in AI make this technology timely and relevant for automating physical workflows [ev-001]."
+}

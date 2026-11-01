@@ -1,0 +1,79 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Disclosure of team credentials and customer traction metrics [ev-001]",
+    "Evidence of significant cost savings and adoption by early customers [ev-001]"
+  ],
+  "company": "Riften",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The problem of high costs and lack of ownership in renting AI intelligence is significant [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Potential for immediate cost savings, but credibility of value delivery is uncertain without traction data [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The concept of transitioning to owned models offers a compounding advantage, but execution details are lacking [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Team details are not disclosed, impacting confidence in execution [ev-001].",
+      "score": 3.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Market size is plausible, but ICP and distribution details are not provided [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market for cost-effective AI solutions in SMBs is potentially large, but specific ICP clarity and distribution motion are not detailed [ev-001].",
+  "open_questions": [
+    "What is the current team size and composition? [ev-001]",
+    "What are the customer acquisition and retention metrics? [ev-001]"
+  ],
+  "product": "Riften's product is an AI traffic gateway that routes requests to the lowest-cost models and gradually builds private models for companies, aiming to reduce costs and increase intelligence ownership [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "Lack of disclosed team and traction metrics could indicate early-stage risks [ev-001]."
+  ],
+  "score": 60.5,
+  "summary": "Riften presents an intriguing value proposition by offering a cost-effective gateway for AI traffic and transitioning companies to owned intelligence models. However, critical details such as team size, customer traction, and financials are not disclosed, which limits the assessment [ev-001].",
+  "team": "Not disclosed [ev-001]",
+  "thesis": "Riften aims to provide 'earned intelligence' for companies by routing AI requests to the most cost-effective models and gradually transitioning to private, company-controlled models, thereby reducing costs and increasing ownership of intelligence [ev-001].",
+  "why_now": "The increasing cost of renting AI intelligence and the trend towards owning and controlling intelligence assets make Riften's proposition timely [ev-001]."
+}

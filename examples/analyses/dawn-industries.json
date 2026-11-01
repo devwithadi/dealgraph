@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer adoption and retention.",
+    "Detailed financials showing the impact on factory costs."
+  ],
+  "company": "Dawn Industries",
+  "confidence": 0.25,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "High frequency, severity, and cost of faults in industrial automation cells [ev-001].",
+      "score": 9.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Quick reduction in recovery time and cost savings per fault [ev-001].",
+      "score": 8.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Potential advantage through integration with existing automation cells, but details on defensibility are not disclosed [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Small team size with the company marked as hiring, execution capabilities are not fully demonstrated [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Large market of factories with automation cells, but specific distribution motion is not detailed [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market is large factories with industrial automation cells. The distribution motion is not explicitly mentioned but is implied through the product's integration capabilities [ev-001].",
+  "open_questions": [
+    "What is the current customer adoption rate and feedback on the product?"
+  ],
+  "product": "The product, VIM, connects to industrial automation cells to diagnose and fix faults automatically, reducing recovery time from 30 minutes to under two minutes [ev-001].",
+  "recommendation": "Take a meeting",
+  "risks": [
+    "The small team size may pose execution risks [ev-001]."
+  ],
+  "score": 72.0,
+  "summary": "Dawn Industries, with a small team of 2, offers a solution that dramatically cuts recovery time from faults in industrial automation, saving over $15,000 per fault. The company is backed by Y Combinator and is in the process of hiring [ev-001].",
+  "team": "Reported team size is 2, with the company marked as hiring by Y Combinator [ev-001].",
+  "thesis": "Dawn Industries provides an AI-driven solution for diagnosing and fixing faults in industrial automation cells, aiming to significantly reduce downtime and costs for large factories [ev-001].",
+  "why_now": "The urgency is driven by the high cost and time associated with fault recovery in large factories, which VIM aims to address [ev-001]."
+}

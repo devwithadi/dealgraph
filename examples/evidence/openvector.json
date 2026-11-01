@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "AI that turns any camera to an autonomous worker with real-time vision OpenVector transforms any existing camera into an automated 24/7 workforce without requiring new hardware. Users simply describe a task in plain English, and OpenVector automatically builds a custom AI vision model to monitor the feed. When it detects an important physical event—like a stalled production cycle, a safety violation, or a waiting customer—it operates a computer just like a human to take immediate action. It integrates with legacy systems to make calls, send emails, update a POS/CRM, or trigger webhooks in real time. OpenVector enables any camera to do real work. Reported team size: 4.",
+    "id": "ev-001",
+    "published_at": "2026-07-29T23:57:48Z",
+    "retrieved_at": "2026-08-24T19:28:35.203659Z",
+    "source_title": "YC profile: OpenVector",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/openvector",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: OpenVector | an AI that lives in your camera",
+    "excerpt": "Skip to contentOpenVector abouthow it worksintegrationsresearchpreorder offline station preorder offline stationbook a demo OpenVector an ai that lives in your camera to take action. Pick a camera. Watch OpenVector turn what it sees into work in real-time. book a demojoin waitlist live playground click a camera. give it a job. Each feed runs its own real example. Choose one to restart the video and its matching automation. Assembly Line · CAM-05 live click to playBOTTLENECK 0.89 automation.txtlistening deploy agent ✓WhatsApp report sent We build the world’s fastest vision model for real-time video understanding. The lowest latency at a fraction of the bandwidth. read the research → How OpenVector works Watch.Understand.Act. CAM-05 · Assembly Linelive BOTTLENECK 0.89 automation.txtrule ready When a bottleneck forms on the assembly line, send me a WhatsApp report with the downtime and cycle time. action completeWhatsApp report sentdaily report sent · 6:00pm✓ connected work it acts inside the systems your industry already runs. Click any system to bring it forward. OpenVector turns camera events into actions in the operational system of record behind gyms, car washes, offices, warehouses, and restaurants. see it with your stack OpenVector camera → action give your cameras a job Book a 20-minute demo and we’ll turn one of your live streams into a working automation on the call. book a demoor join the waitlist → OpenVector © 2026 OpenVector · realtime video intelligence ✕ Work email Leave this field blank continue",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:28:44.164717Z",
+    "source_title": "OpenVector | an AI that lives in your camera",
+    "source_type": "web_scraper",
+    "source_url": "https://openvector.com/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [About]: About — OpenVector",
+    "excerpt": "[PRICING & TIERS]: the team\n[TEAM & FOUNDERS]: co-founder • PhD Dropout @ Harvard • CSAIL, MIT · Weizmann Institute of Science\n\nSkip to main contentOpenVector abouthow it worksintegrationsresearchpreorder offline station preorder offline stationbook a demo the team Founded by builders and engineers obsessed with bringing self-improving visual intelligence to the physical world. Andrey Gizdov co-founder • PhD Dropout @ Harvard • Fulbright ScholarLinkedIn → Vishal Urlam co-founder • Embedded Systems @ CMU • Infra @ TataLinkedIn → backed by The visual world is immensely rich in information that can be used to automate many types of labor when combined with the ability to take actions. OpenVector’s technology brings this ability to life, turning real-time scene understanding to immediate operational actions. Cameras are everywhere, and they’re an immensely underutilized asset.Dr. Daniel HarariCSAIL, MIT · Weizmann Institute of Science affiliations & recognition the launch watch the launch. A two-minute look at what OpenVector does and why we built it. OpenVector · launch film OpenVector © 2026 OpenVector · realtime video intelligence",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:28:44.164783Z",
+    "source_title": "About — OpenVector",
+    "source_type": "web_scraper",
+    "source_url": "https://openvector.com/about",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

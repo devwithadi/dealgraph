@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Force-sensing wristband for training robotic AI Every serious robotics lab is bottlenecked on the same thing: demonstration data. The field has converged on egocentric video and hand pose as the substrate, and both are now cheap to collect at scale. What neither of them contains is force. A video of someone picking up an egg and a video of someone picking up a rock are nearly identical in pixel space and nearly identical in joint angles. They differ almost entirely in a quantity nobody is recording. Policies trained without it learn geometry and inherit no sense of touch.\r\n\r\nHemlock closes that gap at the source. Our device, the Bracelet, is a wrist-worn surface EMG band that reads the electrical activity of the forearm muscles that actually drive the hand, which means it recovers contraction force directly rather than inferring it from motion. This distinction is the whole thesis: force cannot be reconstructed downstream of kinematics, because a hand squeezing hard isometrically and a hand resting can occupy the identical pose. Muscle signal is the only non-invasive channel that separates them. Reported team size: 1. YC marks the company as hiring.",
+    "id": "ev-001",
+    "published_at": "2026-08-11T23:35:05Z",
+    "retrieved_at": "2026-08-24T19:24:47.941951Z",
+    "source_title": "YC profile: Hemlock",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/hemlock",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Hemlock — Muscle Memory For Machines",
+    "excerpt": "[PRICING & TIERS]: Stream it live or hand it off in the formats your team already trains on. No new tooling to adopt.\n\nHemlock 0% Hemlock HomeAlternative ApplicationsContactJoin the Beta Join the Beta HomeAlternative ApplicationsContactJoin the Beta Muscle MemoryFor Machines The force behind human skill, captured as training data for embodied AI. Scroll The Bracelet A ring of dry electrodes reads the electrical drive your brain sends to your muscles — force and intent, captured at the source. No cameras. No line of sight. The Signal Cameras Miss Video sees where a hand went. The Bracelet records how hard it pressed, how it gripped, and the moment it let go. Force is the label nothing else captures. Clinical-Grade Fidelity Medical-precision sensing, engineered down to a consumer-grade wearable. Laboratory data, off the lab bench. The Data Engine for Physical AI Foundation models for robotics are starved for one thing: contact-rich manipulation data. The Bracelet turns everyday work into force-labeled demonstrations — no labs, no mocap rigs, no teleoperation. A continuously growing dataset of human manipulation, captured at scale and ready to train embodied AI. The Missing Modality Today's robots learn from video. They can see how a task looks, but not how it feels — and without force, fine manipulation fails. Force-Labeled Demonstrations The Bracelet captures the forces behind every human demonstration — grip, pressure, timing — creating the ground truth that teaches machines how to modulate force dynamics. Human-Level Finesse Trained on force, robots can handle the fragile and the precise — like cracking an egg without crushing it.Skill transferred from your hands to theirs. Muscle Memory For Machines Deployed Where Work Happens Assembly lines, warehouses, workshops, labs. Slip it on and an ordinary shift becomes thousands of contact-rich demonstrations. Your workforce is your dataset. Built Around Your Stack We shape the software to your model architecture and training protocol, so force data arrives in the format you already train on. No pipeline rewrite. Just a new modality. The data layer for embodied AI. Force You Can Measure Every grasp comes back as real force, finger by finger — not a guess inferred from pixels. The number, not the estimate. You Control the Record Nothing is captured until you start a session, and nothing is kept unless you choose to keep it. Your data, on your terms. Works With Your Stack Stream it live or hand it off in the forma",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:24:54.998707Z",
+    "source_title": "Hemlock — Muscle Memory For Machines",
+    "source_type": "web_scraper",
+    "source_url": "https://hemlock.info/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

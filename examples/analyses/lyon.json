@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant revenue growth or additional high-profile clients.",
+    "Detailed case studies or testimonials from current clients showcasing the impact of Lyon's models."
+  ],
+  "company": "Lyon",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Frequent, expensive workflows in predicting customer outcomes in financial sectors [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Quick deployment and visible impact as seen with the fintech client [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Defensibility through proprietary data and model customization [ev-001].",
+      "score": 8.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Small team size raises questions about scalability and execution [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Clear ICP in financial sectors with early traction [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "Targeting banks, insurance companies, and fintechs, with early adoption by a major insurer and a fintech serving tens of millions of active users [ev-001].",
+  "open_questions": [
+    "How will Lyon scale its operations with a team size of 2?"
+  ],
+  "product": "Lyon's product is a private foundation model that learns from a company’s proprietary transactions, payments, clicks, and customer interactions to predict various customer outcomes. The model runs inside the company’s cloud, ensuring data and intelligence remain under its control [ev-001].",
+  "recommendation": "Take a meeting",
+  "risks": [
+    "Dependency on a small team size of 2 for execution and scaling [ev-001]."
+  ],
+  "score": 71.5,
+  "summary": "Lyon offers a unique solution for B2B companies to predict customer outcomes using private foundation models trained on their proprietary data, with early traction in major industries [ev-001].",
+  "team": "Reported team size is 2, with founders from Stanford and NVIDIA, backed by Y Combinator [ev-001].",
+  "thesis": "Lyon builds private foundation models for banks, insurance companies, and fintechs, leveraging proprietary transaction data to predict various customer outcomes and offering a potentially defensible advantage through data control and model customization [ev-001].",
+  "why_now": "The increasing need for personalized and accurate customer predictions in the financial sector, coupled with the rise of AI and machine learning technologies, makes now an opportune time for Lyon's solution [ev-001]."
+}

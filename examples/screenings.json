@@ -1,0 +1,674 @@
+[
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on silicon manufacturing on the moon does not directly relate to AI infrastructure.",
+    "slug": "ethos-space-resources"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "While the company uses AI, it operates in asset management rather than providing AI infrastructure.",
+    "slug": "spectre-intelligence"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on military exoskeletons is unrelated to AI infrastructure.",
+    "slug": "edgerun"
+  },
+  {
+    "advance": true,
+    "fit_score": 65.0,
+    "rationale": "The company uses AI to automate insurance broker workflows, which could be part of AI infrastructure, though not explicitly stated.",
+    "slug": "covera"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on mental health services does not directly involve AI infrastructure.",
+    "slug": "allia-health"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company operates in the government sector, with no clear connection to AI infrastructure.",
+    "slug": "capveon"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on AI analytics does not directly involve providing AI infrastructure.",
+    "slug": "studio"
+  },
+  {
+    "advance": true,
+    "fit_score": 60.0,
+    "rationale": "The company's AI assistant could be part of broader AI infrastructure, though not explicitly stated.",
+    "slug": "gini"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on autonomous hardware testing is not directly related to AI infrastructure.",
+    "slug": "hilstart"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on AI-driven recruitment does not directly involve AI infrastructure.",
+    "slug": "lantern-ai"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on AI collections does not directly involve AI infrastructure.",
+    "slug": "callbook-ai"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on content generation for creators does not directly involve AI infrastructure.",
+    "slug": "grocalo"
+  },
+  {
+    "advance": true,
+    "fit_score": 70.0,
+    "rationale": "The company's platform for rebuilding businesses using AI agents could be part of AI infrastructure.",
+    "slug": "marker"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on voice-first hardware does not directly involve AI infrastructure.",
+    "slug": "antimattr"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on advanced chip manufacturing does not directly involve AI infrastructure.",
+    "slug": "aerogen-systems"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on AI-driven visa applications does not directly involve AI infrastructure.",
+    "slug": "veeza-ai"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on radar seekers for interceptors is not directly related to AI infrastructure.",
+    "slug": "vernius-systems-inc"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on social poker does not directly involve AI infrastructure.",
+    "slug": "snap-poker"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "The company's focus on recycled rare-earth magnets is not directly related to AI infrastructure.",
+    "slug": "mass-magnetics"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company's focus on an AI assistant for iPhones does not directly involve AI infrastructure.",
+    "slug": "touchy"
+  },
+  {
+    "advance": true,
+    "fit_score": 70.0,
+    "rationale": "Lyon's AI foundation models for enterprise transaction data could streamline analytics, but their specific value proposition and market impact need further research.",
+    "slug": "lyon"
+  },
+  {
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "Waybill's managed procurement and inventory service for hardware teams aligns with AI infrastructure needs, though its impact and scalability require deeper investigation.",
+    "slug": "waybill"
+  },
+  {
+    "advance": false,
+    "fit_score": 40.0,
+    "rationale": "Tarifflo's focus on customs compliance and cost savings is somewhat related to AI infrastructure but lacks a clear connection to replacing SMB workflows.",
+    "slug": "tarifflo-inc"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Akon Labs' 'Nervous System for AI Agents' is too vague to assess its relevance to AI infrastructure.",
+    "slug": "akon-labs"
+  },
+  {
+    "advance": false,
+    "fit_score": 30.0,
+    "rationale": "Bernard's AI for appliance servicers focuses on operations rather than AI infrastructure.",
+    "slug": "bernard"
+  },
+  {
+    "advance": false,
+    "fit_score": 35.0,
+    "rationale": "Veltha's AI claims adjuster for insurance is more about fintech than AI infrastructure.",
+    "slug": "veltha"
+  },
+  {
+    "advance": false,
+    "fit_score": 45.0,
+    "rationale": "WonderTx's AI-powered drug discovery is innovative but not directly related to AI infrastructure.",
+    "slug": "wondertx"
+  },
+  {
+    "advance": false,
+    "fit_score": 50.0,
+    "rationale": "Dream's AI cameras for asset damage detection are interesting but not directly linked to AI infrastructure.",
+    "slug": "dream"
+  },
+  {
+    "advance": false,
+    "fit_score": 30.0,
+    "rationale": "Evergrove's voice agents for care coordination in workers' comp are not directly related to AI infrastructure.",
+    "slug": "evergrove"
+  },
+  {
+    "advance": false,
+    "fit_score": 40.0,
+    "rationale": "Palisade's AI sales agents for marketplaces are more about e-commerce than AI infrastructure.",
+    "slug": "palisade"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Magma's focus on monetizing agent traces is not clearly related to AI infrastructure.",
+    "slug": "magma"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "MOCHI.TV's mobile-first entertainment platform for anime shorts is not related to AI infrastructure.",
+    "slug": "mochitv"
+  },
+  {
+    "advance": false,
+    "fit_score": 35.0,
+    "rationale": "Meteoric's drones for cloud clearing and storm weakening are more about climate tech than AI infrastructure.",
+    "slug": "meteoric"
+  },
+  {
+    "advance": false,
+    "fit_score": 30.0,
+    "rationale": "PRINCEPS's AI-native insurance company is not directly related to AI infrastructure.",
+    "slug": "princeps"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Mentlio's focus on optimizing AI ROI for enterprises is not directly related to AI infrastructure.",
+    "slug": "mentlio"
+  },
+  {
+    "advance": false,
+    "fit_score": 30.0,
+    "rationale": "Pennant's corporate governance intelligence is not directly related to AI infrastructure.",
+    "slug": "pennant"
+  },
+  {
+    "advance": false,
+    "fit_score": 40.0,
+    "rationale": "Familiar's audio-visual translation technology is not directly related to AI infrastructure.",
+    "slug": "familiar"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "DeepReach's real-world data network for robots and world models aligns well with AI infrastructure needs.",
+    "slug": "deepreach-inc"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Dipole Labs' AI-controlled optical switching for AI clusters is too vague to assess its relevance to AI infrastructure.",
+    "slug": "dipole-labs"
+  },
+  {
+    "advance": false,
+    "fit_score": 40.0,
+    "rationale": "TovenAI's AI agents for compliance at trading firms are more about fintech than AI infrastructure.",
+    "slug": "tovenai"
+  },
+  {
+    "advance": true,
+    "fit_score": 65.0,
+    "rationale": "Shiraz AI deploys robots that learn from human demonstrations, which is directly related to AI infrastructure for manufacturing workflows.",
+    "slug": "shiraz-ai"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "EdotEnv focuses on self-improving agents from quant trading, which is not directly related to AI infrastructure.",
+    "slug": "edotenv"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "Hemlock provides a force-sensing wristband for robotic AI training, which is a critical component of AI infrastructure in robotics.",
+    "slug": "hemlock"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "TryNearby connects local businesses with creators, which is not directly related to AI infrastructure.",
+    "slug": "trynearby"
+  },
+  {
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "Moving Atoms builds world models trained on internet-scale video for robotics, which is relevant to AI infrastructure for robotics.",
+    "slug": "moving-atoms"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Tenor manages AI workers as labor, which is not directly related to AI infrastructure.",
+    "slug": "tenor"
+  },
+  {
+    "advance": false,
+    "fit_score": 30.0,
+    "rationale": "Simulithic provides simulations for product changes, which is not directly related to AI infrastructure.",
+    "slug": "simulithic"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "Vorelios builds foundation models for physics simulations, which is relevant to AI infrastructure for engineering and product design.",
+    "slug": "vorelios"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Financial Datasets provides real-time stock market data, which is not directly related to AI infrastructure.",
+    "slug": "financial-datasets"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Verdict Machine uses AI for cybersecurity, which is not directly related to AI infrastructure.",
+    "slug": "verdict-machine"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Peer is an AI-native freight brokerage, which is not directly related to AI infrastructure.",
+    "slug": "peer"
+  },
+  {
+    "advance": true,
+    "fit_score": 70.0,
+    "rationale": "Enact generates data to make robotics models reliable, which is relevant to AI infrastructure for robotics.",
+    "slug": "enact"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Mosaic provides shared memory for AI coding agents, which is not directly related to AI infrastructure.",
+    "slug": "mosaic-inc"
+  },
+  {
+    "advance": false,
+    "fit_score": 30.0,
+    "rationale": "Pacific mass-produces modular data centers, which is not directly related to AI infrastructure.",
+    "slug": "pacific"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Antropi Robotics provides autonomous CNC factories, which is not directly related to AI infrastructure.",
+    "slug": "antropi-robotics"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Erinys is an AI-native law firm network, which is not directly related to AI infrastructure.",
+    "slug": "erinys"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "Marengo designs data centers with AI, which is directly related to AI infrastructure.",
+    "slug": "marengo"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Prodigy Research focuses on quantitative finance, which is not directly related to AI infrastructure.",
+    "slug": "prodigy-research"
+  },
+  {
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "Dawn Industries provides automatic diagnosis and fix for industrial automation cells, which is relevant to AI infrastructure.",
+    "slug": "dawn-industries"
+  },
+  {
+    "advance": true,
+    "fit_score": 70.0,
+    "rationale": "Hebbian Robotics provides an open-source SDK for building quality control pipelines for Physical AI, which is relevant to AI infrastructure.",
+    "slug": "hebbian-robotics"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on debt collection automation, which is not directly related to AI infrastructure.",
+    "slug": "audun"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company operates in commercial insurance underwriting and is not focused on AI infrastructure.",
+    "slug": "qlo"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on radiology practice automation, not AI infrastructure.",
+    "slug": "radley"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company is focused on satellite communication, not AI infrastructure.",
+    "slug": "exosat"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on robotics for wet labs, not AI infrastructure.",
+    "slug": "neuromorphic"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company provides an open-source agent runtime, not AI infrastructure.",
+    "slug": "herdr"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on coding agent harnesses, not AI infrastructure.",
+    "slug": "jcode"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company connects commercial debt advisors with private credit funds, not AI infrastructure.",
+    "slug": "useforward"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company provides research services for chat platforms, not AI infrastructure.",
+    "slug": "click"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company operates in trading, not AI infrastructure.",
+    "slug": "arbital"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company provides a chat tool for coding agents, not AI infrastructure.",
+    "slug": "agent-fm"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on government contracting, not AI infrastructure.",
+    "slug": "chromie"
+  },
+  {
+    "advance": true,
+    "fit_score": 65.0,
+    "rationale": "The company provides a gateway for AI traffic routing, which is adjacent to AI infrastructure.",
+    "slug": "riften"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on metal parts manufacturing, not AI infrastructure.",
+    "slug": "ultrasonium"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company provides data for AI science, not AI infrastructure.",
+    "slug": "qokedas"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company operates in personalized patient research, not AI infrastructure.",
+    "slug": "omanta"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on AI-powered drug discovery, not AI infrastructure.",
+    "slug": "rasyn"
+  },
+  {
+    "advance": true,
+    "fit_score": 85.0,
+    "rationale": "The company provides a hosting platform for verifiable compute, which is a strong fit for AI infrastructure.",
+    "slug": "caution"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company focuses on autonomous interceptor drones, not AI infrastructure.",
+    "slug": "impact-drones"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "The company provides an operating system for auto repair shops, not AI infrastructure.",
+    "slug": "carsignal"
+  },
+  {
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "AI-driven supply chain automation aligns with AI infrastructure thesis, but specific ROI and workflow replacement need verification.",
+    "slug": "spaceflow-technologies-inc"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "AI for chip design is tangential to AI infrastructure thesis.",
+    "slug": "standard-machines"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Software commerce for agents is not directly related to AI infrastructure.",
+    "slug": "amorphic-labs"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Trading card investment platform is unrelated to AI infrastructure.",
+    "slug": "tash"
+  },
+  {
+    "advance": false,
+    "fit_score": 15.0,
+    "rationale": "Vaccine development using AI is not directly related to AI infrastructure.",
+    "slug": "tarebio"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Robotics for AI infrastructure is not specific to AI infrastructure itself.",
+    "slug": "lambda-robotics"
+  },
+  {
+    "advance": true,
+    "fit_score": 70.0,
+    "rationale": "AI vision for infrastructure tasks aligns with AI infrastructure thesis, but specific ROI and workflow replacement need verification.",
+    "slug": "openvector"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "AI hardware marketplace fits well within AI infrastructure thesis, showing potential for measurable ROI.",
+    "slug": "stoa"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "AI for government workflows is not directly related to AI infrastructure.",
+    "slug": "stratum-industries"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Tax calculation API is not directly related to AI infrastructure.",
+    "slug": "luca-iq"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Cybersecurity testing using AI is not directly related to AI infrastructure.",
+    "slug": "trident"
+  },
+  {
+    "advance": false,
+    "fit_score": 15.0,
+    "rationale": "AI sales coaching is not directly related to AI infrastructure.",
+    "slug": "ai-coach"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Diamond wafers for hardware are not directly related to AI infrastructure.",
+    "slug": "kara"
+  },
+  {
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "Infrastructure for AI model improvement aligns with AI infrastructure thesis, but specific ROI and workflow replacement need verification.",
+    "slug": "hiloop"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "AI integration management layer fits well within AI infrastructure thesis, showing potential for measurable ROI.",
+    "slug": "executor"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "AI property management is not directly related to AI infrastructure.",
+    "slug": "atlia"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Supply chain decision platform is not directly related to AI infrastructure.",
+    "slug": "ekho-labs"
+  },
+  {
+    "advance": true,
+    "fit_score": 85.0,
+    "rationale": "Git forge for AI agents fits well within AI infrastructure thesis, showing potential for measurable ROI.",
+    "slug": "gitcafe"
+  },
+  {
+    "advance": true,
+    "fit_score": 70.0,
+    "rationale": "Combining open-source AI models for efficiency aligns with AI infrastructure thesis, but specific ROI and workflow replacement need verification.",
+    "slug": "tracer"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Custom chips for AI models are not directly related to AI infrastructure.",
+    "slug": "lamb-labs"
+  },
+  {
+    "advance": false,
+    "fit_score": 25.0,
+    "rationale": "Dock's focus on agent workspaces relates to AI but does not explicitly target AI infrastructure.",
+    "slug": "dock"
+  },
+  {
+    "advance": true,
+    "fit_score": 80.0,
+    "rationale": "Decawork's management of AI agents aligns with AI infrastructure, and its potential for IT integration suggests durable differentiation.",
+    "slug": "decawork"
+  },
+  {
+    "advance": false,
+    "fit_score": 15.0,
+    "rationale": "Grip's focus on robotics for waste management does not directly relate to AI infrastructure.",
+    "slug": "grip"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Buildbox focuses on improving human-agent experiences, not AI infrastructure.",
+    "slug": "buildbox"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Applied Electrodynamics' technology for seeing through walls does not pertain to AI infrastructure.",
+    "slug": "applied-electrodynamics-inc"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Gutgutgoose's focus on personalized probiotics does not relate to AI infrastructure.",
+    "slug": "gutgutgoose"
+  },
+  {
+    "advance": false,
+    "fit_score": 15.0,
+    "rationale": "Wondering provides AI-enhanced learning but does not target AI infrastructure.",
+    "slug": "wondering"
+  },
+  {
+    "advance": true,
+    "fit_score": 85.0,
+    "rationale": "Synapse Semiconductor's focus on new vision sensors and physical AI aligns closely with AI infrastructure.",
+    "slug": "synapse-semiconductor"
+  },
+  {
+    "advance": false,
+    "fit_score": 20.0,
+    "rationale": "Graphify Labs' knowledge graph engine for enterprises is not directly related to AI infrastructure.",
+    "slug": "graphify-labs"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "PokerClubHub is a poker club platform and does not relate to AI infrastructure.",
+    "slug": "pokerclubhub"
+  },
+  {
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "Traceforce provides security for AI apps, which is related to AI infrastructure, though its primary focus is security.",
+    "slug": "traceforce"
+  },
+  {
+    "advance": false,
+    "fit_score": 10.0,
+    "rationale": "Lumeria's multispectral camera for skin analysis does not pertain to AI infrastructure.",
+    "slug": "lumeria"
+  }
+]

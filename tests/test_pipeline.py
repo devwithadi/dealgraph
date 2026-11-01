@@ -2,6 +2,7 @@ import json
 import inspect
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -35,52 +36,53 @@ def record(slug: str = "agentdesk") -> dict:
     }
 
 
-class BedrockClient:
-    def converse(self, **kwargs):
-        stage = kwargs["requestMetadata"]["stage"]
-        if stage == "screening":
-            payload = {
-                "decisions": [
-                    {
-                        "slug": "agentdesk",
-                        "advance": True,
-                        "fit_score": 85,
-                        "rationale": "Strong fit",
-                    }
-                ]
-            }
-        else:
-            payload = {
-                "summary": "Strong fit with evidence gaps. [ev-001]",
-                "team": "Unknown",
-                "product": "AI support automation. [ev-001]",
-                "market": "SMB support. [ev-001]",
-                "why_now": "AI adoption. [ev-001]",
-                "risks": ["Retention is unknown. [ev-001]"],
-                "open_questions": ["What is retention?"],
-                "changes_mind": ["Verified retention", "Customer references"],
-                "score": 71,
-                "dimensions": [
-                    {
-                        "name": name,
-                        "score": 6.5,
-                        "weight": weight,
-                        "rationale": "Supported by evidence [ev-001]",
-                        "evidence_ids": ["ev-001"],
-                    }
-                    for name, weight in (
-                        ("workflow_pain", 25),
-                        ("speed_to_value", 20),
-                        ("compounding_advantage", 20),
-                        ("team_execution", 15),
-                        ("market_distribution", 20),
-                    )
-                ],
-                "confidence": 0.6,
-                "recommendation": "Watch",
-                "citations": ["ev-001", "ev-002"],
-            }
-        return {"output": {"message": {"content": [{"text": json.dumps(payload)}]}}}
+def bedrock_completion(**kwargs):
+    stage = kwargs["requestMetadata"]["stage"]
+    if stage == "screening":
+        payload = {
+            "decisions": [
+                {
+                    "slug": "agentdesk",
+                    "advance": True,
+                    "fit_score": 85,
+                    "rationale": "Strong fit",
+                }
+            ]
+        }
+    else:
+        payload = {
+            "summary": "Strong fit with evidence gaps. [ev-001]",
+            "team": "Unknown",
+            "product": "AI support automation. [ev-001]",
+            "market": "SMB support. [ev-001]",
+            "why_now": "AI adoption. [ev-001]",
+            "risks": ["Retention is unknown. [ev-001]"],
+            "open_questions": ["What is retention?"],
+            "changes_mind": ["Verified retention", "Customer references"],
+            "score": 71,
+            "dimensions": [
+                {
+                    "name": name,
+                    "score": 6.5,
+                    "weight": weight,
+                    "rationale": "Supported by evidence [ev-001]",
+                    "evidence_ids": ["ev-001"],
+                }
+                for name, weight in (
+                    ("workflow_pain", 25),
+                    ("speed_to_value", 20),
+                    ("compounding_advantage", 20),
+                    ("team_execution", 15),
+                    ("market_distribution", 20),
+                )
+            ],
+            "confidence": 0.6,
+            "recommendation": "Watch",
+            "citations": ["ev-001", "ev-002"],
+        }
+    return SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(payload)))]
+    )
 
 
 def test_pipeline_runs_two_stage_flow_and_writes_complete_run_artifacts(
@@ -105,14 +107,7 @@ def test_pipeline_runs_two_stage_flow_and_writes_complete_run_artifacts(
         ]
 
     monkeypatch.setattr("app.pipeline.service.agent_reach_evidence", research)
-    client = BedrockClient()
-    created: list[object] = []
-
-    def create_client():
-        created.append(client)
-        return client
-
-    monkeypatch.setattr("app.pipeline.service.create_bedrock_client", create_client)
+    monkeypatch.setattr("app.analysis.providers.completion", bedrock_completion)
     run_dir = tmp_path / "run"
     result = Pipeline().run(
         topic="AI agents for SMBs",
@@ -135,7 +130,6 @@ def test_pipeline_runs_two_stage_flow_and_writes_complete_run_artifacts(
         "succeeded": 1,
         "failed": 0,
     }
-    assert created == [client]
     pdf_path = run_dir / "agentdesk.pdf"
     assert pdf_path.exists()
     assert pdf_path.stat().st_size > 0
@@ -161,6 +155,8 @@ def test_pipeline_runs_two_stage_flow_and_writes_complete_run_artifacts(
 
 def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypatch) -> None:
     requests: list[httpx.Request] = []
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "test-only")
+    monkeypatch.setattr("app.analysis.providers.completion", bedrock_completion)
 
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append(request)
@@ -183,7 +179,6 @@ def test_pipeline_fetches_yc_feed_before_llm_screening(tmp_path: Path, monkeypat
     )
     result = Pipeline(
         client=httpx.Client(transport=httpx.MockTransport(handler)),
-        bedrock_client=BedrockClient(),
     ).run(
         topic="AI",
         batch=None,

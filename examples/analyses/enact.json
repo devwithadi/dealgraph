@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of successful deployments and customer testimonials.",
+    "Clear definition of market size and ICP."
+  ],
+  "company": "Enact",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "Robotics deployment in SMBs is costly and unreliable, which Enact aims to address [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The continuous improvement loop suggests a methodical approach to value delivery, but specific metrics are not provided [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "Potential advantage through data generation, but lack of clear integrations or proprietary data [ev-001].",
+      "score": 4.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Small team size raises concerns about execution capacity [ev-001].",
+      "score": 3.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "Market size and distribution motion are not disclosed [ev-001].",
+      "score": 2.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market and ICP are not clearly defined in the provided evidence [ev-001].",
+  "open_questions": [
+    "What is the specific market size and ICP for Enact's solution?"
+  ],
+  "product": "Enact generates targeted datasets to improve robotics models, which could address a significant pain point in robotics deployment [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "Small team size may hinder rapid development and scaling [ev-001]."
+  ],
+  "score": 48.5,
+  "summary": "Enact, a robotics data generation company, has a small team and is backed by YCombinator. The company focuses on improving robotics models through a continuous improvement loop [ev-001].",
+  "team": "Reported team size is 2, which may limit execution capacity [ev-001].",
+  "thesis": "Enact aims to enhance robotics models by generating targeted data, potentially reducing the cost and improving the reliability of robotics implementations in SMBs [ev-001].",
+  "why_now": "Not disclosed. [ev-001]"
+}

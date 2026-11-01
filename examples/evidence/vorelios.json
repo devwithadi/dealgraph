@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "AI that simulates physics 1000x faster Engineering is bottlenecked by slow, costly simulations. We're fixing that by building foundation models that learn physics end-to-end and deliver the same results in seconds, at a fraction of the cost. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-08-11T03:09:29Z",
+    "retrieved_at": "2026-08-24T19:25:30.348642Z",
+    "source_title": "YC profile: Vorelios",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/vorelios",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Vorelios",
+    "excerpt": "Vorelios Toward Engineering Superintelligencecontact@vorelios.com",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:25:35.474932Z",
+    "source_title": "Vorelios",
+    "source_type": "web_scraper",
+    "source_url": "https://vorelios.com/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Foundation models on enterprise transaction data. Lyon builds private foundation models for banks, insurance companies, and fintechs. Each model learns from the company’s proprietary transactions, payments, clicks, and customer interactions to predict credit, fraud, collections, income, churn, and lifetime value; and runs inside the company’s cloud, so its data and intelligence remain under its control. Lyon is already working with a major insurer and trained a model on 28B transactions for a fintech serving tens of millions of active users, identifying premium-card converters 4x more precisely than its existing rules; the model is now being deployed for credit. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-08-14T08:09:47Z",
+    "retrieved_at": "2026-08-24T19:23:17.157554Z",
+    "source_title": "YC profile: Lyon",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/lyon",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Lyon – The Customer Foundation Model",
+    "excerpt": "[PRICING & TIERS]: Built by a team from Stanford and NVIDIA, backed by Y Combinator\n[TEAM & FOUNDERS]: Built by a team from Stanford and NVIDIA, backed by Y Combinator • Stanford\n[INTEGRATIONS & ECOSYSTEM]: Deployed in your cloud, on AWS, GCP, or Azure\n\nSkip to contentLyonBook a call The Customer Foundation Model Lyon trains a foundation model from scratch on your customer event data. The model runs in your cloud, and you own the weights. Book a call Built by a team from Stanford and NVIDIA, backed by Y Combinator StanfordNVIDIACombinator Every customer, one rich embedding Hand-built features compress a customer into a few dozen numbers. Embeddings learned from raw event data are far richer. Events + profile inCustomer embeddings out One model, every prediction Churn, credit risk, fraud, collections, income, cross-sell: every downstream task comes from the same model, not another months-long feature engineering project. Have features that already work? Upgrade them. Lyon’s downstream models can take them alongside the embeddings. Embedding → Churn Credit risk Fraud Collections Income Cross-sell Fine-tuning Train a task adapter Select a label table, verify the split, and start a LoRA fine-tune. Your data never leaves your cloud Training and inference run inside your VPC. Your data stays yours, and so does every model trained on it. • Deployed in your cloud, on AWS, GCP, or Azure • Your models, your weights • Complete data isolation SOC 2 GDPR LGPD See it on your data. Book a call or email founders@lyon.so © 2026 Lyon · San Francisco founders@lyon.soTrust CenterPrivacyTerms",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:23:22.107969Z",
+    "source_title": "Lyon – The Customer Foundation Model",
+    "source_type": "web_scraper",
+    "source_url": "https://lyon.so/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

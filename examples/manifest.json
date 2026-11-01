@@ -1,0 +1,29 @@
+{
+  "artifacts": {
+    "analyses": "analyses/",
+    "candidates": "candidates.json",
+    "evidence": "evidence/",
+    "gaps": "gaps.json",
+    "input": "input.json",
+    "screenings": "screenings.json",
+    "shortlist": "shortlist.json"
+  },
+  "created_at": "2026-08-24T19:32:12.478828+00:00",
+  "provider": "bedrock",
+  "request_id": "req-436ed4be74da432e",
+  "run_id": "20260824T193212Z",
+  "screening_model": "amazon.nova-lite-v1:0",
+  "summary": {
+    "candidates": 112,
+    "failed": 3,
+    "finalists": 26,
+    "output": ".",
+    "request_id": "req-436ed4be74da432e",
+    "run_id": "20260824T193212Z",
+    "screened": 112,
+    "selected": 23,
+    "succeeded": 23
+  },
+  "synthesis_model": "amazon.nova-pro-v1:0",
+  "topic": "AI infrastructure"
+}

@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer traction or partnerships with large enterprises.",
+    "Detailed case studies or testimonials from existing customers highlighting the value and ROI of using Decawork."
+  ],
+  "company": "Decawork",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The problem of AI agent sprawl and lack of governance is a significant pain point for IT teams, as highlighted in the YC profile [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The product offers a comprehensive solution for managing AI agents, but the speed to value for customers is not explicitly demonstrated in the evidence [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The product's ability to integrate with various tools and systems and provide a centralized control plane could create a compounding advantage, but this is not fully substantiated in the evidence [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The small team size raises concerns about execution capabilities, especially for a product that requires significant integration and governance [ev-001].",
+      "score": 4.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market size and distribution motion are not clearly defined in the evidence, making it difficult to assess the potential reach and impact of the product [ev-001].",
+      "score": 5.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The market for internal AI agent management is not explicitly defined in the evidence. The ideal customer profile (ICP) and credible market size are not disclosed [ev-001].",
+  "open_questions": [
+    "What is the background and experience of the founders in building and scaling similar products?"
+  ],
+  "product": "Decawork's product is an agent control plane that allows IT teams to manage AI agents built in any tool. It provides features like agent inventory, scoped access, approval gates, and audit trails. The product integrates with various tools and systems, as evidenced by the list of managed agents on their website [ev-001][ev-002].",
+  "recommendation": "Watch",
+  "risks": [
+    "The small team size may pose execution risks, especially if the company aims to scale rapidly [ev-001]."
+  ],
+  "score": 62.0,
+  "summary": "Decawork offers a solution to manage internal AI agents, addressing the growing need for IT control over these tools. The product provides a unified platform for deploying, controlling, and auditing AI agents, which could be valuable for companies looking to leverage AI without compromising security and governance [ev-001].",
+  "team": "The team size is reported to be 2, but specific execution evidence or credentials are not disclosed [ev-001].",
+  "thesis": "Decawork aims to solve the problem of AI agent sprawl within companies by providing a centralized control plane for IT teams to deploy, govern, and maintain these agents. The company's defensible advantage lies in its ability to standardize agent deployment, provide scoped access and audit trails, and integrate with various tools and systems [ev-001].",
+  "why_now": "The timing is driven by the increasing ease of building internal AI tools and agents, leading to a need for better governance and control over these tools within companies [ev-001]."
+}

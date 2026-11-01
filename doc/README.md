@@ -55,7 +55,7 @@ Dependencies point inward: **CLI → pipeline → sourcing / analysis / reportin
 | Live YC feed | Uses `https://yc-oss.github.io/api/companies/all.json` when no source file is supplied. |
 | Agent Reach / Exa | Supplies focused public-web evidence for finalists when enabled in the source registry. |
 | Company websites | First-party HTML only, through the safe fetch policy. |
-| Amazon Bedrock | Default provider through Boto3 `Converse`; request metadata carries the request ID. |
+| Amazon Bedrock | Default provider through LiteLLM; request metadata carries the request ID. |
 | Other model providers | Named API-key providers and validated OpenAI-compatible HTTPS endpoints are supported. |
 | Sanitized artifacts | Every live run writes reviewable JSON plus one-page PDF memos without storing prompts, raw responses, or secrets. |
 

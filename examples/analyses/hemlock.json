@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of successful integration and performance improvement in robotic AI trained with Hemlock's data.",
+    "Testimonials or case studies from early adopters highlighting the technology's impact."
+  ],
+  "company": "Hemlock",
+  "confidence": 0.5,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The inability to capture force data in robotic AI training is a significant pain point, directly impacting the precision and capability of robots [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "speed_to_value",
+      "rationale": "The value proposition is clear, but the speed to measurable value in real-world applications is not yet demonstrated [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The unique ability to capture force data could provide a compounding advantage in training more capable robots, though this is contingent on adoption and integration [ev-001].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "Limited team size and early stage of the company raise questions about execution capability [ev-001].",
+      "score": 4.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "market_distribution",
+      "rationale": "The market for enhanced robotic AI training is clear, but distribution and adoption metrics are not disclosed [ev-001].",
+      "score": 6.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "Targeting robotics labs and industries requiring precise robotic manipulation, such as assembly lines and warehouses [ev-001].",
+  "open_questions": [
+    "What is the current adoption rate of the technology in pilot programs or beta tests?"
+  ],
+  "product": "The Bracelet, a wrist-worn surface EMG band that reads electrical activity of forearm muscles to recover contraction force directly [ev-001].",
+  "recommendation": "Watch",
+  "risks": [
+    "The technology's effectiveness in real-world applications and its adoption by robotics labs [ev-001]."
+  ],
+  "score": 64.0,
+  "summary": "Hemlock's innovative approach to capturing force data directly from human muscle activity could significantly enhance the training of robotic AI, potentially leading to more precise and capable robots [ev-001].",
+  "team": "Reported team size: 1. YC marks the company as hiring [ev-001].",
+  "thesis": "Hemlock aims to revolutionize robotic AI training by providing force-sensing data through a wristband, addressing the critical gap in force data that current video and pose-based methods cannot capture [ev-001].",
+  "why_now": "The convergence on egocentric video and hand pose for robotic AI training, coupled with the recognized gap in force data, creates a timely opportunity for Hemlock's technology [ev-001]."
+}

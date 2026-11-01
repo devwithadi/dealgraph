@@ -1,0 +1,78 @@
+{
+  "analysis_mode": "bedrock",
+  "changes_mind": [
+    "Evidence of significant customer traction or partnerships with major MDM providers.",
+    "Detailed case studies or testimonials from high-profile customers."
+  ],
+  "company": "Traceforce",
+  "confidence": 0.65,
+  "dimensions": [
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "workflow_pain",
+      "rationale": "The security risks associated with AI applications are a significant pain point for companies, as traditional security tools are not designed to handle these risks [ev-001].",
+      "score": 8.0,
+      "weight": 25
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "speed_to_value",
+      "rationale": "Traceforce offers a 15-minute onboarding process and automated remediation, which should allow customers to quickly realize value from the platform [ev-002].",
+      "score": 7.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "compounding_advantage",
+      "rationale": "The platform's integration with popular MDM solutions and its ability to provide automated remediation could create a compounding advantage [ev-002].",
+      "score": 6.0,
+      "weight": 20
+    },
+    {
+      "evidence_ids": [
+        "ev-001"
+      ],
+      "name": "team_execution",
+      "rationale": "The small team size may limit the company's ability to execute quickly [ev-001].",
+      "score": 5.0,
+      "weight": 15
+    },
+    {
+      "evidence_ids": [
+        "ev-002"
+      ],
+      "name": "market_distribution",
+      "rationale": "The company targets a broad market of security teams at companies of all sizes and integrates with popular MDM solutions, which could facilitate market distribution [ev-002].",
+      "score": 7.0,
+      "weight": 20
+    }
+  ],
+  "financials": {
+    "burn": null,
+    "evidence_ids": [],
+    "funding": null,
+    "pricing": null,
+    "revenue": null,
+    "runway": null
+  },
+  "market": "The company targets security teams at companies ranging from startups to Fortune 500s. The platform integrates with popular MDM solutions such as Jamf, JumpCloud, NinjaOne, and Iru [ev-002].",
+  "open_questions": [
+    "What is the background and experience of the founders in the security and AI space?"
+  ],
+  "product": "Traceforce provides an AI security and control platform that runs on devices to secure browser AI, desktop apps, and CLI agents. The platform offers features such as 15-minute self-serve onboarding, tracking of tool calls from MCPs to CLIs, and automated remediation of AI packages on-device [ev-002].",
+  "recommendation": "Watch",
+  "risks": [
+    "The small team size may limit the company's ability to scale quickly [ev-001]."
+  ],
+  "score": 67.5,
+  "summary": "Traceforce is a B2B security company focused on securing AI applications directly on devices. The company offers an AI security and control platform that integrates with popular MDM solutions and provides automated remediation for security breaches [ev-002]. The platform is designed to be easy to deploy, with a 15-minute onboarding process [ev-002].",
+  "team": "The team size is reported to be 2, and the company is marked as hiring by YC [ev-001].",
+  "thesis": "Traceforce aims to provide AI security and control for devices, addressing the growing security risks associated with AI applications [ev-001]. The company's advantage lies in its ability to offer on-device security solutions that integrate with existing IT tools and provide automated remediation [ev-002].",
+  "why_now": "The increasing use of AI applications like ChatGPT and Claude has introduced new security risks that traditional security tools are not equipped to handle. Traceforce addresses this gap by providing on-device security solutions specifically designed for AI applications [ev-001]."
+}

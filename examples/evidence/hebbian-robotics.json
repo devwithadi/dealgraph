@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "Open source SDK for building quality control pipelines for Physical AI Hebbian is an open source SDK for building quality control pipelines for Physical AI. We enable data teams to scale their pipeline from thousands to millions of hours of data, without managing infrastructure.\r\n\r\nhttps://github.com/Hebbian-Robotics/hflow Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-08-07T17:21:16Z",
+    "retrieved_at": "2026-08-24T19:26:54.849447Z",
+    "source_title": "YC profile: Hebbian Robotics",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/hebbian-robotics",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Hebbian Robotics",
+    "excerpt": "[PRICING & TIERS]: We come from top embodied AI and ECE programs at Columbia University and the National University of Singapore. Our team has topped Stanford's LLM benchmarks and built infrastructure at Jane Street and Verkada, and we are backed by Y Combinator and angels from Oracle, Google DeepMind, and OpenAI. | Data teams understand their collection systems and should own the checks that define quality. By building HFlow in public, an edge case caught by one team can become a reliable check for everyone.\n[TEAM & FOUNDERS]: We come from top embodied AI and ECE programs at Columbia University and the National University of Singapore. Our team has topped Stanford's LLM benchmarks and built infrastructure at Jane Street and Verkada, and we are backed by Y Combinator and angels from Oracle, Google DeepMind, and OpenAI.\n[INTEGRATIONS & ECOSYSTEM]: GitHub\n\nGitHubDemoDocsBlogJoin us Hebbian Robotics Backed by NewHFlow: open-source data quality infrastructure for Physical AI Hebbian Robotics builds fast, open-source SDKs for Physical AI data pipelines at scale. Robotics foundation model labs are buying massive volumes of egocentric video, and we help them filter and label the data that actually improves models. Our flagship open source project isHFlow, data quality infrastructure for teams that collect, transform, and curate Physical AI data. Teams write quality checks as ordinary Python functions, while HFlow provides the durable execution, observability, and auditability around them. We come from top embodied AI and ECE programs at Columbia University and the National University of Singapore. Our team has topped Stanford's LLM benchmarks and built infrastructure at Jane Street and Verkada, and we are backed by Y Combinator and angels from Oracle, Google DeepMind, and OpenAI. Data quality is infrastructure Quality control is still painstakingly manual, and metrics are rarely defined with enough rigor to be reproducible. We believe every result should be traceable across operators, sessions, and collection conditions. Measure data before training Today, we help teams evaluate data quality without training a robotics model. Data should be studied with the same seriousness and methodology that researchers apply to models. Open source compounds Data teams understand their collection systems and should own the checks that define quality. By building HFlow in public, an edge case caught by one team can become a reliable check for everyone. Join us If this thesis re",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:27:00.882371Z",
+    "source_title": "Hebbian Robotics",
+    "source_type": "web_scraper",
+    "source_url": "https://hebbianrobotics.com/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Blog]: Blog | Hebbian Robotics",
+    "excerpt": "[PRICING & TIERS]: To understand what it takes to build a humanoid robot with model-based control, we finetuned @physical_int's (PI) Pi05 model for our custom use case and environment. We incurred ~$10K in hardware costs, compared to the typical ~$20K set up (DROID/ALOHA).\n[INTEGRATIONS & ECOSYSTEM]: GitHub\n\nGitHubDemoDocsBlogJoin us Blog • HFlow: open-source data quality infrastructure for Physical AI 2026-08-19 HFlow is an open-source SDK for data teams that collect, transform, and curate Physical AI data. • YouTube System Design for Robotics Data Infrastructure 2026-07-20 What a classic interview question got right about the infrastructure behind robotics data. • Pareto: high quality data curation for robotics 2026-07-16 Robotics teams need a more rigorous way to understand, curate, and improve training datasets. • Finetuning PI05 for a custom task, robot and environment 2026-02-26 To understand what it takes to build a humanoid robot with model-based control, we finetuned @physical_int's (PI) Pi05 model for our custom use case and environment. We incurred ~$10K in hardware costs, compared to the typical ~$20K set up (DROID/ALOHA).",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:27:00.882450Z",
+    "source_title": "Blog | Hebbian Robotics",
+    "source_type": "web_scraper",
+    "source_url": "https://hebbianrobotics.com/blog",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

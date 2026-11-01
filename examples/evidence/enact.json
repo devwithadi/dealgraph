@@ -1,0 +1,28 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "The post-training layer for robotics. Enact generates the data that makes robotics models reliable in the real world. We run the full improvement loop: roll out, find failures, collect targeted data, train, evaluate, and repeat. Reported team size: 2.",
+    "id": "ev-001",
+    "published_at": "2026-08-09T21:31:30Z",
+    "retrieved_at": "2026-08-24T19:25:50.827238Z",
+    "source_title": "YC profile: Enact",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/enact",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Home]: Enact",
+    "excerpt": "We launched Enact on X↗ The post-training layer for physical AI. Enact generates the data that makes robotics models useful in the real world. We roll out policies on tasks, identify the states where they fail, and generate targeted demonstration and recovery datasets. We evaluate model performance in-house to verify that the data addresses those failures. Looking for real-world robotics data? Request data[email protected] started at backed byYCombinatorXLinkedIn",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:25:57.775878Z",
+    "source_title": "Enact",
+    "source_type": "web_scraper",
+    "source_url": "https://enact.company/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

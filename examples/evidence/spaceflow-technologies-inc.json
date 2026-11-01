@@ -1,0 +1,41 @@
+[
+  {
+    "claim": "YC profile",
+    "excerpt": "The managed runtime for enterprise AI agents SpaceFlow is the managed runtime for AI agents that execute supply chain work across ERPs, email, spreadsheets, documents, and supplier portals. It turns fragmented operational data and SOPs into a governed context layer, then gives agents reusable skills and controlled access to enterprise tools.\r\n\r\nSpaceFlow agents normalize multi-round quotations, chase suppliers and delivery confirmations, repair incomplete requests, classify materials, reconcile phantom inventory, surface market signals, and help sales and operations planning teams continuously align demand, supply, inventory, purchasing deadlines, and freight decisions.\r\n\r\nSpaceFlow deploys in the customer’s cloud or on-prem environment with permissions, human approvals, observability, and audit trails, allowing industrial and regulated enterprises to automate high-stakes operations without replacing existing systems or moving sensitive data. Reported team size: 4.",
+    "id": "ev-001",
+    "published_at": "2026-08-02T04:22:37Z",
+    "retrieved_at": "2026-08-24T19:28:10.702994Z",
+    "source_title": "YC profile: SpaceFlow Technologies, Inc.",
+    "source_type": "yc_directory",
+    "source_url": "https://www.ycombinator.com/companies/spaceflow-technologies-inc",
+    "status": "verified",
+    "trust_tier": "curated_directory",
+    "verification": "third_party"
+  },
+  {
+    "claim": "Company website [Security]: Spaceflow",
+    "excerpt": "[PRICING & TIERS]: Enterprise-grade means provable. | Cloud models run under enterprise terms with workspace caps. Sovereign mode keeps the same gateway contract while open-weight models run inside the customer boundary or on dedicated in-country capacity.\n\nUse Cases Security Book a demo Use Cases Security Book a demo Security How we keep agents safe. Five controls built into the foundation, so agents can move fast on real systems without breaking things. Book a demo Book a demo Book a demo Enterprise-grade means provable. Agent request Your systems 01 Identity passthrough Agents act as the person who asked. 02 Guardrails Thresholds, approvals, scoped access. 03 One gateway Every agent call logged and checked. 04 Monitoring Anomalies quarantined automatically. 05 Immutable audit log Reconstruct anything, always. Security architecture, layer by layer. The controls reinforce one another: tenant isolation constrains identity, identity constrains tools, tools run through one gateway, and every result lands in the ledger. 01 · Live Tenancy and identity Workspaces are hard boundaries for data, agents, and budgets. SSO, SCIM, and MFA bring humans in. Identity passthrough ensures every agent action inherits the requester’s real permissions. 02 · Building The governance gateway Every model call and tool call crosses one enforcement point. Typed tools, capability gates, job envelopes, and the call broker decide what runs, what waits, and what gets blocked. 03 · Live Propose-only by default Autonomy is earned per action, never granted globally. Threshold breaches enter approvals, the approver is recorded, and access can be revoked instantly. 04 · Deepening Treat inbound content as untrusted Supplier mail, documents, and spreadsheets never become instructions. Redaction runs before model access, retrieval stays scoped, and taint tracking is moving from design into the product. 05 · Live / Building A model-agnostic AI gateway Cloud models run under enterprise terms with workspace caps. Sovereign mode keeps the same gateway contract while open-weight models run inside the customer boundary or on dedicated in-country capacity. 06 · Live The memory of everything Every read, tool call, proposal, approval, and execution lands in an append-only ledger. Trace-level observability supports investigation, quarantine, SIEM export, and audit review. One Chokepoint · No Side DoorS Nothing runs without an envelope. Nothing runs without an envelope. Every unit of work declares who as",
+    "id": "ev-002",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:28:18.451093Z",
+    "source_title": "Spaceflow",
+    "source_type": "web_scraper",
+    "source_url": "https://spaceflow.tech/security",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  },
+  {
+    "claim": "Company website [Home]: Spaceflow",
+    "excerpt": "Use Cases Security Book a demo Use Cases Security Book a demo",
+    "id": "ev-003",
+    "published_at": null,
+    "retrieved_at": "2026-08-24T19:28:18.451009Z",
+    "source_title": "Spaceflow",
+    "source_type": "web_scraper",
+    "source_url": "https://spaceflow.tech/",
+    "status": "claimed",
+    "trust_tier": "self_reported",
+    "verification": "direct_scrape"
+  }
+]

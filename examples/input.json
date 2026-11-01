@@ -1,0 +1,14 @@
+{
+  "batch": null,
+  "cutoff": "2026-07-25T19:21:41.826467+00:00",
+  "deep_diligence": true,
+  "limit": null,
+  "lookback_days": 30,
+  "max_hops": 2,
+  "provider": "bedrock",
+  "request_id": "req-436ed4be74da432e",
+  "screening_model": "amazon.nova-lite-v1:0",
+  "source_file": null,
+  "synthesis_model": "amazon.nova-pro-v1:0",
+  "topic": "AI infrastructure"
+}

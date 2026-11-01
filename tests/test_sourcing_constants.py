@@ -53,11 +53,11 @@ def test_discovery_uses_the_agent_reach_model_token_constant(monkeypatch, tmp_pa
     monkeypatch.setattr("app.pipeline.service.AGENT_REACH", configured)
     monkeypatch.setattr("app.pipeline.service.model_json", fake_model_json)
     monkeypatch.setattr("app.pipeline.service.discover_candidates", fake_discover)
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "test-only")
 
     with pytest.raises(StopAfterDiscovery):
         Pipeline(
             client=httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200, json=[]))),
-            bedrock_client=object(),
         ).run(
             topic="AI agents",
             batch=None,

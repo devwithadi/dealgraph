@@ -1,0 +1,1052 @@
+[
+  {
+    "candidate": "covera",
+    "description": "The total addressable market (TAM) for AI-native OS for insurance brokers is not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence does not provide information on the size of the market for AI-native OS for insurance brokers.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "covera",
+    "description": "The revenue model and pricing tiers for Covera's services are not detailed.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide specific details on how Covera generates revenue or its pricing structure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "covera",
+    "description": "The technical infrastructure and intellectual property protection of Covera's AI agents are not verified.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide details on the technical infrastructure or IP protection of Covera's AI agents.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "covera",
+    "description": "The environmental, social, and governance (ESG) considerations of Covera's operations are not addressed.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not provide information on Covera's ESG practices.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "covera",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "gini",
+    "error": "ValueError: diligence evaluation must contain each core pillar exactly once",
+    "stage": "finalist"
+  },
+  {
+    "candidate": "marker",
+    "description": "The provided evidence does not detail the market size or address the total addressable market (TAM) for Marker's AI infrastructure solutions.",
+    "pillar": "Commercial / TAM",
+    "rationale": "No evidence provides information on the market size or TAM for Marker's services.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "marker",
+    "description": "There is no information on the pricing structure, revenue model, or unit economics of Marker's AI infrastructure services.",
+    "pillar": "Unit Economics",
+    "rationale": "The provided evidence does not include any details about Marker's pricing, revenue, or unit economics.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "marker",
+    "description": "The evidence does not provide details about the technical infrastructure, proprietary technology, or intellectual property (IP) of Marker.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "No evidence provides information on Marker's technical infrastructure or IP.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "marker",
+    "description": "The provided evidence does not address any environmental, social, or governance (ESG) risks associated with Marker's operations or AI infrastructure.",
+    "pillar": "Risk / ESG",
+    "rationale": "No evidence discusses Marker's ESG risks.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "marker",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "lyon",
+    "description": "The evidence provided does not mention the total addressable market (TAM) size for Lyon's services.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not provide information on the TAM size for Lyon's foundation models in the financial sector.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "lyon",
+    "description": "The evidence does not provide specific information on the revenue model, pricing strategy, or cost structure of Lyon's services.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence provided does not detail how Lyon generates revenue, its pricing strategy, or the costs associated with its foundation models.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "lyon",
+    "description": "The evidence does not provide details on the technical approach, proprietary algorithms, or intellectual property protections of Lyon's models.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence provided does not specify the technical foundation, proprietary algorithms, or IP protections of Lyon's foundation models.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "lyon",
+    "description": "The evidence does not provide information on Lyon's approach to environmental, social, and governance (ESG) factors, or potential risks associated with their technology.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence provided does not address Lyon's ESG practices or the potential risks associated with their AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "lyon",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "waybill",
+    "description": "The total addressable market (TAM) and commercial viability of Waybill's services are not substantiated by the provided evidence.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided only includes a company description and website excerpt without any market size or revenue data.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "waybill",
+    "description": "The cost structure, pricing model, and profitability of Waybill's services are not detailed in the provided evidence.",
+    "pillar": "Unit Economics",
+    "rationale": "There is no information on how Waybill charges for its services or its pricing tiers, making it impossible to assess the unit economics.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "waybill",
+    "description": "The technological infrastructure and intellectual property (IP) defensibility of Waybill's platform are not detailed in the provided evidence.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "While the company claims to have a proprietary technology, there is no evidence to substantiate the uniqueness or defensibility of this technology.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "waybill",
+    "description": "The environmental, social, and governance (ESG) risks associated with Waybill's operations are not addressed in the provided evidence.",
+    "pillar": "Risk / ESG",
+    "rationale": "There is no information on how Waybill manages its supply chain in terms of sustainability or ethical practices.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "waybill",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "deepreach-inc",
+    "description": "The evidence does not provide information on the total addressable market (TAM) size for AI infrastructure or the specific market segments that DeepReach is targeting.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not mention the TAM or the specific market segments DeepReach is targeting.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "deepreach-inc",
+    "description": "The evidence does not provide detailed information on the unit economics of DeepReach's business model, including the costs associated with manufacturing and deploying devices, the revenue generated from data sales, and the profitability of the business.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence provided does not detail the costs, revenues, or profitability of DeepReach's business model.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "deepreach-inc",
+    "description": "The evidence does not provide details on the technical aspects of DeepReach's technology, such as the specifications of the wearable stereo capture devices, the software platform, and the quality pipeline.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence provided does not detail the technical specifications of DeepReach's technology.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "deepreach-inc",
+    "description": "The evidence does not provide information on the environmental, social, and governance (ESG) risks associated with DeepReach's operations, such as the environmental impact of manufacturing devices, the social implications of employing local data partners, and the governance practices of the company.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence provided does not address ESG risks associated with DeepReach's operations.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "deepreach-inc",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "shiraz-ai",
+    "description": "Evidence does not cover the total addressable market (TAM) size for the technology Shiraz AI is targeting.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not mention the size of the market for robots that learn from a single human demonstration in contract manufacturing.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "shiraz-ai",
+    "description": "Evidence does not cover the pricing model and profitability of Shiraz AI's robots.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not detail the pricing tiers, revenue model, or profitability of Shiraz AI's robots.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "shiraz-ai",
+    "description": "Evidence does not cover the technological uniqueness and patent status of Shiraz AI's robot foundation model.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide details about the technological uniqueness, patent status, or competitive advantage of Shiraz AI's robot foundation model.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "shiraz-ai",
+    "description": "Evidence does not cover the environmental, social, and governance (ESG) aspects of Shiraz AI's operations.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not address the ESG aspects, such as energy consumption, labor practices, and governance structure of Shiraz AI.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "shiraz-ai",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "hemlock",
+    "description": "The total addressable market (TAM) for force-sensing wristbands in the robotics industry is not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence does not provide information on the market size or potential customer base for Hemlock's product.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hemlock",
+    "description": "The pricing and revenue model for Hemlock's force-sensing wristbands are not detailed.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide information on how Hemlock plans to monetize its product or the pricing strategy.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hemlock",
+    "description": "The technical details and intellectual property status of Hemlock's force-sensing wristband technology are not fully disclosed.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide sufficient technical details or IP claims to assess the defensibility of Hemlock's technology.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "hemlock",
+    "description": "There is no information on the environmental, social, and governance (ESG) risks associated with Hemlock's operations.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not provide information on Hemlock's ESG practices or potential risks.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "hemlock",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "moving-atoms",
+    "error": "ValidationError: 1 validation error for DiligenceEvaluation\nfollowup_queries.0.pillar\n  Input should be 'Commercial / TAM', 'Unit Economics', 'Tech / IP Defensibility', 'Risk / ESG' or 'Research availability' [type=enum, input_value='Commercial / TAM | Unit Economics', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
+    "stage": "finalist"
+  },
+  {
+    "candidate": "vorelios",
+    "description": "The market size and target customer segments for Vorelios' AI infrastructure are not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The provided evidence does not mention the market size, potential customers, or revenue model.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "vorelios",
+    "description": "The pricing model, revenue generation, and cost structure of Vorelios' AI infrastructure are not disclosed.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide information on how Vorelios plans to monetize its technology or its cost efficiency.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "vorelios",
+    "description": "Details about the foundational models, technology stack, and intellectual property status are not provided.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not describe the specific technologies or patents that Vorelios holds or plans to use.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "vorelios",
+    "description": "There is no information on potential risks, environmental impact, or social governance practices of Vorelios.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not address any risks, sustainability efforts, or ethical considerations related to Vorelios' operations.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "vorelios",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "enact",
+    "description": "The total addressable market (TAM) for Enact's technology in the robotics industry is not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence does not provide any information about the market size or potential customer base for Enact's technology.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "enact",
+    "description": "The revenue model and pricing strategy for Enact's data services are not detailed.",
+    "pillar": "Unit Economics",
+    "rationale": "There is no information provided on how Enact generates revenue or the pricing of its data services.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "enact",
+    "description": "The technical approach and intellectual property status of Enact's technology are not specified.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide details on the technical implementation or any patents/trade secrets protecting Enact's technology.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "enact",
+    "description": "The environmental, social, and governance (ESG) risks associated with Enact's operations are not disclosed.",
+    "pillar": "Risk / ESG",
+    "rationale": "No information is provided regarding Enact's approach to ESG risks.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "enact",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "marengo",
+    "error": "ValidationError: 1 validation error for DiligenceEvaluation\nfollowup_queries.0.pillar\n  Input should be 'Commercial / TAM', 'Unit Economics', 'Tech / IP Defensibility', 'Risk / ESG' or 'Research availability' [type=enum, input_value='Commercial / TAM | Unit Economics', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
+    "stage": "finalist"
+  },
+  {
+    "candidate": "dawn-industries",
+    "description": "No evidence provides information about the total addressable market (TAM) size for VIM's product in the industrial automation cells market.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The provided evidence does not cover the market size or potential customer base for VIM.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "dawn-industries",
+    "description": "No evidence provides information on the cost structure, revenue model, or pricing strategy of VIM.",
+    "pillar": "Unit Economics",
+    "rationale": "The provided evidence does not cover how VIM generates revenue or its unit economics.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "dawn-industries",
+    "description": "No evidence provides information on the technical infrastructure, proprietary technology, or intellectual property of VIM.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The provided evidence does not cover the technical details or IP defensibility of VIM.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "dawn-industries",
+    "description": "No evidence provides information on the environmental, social, and governance (ESG) risks associated with VIM's operations.",
+    "pillar": "Risk / ESG",
+    "rationale": "The provided evidence does not cover the ESG risks of VIM.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "dawn-industries",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "hebbian-robotics",
+    "description": "While the company claims to build infrastructure for Physical AI data pipelines, there is no evidence of current customers or market traction.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not mention any customers, partnerships, or market adoption of their SDK.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hebbian-robotics",
+    "description": "There is no information on the pricing models or revenue generation strategy of the company.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide details on how the company plans to monetize its SDK or its pricing tiers.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hebbian-robotics",
+    "description": "The evidence does not provide details on the technical architecture, patents, or proprietary algorithms of the SDK.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence lacks specifics on the technology stack, IP protection, or unique selling points of the SDK.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hebbian-robotics",
+    "description": "There is no information on the environmental, social, and governance (ESG) practices of the company.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not mention any ESG initiatives, policies, or impact of the company's operations.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "hebbian-robotics",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "riften",
+    "description": "The total addressable market (TAM) for AI infrastructure is not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The provided evidence does not contain information about the size of the market for AI infrastructure services.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "riften",
+    "description": "Details on pricing strategy and revenue model are not provided.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not include information on how Riften plans to price its services or generate revenue.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "riften",
+    "description": "Specifics about the technology and intellectual property (IP) used by Riften are not detailed.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence lacks details on the proprietary technology and IP that Riften employs to differentiate itself from competitors.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "riften",
+    "description": "Information on the environmental, social, and governance (ESG) practices of Riften is not provided.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not mention any ESG initiatives or considerations by Riften.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "riften",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "caution",
+    "description": "No evidence directly addresses the Total Addressable Market (TAM) or specific commercial traction for Caution in AI infrastructure.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The provided evidence does not discuss the market size, customer base, or specific commercial traction related to AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "caution",
+    "description": "No evidence provides details on the unit economics of Caution, such as pricing models, revenue per user, or cost structure.",
+    "pillar": "Unit Economics",
+    "rationale": "The provided evidence lacks information on how Caution generates revenue, its pricing models, or the cost structure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "caution",
+    "description": "No evidence details the technical or intellectual property defensibility of Caution in the context of AI infrastructure.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The provided evidence does not cover the technical defensibility, patents, or proprietary technology related to Caution's platform in AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "caution",
+    "description": "No evidence addresses the risk or ESG (Environmental, Social, Governance) factors related to Caution, especially in the context of AI infrastructure.",
+    "pillar": "Risk / ESG",
+    "rationale": "The provided evidence does not discuss the risks or ESG considerations associated with Caution, particularly in AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "caution",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "spaceflow-technologies-inc",
+    "description": "The target market and addressable market for SpaceFlow's AI infrastructure are not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not include details about the target market or addressable market for SpaceFlow's AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "spaceflow-technologies-inc",
+    "description": "The pricing model and revenue generation mechanism for SpaceFlow's AI infrastructure are not specified.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence provided does not include details about the pricing model or how SpaceFlow generates revenue from its AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "spaceflow-technologies-inc",
+    "description": "Details about the technical infrastructure and intellectual property used by SpaceFlow are not specified.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence provided does not include specific details about the technical infrastructure or intellectual property that SpaceFlow uses.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "spaceflow-technologies-inc",
+    "description": "The risk factors and ESG considerations related to SpaceFlow's AI infrastructure are not specified.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence provided does not include information about the risk factors or ESG considerations associated with SpaceFlow's AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "spaceflow-technologies-inc",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "openvector",
+    "description": "There is no information on the market size, target customer segments, or commercial viability of OpenVector's technology. The evidence only describes the product capabilities and team background.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence does not provide details on market size, customer segments, or revenue model, which are essential for assessing commercial viability.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "openvector",
+    "description": "There is no information on pricing, customer acquisition costs, lifetime value, or profitability. The evidence only mentions a preorder option without specific pricing details.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide details on unit economics, which are critical for evaluating the financial model of the business.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "openvector",
+    "description": "There is no information on patents, proprietary technology, or competitive differentiation. The evidence only describes the product capabilities without mentioning any IP protection or competitive advantages.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide details on intellectual property, which is essential for assessing the defensibility of the technology.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "openvector",
+    "description": "There is no information on the environmental, social, and governance risks associated with OpenVector's technology. The evidence does not address any potential risks or sustainability efforts.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not provide details on risk management and ESG practices, which are important for assessing the long-term viability of the business.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "openvector",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "stoa",
+    "description": "The size and potential growth of the AI hardware market are not specified. The evidence only mentions that Stoa is a marketplace for AI hardware but does not provide details on the total addressable market (TAM) for AI infrastructure.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence does not provide quantitative information on the size and growth potential of the AI hardware market.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "stoa",
+    "description": "The pricing model and revenue generation details are not fully clear. The evidence mentions a platform fee on completed transactions but does not specify the fee structure or the revenue per transaction.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide sufficient details on the pricing model and how revenue is generated.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "stoa",
+    "description": "The technology and intellectual property (IP) used by Stoa are not detailed. The evidence does not provide information on the proprietary technology or IP that Stoa uses to operate its marketplace.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide details on the technology and IP used by Stoa.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "stoa",
+    "description": "The risk factors and environmental, social, and governance (ESG) considerations are not addressed. The evidence does not mention any risk factors or ESG considerations related to Stoa's operations.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not provide information on the risk factors or ESG considerations related to Stoa.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "stoa",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "hiloop",
+    "description": "There is no direct evidence of the total addressable market (TAM) or specific customer segments that hiloop targets.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The provided evidence only describes hiloop's services and does not provide information on the market size or customer segments.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hiloop",
+    "description": "There is no direct evidence of hiloop's pricing model, revenue model, or cost structure.",
+    "pillar": "Unit Economics",
+    "rationale": "The provided evidence does not include any details on how hiloop generates revenue, its pricing model, or its cost structure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hiloop",
+    "description": "There is no direct evidence of hiloop's technological innovation, patents, or intellectual property protection.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The provided evidence does not provide any information on hiloop's technological innovations, patents, or IP protection.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "hiloop",
+    "description": "There is no direct evidence of hiloop's environmental, social, and governance (ESG) practices.",
+    "pillar": "Risk / ESG",
+    "rationale": "The provided evidence does not include any information on hiloop's ESG practices or policies.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "hiloop",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "executor",
+    "description": "Total Addressable Market (TAM) size and potential customer base are not quantified in the provided evidence.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence does not provide any numerical estimates or market analysis regarding the size of the potential customer base for Executor.sh.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "executor",
+    "description": "Pricing tiers and revenue model are not detailed in the provided evidence.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence only mentions a free tier and a hosted version but does not provide details on pricing tiers, revenue generation, or unit economics.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "executor",
+    "description": "The technical details and IP protections are not thoroughly explained in the provided evidence.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "While the evidence mentions that Executor is open-source and licensed under MIT, it does not provide detailed technical specifications or information about IP protections.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "executor",
+    "description": "Environmental, Social, and Governance (ESG) factors are not addressed in the provided evidence.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not mention any ESG considerations or practices related to Executor.sh.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "executor",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "gitcafe",
+    "description": "There is no evidence indicating the total addressable market (TAM) or commercial viability for GitCafe's services.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The provided evidence does not include any information about the market size, potential customer base, or revenue model.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "gitcafe",
+    "description": "There is no evidence of pricing strategy, revenue model, or unit economics for GitCafe.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence mentions free private repositories during beta but does not detail future pricing or revenue streams.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "gitcafe",
+    "description": "There is no evidence regarding the technical defensibility or intellectual property status of GitCafe's technology.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence does not provide information on patents, proprietary technology, or competitive differentiation.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "gitcafe",
+    "description": "There is no evidence regarding the environmental, social, and governance (ESG) factors for GitCafe.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not mention any ESG initiatives, policies, or impacts.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "gitcafe",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "tracer",
+    "description": "Lack of information about market size, customer base, or revenue generation.",
+    "pillar": "Commercial / TAM",
+    "rationale": "There is no information about the market size, potential customer base, or revenue generation in the provided evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "tracer",
+    "description": "Lack of information about pricing strategy, cost structure, or profitability.",
+    "pillar": "Unit Economics",
+    "rationale": "There is no information about the company's pricing strategy, cost structure, or profitability in the provided evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "tracer",
+    "description": "Lack of information about the proprietary technology or intellectual property.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "There is no detailed information about the proprietary technology or intellectual property in the provided evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "tracer",
+    "description": "Lack of information about environmental, social, and governance practices.",
+    "pillar": "Risk / ESG",
+    "rationale": "There is no information about the company's environmental, social, and governance practices in the provided evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "tracer",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "decawork",
+    "description": "The Total Addressable Market (TAM) for AI infrastructure is not quantified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not include any quantification of the market size for AI infrastructure.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "decawork",
+    "description": "The revenue model and pricing strategy are not detailed.",
+    "pillar": "Unit Economics",
+    "rationale": "The evidence does not provide information on how Decawork generates revenue or its pricing model.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "decawork",
+    "description": "The technical approach and intellectual property (IP) status are not described.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "There is no detailed explanation of the technology behind Decawork or its IP status in the provided evidence.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "decawork",
+    "description": "The environmental, social, and governance (ESG) risks associated with Decawork are not addressed.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not mention any ESG considerations related to Decawork.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "low"
+  },
+  {
+    "candidate": "decawork",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "synapse-semiconductor",
+    "description": "The target market size and potential commercial viability of Synapse Semiconductor's vision sensors are not specified.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not detail the total addressable market or commercial potential for Synapse Semiconductor's products.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "synapse-semiconductor",
+    "description": "The cost structure, pricing strategy, and profitability of Synapse Semiconductor's products are not disclosed.",
+    "pillar": "Unit Economics",
+    "rationale": "There is no information on the unit economics, such as production costs, selling prices, and profit margins, which are critical for assessing the company's financial health.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "synapse-semiconductor",
+    "description": "The details of Synapse Semiconductor's intellectual property, such as patents or proprietary technology, are not provided.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "While the company claims to have a moat of impossible to copy innovation, there is no evidence of specific patents or proprietary technology that supports this claim.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "synapse-semiconductor",
+    "description": "There is no information on Synapse Semiconductor's environmental, social, and governance practices.",
+    "pillar": "Risk / ESG",
+    "rationale": "The evidence does not cover any aspects of the company's risk management, sustainability efforts, or corporate social responsibility initiatives.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "synapse-semiconductor",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "traceforce",
+    "description": "The market size and target audience for Traceforce's AI security platform are not explicitly stated.",
+    "pillar": "Commercial / TAM",
+    "rationale": "The evidence provided does not include information on the market size or target audience for Traceforce's AI security platform.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "traceforce",
+    "description": "The pricing structure and revenue model of Traceforce are not fully detailed, and the customer acquisition costs are not specified.",
+    "pillar": "Unit Economics",
+    "rationale": "While the pricing plans are outlined, details on the revenue model and customer acquisition costs are missing.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "traceforce",
+    "description": "The technical details and proprietary aspects of Traceforce's AI security platform are not fully disclosed.",
+    "pillar": "Tech / IP Defensibility",
+    "rationale": "The evidence provided does not include technical specifications or details on the intellectual property of Traceforce.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  },
+  {
+    "candidate": "traceforce",
+    "description": "The potential risks and ESG (Environmental, Social, and Governance) considerations associated with Traceforce's operations are not addressed.",
+    "pillar": "Risk / ESG",
+    "rationale": "There is no information provided on the risks or ESG considerations related to Traceforce.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "medium"
+  },
+  {
+    "candidate": "traceforce",
+    "description": "Independent search was rate limited; the memo uses available baseline and first-party sources.",
+    "pillar": "Research availability",
+    "rationale": "Search provider returned a quota response; no provider body was retained.",
+    "resolved": false,
+    "resolved_by_evidence_id": null,
+    "severity": "high"
+  }
+]
