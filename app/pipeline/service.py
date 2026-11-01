@@ -111,12 +111,15 @@ class Pipeline:
         LOGGER.info("run started deep_diligence=%s", deep_diligence)
         if not topic.strip():
             raise AppError("topic cannot be empty", exit_code=2)
+        bedrock_client = self.bedrock_client or (
+            create_bedrock_client() if provider == AIProvider.BEDROCK else None
+        )
         validate_provider_config(
             provider,
             screening_model,
             synthesis_model,
             credentials_required=not (
-                provider == AIProvider.BEDROCK and self.bedrock_client is not None
+                provider == AIProvider.BEDROCK and bedrock_client is not None
             ),
         )
         resolved_screening_model = screening_model_for(provider, screening_model) or ""
@@ -199,6 +202,7 @@ class Pipeline:
                     model=resolved_screening_model,
                     max_tokens=AGENT_REACH.discovery_model_max_tokens,
                     stage="discovery",
+                    bedrock_client=bedrock_client,
                 )
 
             candidates = discover_candidates(
@@ -233,10 +237,6 @@ class Pipeline:
             output / "candidates.json",
             [candidate.model_dump(mode="json") for candidate in candidates],
         )
-
-        bedrock_client = self.bedrock_client
-        if provider == AIProvider.BEDROCK and candidates and bedrock_client is None:
-            bedrock_client = create_bedrock_client()
 
         screenings: list[ScreeningDecision] = []
         gaps: list[dict[str, Any]] = []
