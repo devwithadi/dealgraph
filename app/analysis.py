@@ -13,7 +13,7 @@ import httpx
 from app.logging import request_headers
 from app.models import Analysis, Candidate, DimensionScore, Evidence, Financials
 
-LOGGER = logging.getLogger("ida.analysis")
+LOGGER = logging.getLogger("dealgraph.analysis")
 
 THESIS = (
     "Pre-seed and seed B2B AI companies that replace a frequent, expensive SMB "

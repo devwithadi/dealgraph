@@ -43,7 +43,7 @@ class RequestIdFilter(logging.Filter):
 
 
 def configure_logging(verbose: bool = False) -> logging.Logger:
-    logger = logging.getLogger("ida")
+    logger = logging.getLogger("dealgraph")
     logger.handlers.clear()
     handler = logging.StreamHandler()
     handler.addFilter(RequestIdFilter())
