@@ -37,7 +37,9 @@ DEFAULT_SUBPAGES: tuple[str, ...] = (
 )
 
 _TOKEN_LIKE_TEXT = re.compile(
-    r"\b(?=[A-Za-z0-9]{32,}\b)(?=[A-Za-z0-9]*[A-Za-z])(?=[A-Za-z0-9]*\d)[A-Za-z0-9]+\b"
+    r"\b(?=[A-Za-z0-9]{20,}\b)(?=[A-Za-z0-9]*[A-Za-z])(?=[A-Za-z0-9]*\d)[A-Za-z0-9]+\b"
+    r"|\b(?=[A-Za-z0-9·]{20,}\b)(?=[A-Za-z0-9·]*[A-Za-z])(?=[A-Za-z0-9·]*\d)"
+    r"[A-Za-z0-9]+(?:·[A-Za-z0-9]+){2,}\b"
 )
 
 
