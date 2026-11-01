@@ -4,7 +4,7 @@ import pytest
 
 from app.analysis import calculate_score, recommendation_for, validate_citations
 from app.models import DimensionScore, Evidence
-from app.sources import SourcePolicyError, load_candidates, validate_public_url
+from app.sources import SOURCE_REGISTRY, SourcePolicyError, load_candidates, validate_public_url
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -29,6 +29,15 @@ def test_weighted_score_and_recommendation_are_deterministic() -> None:
     assert recommendation_for(74.9, 0.9) == "Watch"
     assert recommendation_for(90, 0.4) == "Watch"
     assert recommendation_for(59.9, 0.9) == "Pass"
+
+
+def test_score_rejects_duplicate_or_incomplete_rubric() -> None:
+    duplicate = [
+        DimensionScore(name="pain_roi", score=80, weight=50, rationale="x"),
+        DimensionScore(name="pain_roi", score=70, weight=50, rationale="x"),
+    ]
+    with pytest.raises(ValueError, match="rubric"):
+        calculate_score(duplicate)
 
 
 @pytest.mark.parametrize(
@@ -61,5 +70,13 @@ def test_citations_must_reference_real_evidence() -> None:
         )
     ]
     validate_citations(["ev-001"], evidence)
+    with pytest.raises(ValueError, match="citation"):
+        validate_citations([], evidence)
     with pytest.raises(ValueError, match="ev-404"):
         validate_citations(["ev-404"], evidence)
+
+
+def test_source_registry_disables_licensed_scraping() -> None:
+    assert SOURCE_REGISTRY["yc"]["access"] == "public_api"
+    assert SOURCE_REGISTRY["pitchbook"]["enabled"] is False
+    assert SOURCE_REGISTRY["pitchbook"]["access"] == "licensed_api_only"
