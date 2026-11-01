@@ -4,6 +4,8 @@ import httpx
 import pytest
 
 from app.analysis import calculate_score, evidence_confidence, recommendation_for, validate_citations
+from pydantic import ValidationError
+
 from app.models import Candidate, DimensionScore, Evidence
 from app.sources import (
     SOURCE_REGISTRY,
@@ -20,6 +22,18 @@ FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
 def test_yc_filter_normalizes_batch_and_topic() -> None:
     candidates = load_candidates(FIXTURE, topic="AI agents for SMBs", batch="W25", limit=10)
     assert [candidate.slug for candidate in candidates] == ["agentdesk"]
+
+
+@pytest.mark.parametrize("slug", ["../outside", "/tmp/outside", "company/name"])
+def test_candidate_slug_cannot_escape_artifact_directory(slug: str) -> None:
+    with pytest.raises(ValidationError):
+        Candidate(
+            slug=slug,
+            name="Unsafe",
+            website="https://example.com",
+            one_liner="AI",
+            source_url="https://example.com/source",
+        )
 
 
 def test_weighted_score_and_recommendation_are_deterministic() -> None:
