@@ -2,9 +2,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from app.cli import main
-from app.errors import AppError
-from app.models import RunSummary
+from dealgraph.cli.main import main
+from dealgraph.core.errors import AppError
+from dealgraph.domain.models import RunSummary
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -14,7 +14,7 @@ def test_cli_offline_replay_creates_memos(tmp_path: Path) -> None:
     command = [
         sys.executable,
         "-m",
-        "app.cli",
+        "dealgraph.cli.main",
         "run",
         "--topic",
         "AI agents for SMBs",
@@ -70,12 +70,12 @@ def test_cli_main_emits_json_only_when_requested(tmp_path: Path, capsys) -> None
 
 
 def test_cli_centralizes_expected_errors(monkeypatch, capsys) -> None:
-    monkeypatch.setattr("app.cli.new_request_id", lambda: "req-test")
+    monkeypatch.setattr("dealgraph.cli.main.new_request_id", lambda: "req-test")
 
     def fail(*_args, **_kwargs):
         raise AppError("candidate source unavailable", exit_code=3)
 
-    monkeypatch.setattr("app.cli.Pipeline.run", fail)
+    monkeypatch.setattr("dealgraph.cli.main.Pipeline.run", fail)
     exit_code = main(["run", "--topic", "AI", "--offline"])
 
     captured = capsys.readouterr()
@@ -132,9 +132,9 @@ def test_missing_source_file_uses_central_error_boundary(tmp_path: Path, capsys)
 
 
 def test_cli_returns_failure_when_any_candidate_fails(monkeypatch, tmp_path: Path, capsys) -> None:
-    monkeypatch.setattr("app.cli.new_request_id", lambda: "req-partial")
+    monkeypatch.setattr("dealgraph.cli.main.new_request_id", lambda: "req-partial")
     monkeypatch.setattr(
-        "app.cli.Pipeline.run",
+        "dealgraph.cli.main.Pipeline.run",
         lambda *_args, **_kwargs: RunSummary(
             run_id="run-1",
             request_id="req-partial",

@@ -4,10 +4,11 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.logging import configure_logging
-from app.models import Candidate
-from app.pipeline import Pipeline
-from app.sources import SafeFetcher, SourcePolicyError, hn_evidence
+from dealgraph.core.logging import configure_logging
+from dealgraph.domain.models import Candidate
+from dealgraph.pipeline.service import Pipeline
+from dealgraph.sourcing.evidence import hn_evidence
+from dealgraph.sourcing.policy import SafeFetcher, SourcePolicyError
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
@@ -142,7 +143,10 @@ def test_offline_pipeline_never_uses_network(tmp_path: Path, monkeypatch) -> Non
 def test_verbose_pipeline_logs_unexpected_candidate_traceback(
     tmp_path: Path, monkeypatch, capsys
 ) -> None:
-    monkeypatch.setattr("app.pipeline.render_memo", lambda *_args: (_ for _ in ()).throw(RuntimeError("render broke")))
+    monkeypatch.setattr(
+        "dealgraph.pipeline.service.render_memo",
+        lambda *_args: (_ for _ in ()).throw(RuntimeError("render broke")),
+    )
     configure_logging(verbose=True)
 
     result = Pipeline().run(
