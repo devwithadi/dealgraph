@@ -2,61 +2,61 @@
   {
     "advance": false,
     "fit_score": 10.0,
-    "rationale": "Silicon production in space is unrelated to AI agents for SMBs.",
+    "rationale": "Relevant technology but not focused on AI agents for SMBs or replacing workflows.",
     "slug": "ethos-space-resources"
   },
   {
     "advance": false,
     "fit_score": 10.0,
-    "rationale": "AI traders in trading firms do not directly apply to AI agents for SMB workflows.",
+    "rationale": "AI traders in asset management, not directly related to SMB workflows or AI agents.",
     "slug": "spectre-intelligence"
   },
   {
     "advance": false,
-    "fit_score": 0.0,
-    "rationale": "Military exoskeletons are not related to AI agents for SMBs.",
+    "fit_score": 10.0,
+    "rationale": "Focuses on military exoskeletons, not related to AI agents for SMBs.",
     "slug": "edgerun"
   },
   {
     "advance": true,
-    "fit_score": 80.0,
-    "rationale": "AI agents for insurance brokers directly match the requested topic and investment thesis.",
+    "fit_score": 70.0,
+    "rationale": "AI agents for insurance brokers could replace data entry workflows in SMBs, showing value quickly.",
     "slug": "covera"
   },
   {
     "advance": false,
     "fit_score": 10.0,
-    "rationale": "AI in mental health services does not align with AI agents for SMBs.",
+    "rationale": "Focuses on mental health services, not directly related to AI agents for SMB workflows.",
     "slug": "allia-health"
   },
   {
     "advance": false,
-    "fit_score": 0.0,
-    "rationale": "Infrastructure demand in government is not related to AI agents for SMBs.",
+    "fit_score": 10.0,
+    "rationale": "Government focus, not related to AI agents for SMBs.",
     "slug": "capveon"
   },
   {
     "advance": false,
-    "fit_score": 10.0,
-    "rationale": "Market prediction models do not match the requested topic of AI agents for SMBs.",
+    "fit_score": 20.0,
+    "rationale": "Predictive market models, not directly focused on AI agents for SMB workflows.",
     "slug": "studio"
   },
   {
     "advance": true,
-    "fit_score": 90.0,
-    "rationale": "An AI coworker in collaboration tools aligns with AI agents for SMB workflows.",
+    "fit_score": 80.0,
+    "rationale": "AI coworker in Slack and Teams could replace workflow tasks in SMBs, showing value quickly.",
     "slug": "gini"
   },
   {
     "advance": false,
-    "fit_score": 0.0,
-    "rationale": "Hardware testing tools are not related to AI agents for SMBs.",
+    "fit_score": 10.0,
+    "rationale": "Focuses on AI for hardware and software testing, not directly related to SMB AI agents.",
     "slug": "hilstart"
   },
   {
-    "advance": false,
-    "fit_score": 10.0,
-    "rationale": "Automated recruiting platforms do not match the requested topic of AI agents for SMBs.",
+    "advance": true,
+    "fit_score": 75.0,
+    "rationale": "AI for the hiring process could replace a frequent, expensive workflow in SMBs, showing quick value.",
     "slug": "lantern-ai"
   }
 ]

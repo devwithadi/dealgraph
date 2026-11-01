@@ -94,6 +94,9 @@ or rejected trade-offs.
   public-IP validation for search-result citations. Scraped token-like strings are redacted before
   they can reach artifacts. Build, dependency, coverage, diff, artifact-secret, and PDF
   layout/link checks were run before handoff.
+- The exact hardened commit then completed a fresh live smoke run: 10/10 candidates screened,
+  3 finalists (`Covera`, `Gini`, and `Lantern AI`), 3/3 one-page PDFs, and zero failures. That run
+  replaced the earlier two-company example under `examples/ai-agents-smb/`.
 
 ## Human follow-up still required
 

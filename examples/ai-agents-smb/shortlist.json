@@ -8,7 +8,13 @@
   {
     "confidence": 0.7,
     "recommendation": "Watch",
-    "score": 68.5,
+    "score": 60.0,
     "slug": "gini"
+  },
+  {
+    "confidence": 0.6,
+    "recommendation": "Watch",
+    "score": 65.5,
+    "slug": "lantern-ai"
   }
 ]
