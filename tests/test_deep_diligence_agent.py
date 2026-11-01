@@ -151,6 +151,22 @@ def test_evaluator_identifies_and_resolves_gaps(mock_candidate: Candidate) -> No
     )
     assert commercial_gap.resolved is False
 
+    verified_commercial = [
+        first_party_commercial[0].model_copy(
+            update={
+                "source_url": "https://sec.gov/filing",
+                "source_type": "regulatory",
+                "status": CitationTag.VERIFIED,
+            }
+        )
+    ]
+    verified_gap = next(
+        gap
+        for gap in evaluate_evidence_gaps(mock_candidate, verified_commercial)
+        if gap.pillar == DiligencePillar.COMMERCIAL_TAM.value
+    )
+    assert verified_gap.resolved is True
+
     # 2. Comprehensive evidence resolving all pillars
     full_evidence = [
         Evidence(
@@ -401,6 +417,49 @@ def test_rate_limit_is_safe_and_stops_repeated_search_calls(
     event = next(data for name, data in events if name == "diligence_search_unavailable")
     assert event["status"] == "rate_limited"
     assert "secret-provider-body" not in str(event)
+
+
+def test_rate_limit_keeps_evidence_collected_earlier_in_the_hop(
+    mock_candidate: Candidate,
+    mock_initial_evidence: list[Evidence],
+) -> None:
+    calls = 0
+
+    def partial_search(cand: Candidate, query: SearchQuery, start_id: int) -> list[Evidence]:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return [
+                Evidence(
+                    id=f"ev-{start_id:03d}",
+                    claim="Independent customer traction",
+                    excerpt=f"{cand.name} signed 12 enterprise customers.",
+                    source_url="https://news.example/nexus-traction",
+                    source_title="Independent traction report",
+                    source_type="deep_diligence_search",
+                    trust_tier="open_web",
+                    verification="multi_hop_search",
+                    status=CitationTag.TRUSTED,
+                )
+            ]
+        raise SourcePolicyError("Independent search rate limited")
+
+    scraper = WebFetchTool(
+        client=httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(404, request=req))),
+        url_validator=lambda url: url,
+    )
+    state = DeepDiligenceAgent(search_fn=partial_search, scraper_tool=scraper).run(
+        mock_candidate,
+        "Enterprise AI",
+        initial_evidence=mock_initial_evidence,
+    )
+
+    assert calls == 2
+    assert any(item.source_url == "https://news.example/nexus-traction" for item in state.evidence)
+    commercial_gap = next(
+        gap for gap in state.gaps if gap.pillar == DiligencePillar.COMMERCIAL_TAM.value
+    )
+    assert commercial_gap.resolved is True
 
 
 def test_is_allowed_url_edge_cases() -> None:
