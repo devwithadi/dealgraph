@@ -11,7 +11,7 @@ class FrozenModel(BaseModel):
 
 
 class Candidate(FrozenModel):
-    slug: str
+    slug: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
     name: str
     website: str
     one_liner: str
@@ -76,6 +76,7 @@ class Analysis(FrozenModel):
 
 class RunSummary(FrozenModel):
     run_id: str
+    request_id: str
     output: str
     candidates: int
     succeeded: int
