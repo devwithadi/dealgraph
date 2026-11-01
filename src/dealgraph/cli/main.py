@@ -4,9 +4,9 @@ import argparse
 import json
 from pathlib import Path
 
-from app.errors import AppError, report_cli_error
-from app.logging import bind_request_id, configure_logging, new_request_id
-from app.pipeline import Pipeline
+from dealgraph.core.errors import AppError, report_cli_error
+from dealgraph.core.logging import bind_request_id, configure_logging, new_request_id
+from dealgraph.pipeline.service import Pipeline
 
 
 def build_parser() -> argparse.ArgumentParser:

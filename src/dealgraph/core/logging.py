@@ -8,7 +8,7 @@ from contextvars import ContextVar
 from typing import Mapping
 from uuid import uuid4
 
-from app.errors import AppError
+from dealgraph.core.errors import AppError
 
 USER_AGENT = "DealGraph/0.1.0 (public research; contact in repository)"
 _request_id: ContextVar[str] = ContextVar("request_id", default="unbound")

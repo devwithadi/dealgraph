@@ -1,0 +1,1 @@
+"""Trusted public-source collection."""

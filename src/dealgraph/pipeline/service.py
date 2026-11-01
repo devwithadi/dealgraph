@@ -11,22 +11,16 @@ from typing import Callable
 
 import httpx
 
-from app.analysis import analyze
-from app.errors import AppError
-from app.logging import bind_request_id, request_headers
-from app.memo import render_memo
-from app.models import RunSummary
-from app.sources import (
-    HN_URL,
-    YC_URL,
-    SafeFetcher,
-    SourcePolicyError,
-    filter_candidates,
-    hn_evidence,
-    load_candidates,
-    website_evidence,
-    yc_evidence,
-)
+from dealgraph.analysis.service import analyze
+from dealgraph.core.errors import AppError
+from dealgraph.core.logging import bind_request_id, request_headers
+from dealgraph.domain.enums import AnalysisMode
+from dealgraph.domain.models import RunSummary
+from dealgraph.reporting.memo import render_memo
+from dealgraph.sourcing.candidates import filter_candidates, load_candidates
+from dealgraph.sourcing.evidence import hn_evidence, website_evidence, yc_evidence
+from dealgraph.sourcing.policy import SafeFetcher, SourcePolicyError
+from dealgraph.sourcing.registry import HN_URL, YC_URL
 
 LOGGER = logging.getLogger("dealgraph.pipeline")
 
@@ -85,7 +79,7 @@ class Pipeline:
 
         succeeded = 0
         gaps: list[dict[str, str]] = []
-        modes: set[str] = set()
+        modes: set[AnalysisMode] = set()
         fetcher = SafeFetcher(self.client, self.resolver) if self.resolver else SafeFetcher(self.client)
         for candidate in candidates:
             try:
@@ -117,7 +111,11 @@ class Pipeline:
                 gaps.append({"candidate": candidate.slug, "stage": "pipeline", "error": str(error)})
 
         run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        analysis_mode = "openai" if "openai" in modes else "deterministic_fallback"
+        analysis_mode = (
+            AnalysisMode.OPENAI
+            if AnalysisMode.OPENAI in modes
+            else AnalysisMode.DETERMINISTIC_FALLBACK
+        )
         _write_json(
             output / "manifest.json",
             {
@@ -129,7 +127,7 @@ class Pipeline:
                 "candidate_source": source,
                 "evidence_sources": [YC_URL, HN_URL, "company public websites"],
                 "analysis_mode": analysis_mode,
-                "model": os.getenv("OPENAI_MODEL") if analysis_mode == "openai" else None,
+                "model": os.getenv("OPENAI_MODEL") if analysis_mode == AnalysisMode.OPENAI else None,
                 "prompt_version": "analysis-v1",
                 "candidates": len(candidates),
                 "succeeded": succeeded,

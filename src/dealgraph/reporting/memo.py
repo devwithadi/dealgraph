@@ -1,6 +1,6 @@
 """Render the one artifact an investment partner should need to read."""
 
-from app.models import Analysis, Candidate, Evidence
+from dealgraph.domain.models import Analysis, Candidate, Evidence
 
 
 def render_memo(candidate: Candidate, analysis: Analysis, evidence: list[Evidence]) -> str:

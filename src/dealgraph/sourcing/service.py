@@ -15,9 +15,9 @@ from urllib.robotparser import RobotFileParser
 
 import httpx
 
-from app.errors import AppError
-from app.logging import USER_AGENT, request_headers
-from app.models import Candidate, Evidence
+from dealgraph.core.errors import AppError
+from dealgraph.core.logging import USER_AGENT, request_headers
+from dealgraph.domain.models import Candidate, Evidence
 
 YC_URL = "https://yc-oss.github.io/api/companies/all.json"
 HN_URL = "https://hn.algolia.com/api/v1/search_by_date"

@@ -1,9 +1,9 @@
 """Small immutable contracts shared by the pipeline."""
 
 from datetime import datetime, timezone
-from typing import Literal
-
 from pydantic import BaseModel, ConfigDict, Field
+
+from dealgraph.domain.enums import AnalysisMode, Recommendation
 
 
 class FrozenModel(BaseModel):
@@ -70,8 +70,8 @@ class Analysis(FrozenModel):
     dimensions: list[DimensionScore]
     score: float
     confidence: float = Field(ge=0, le=1)
-    recommendation: Literal["Pass", "Watch", "Take a meeting"]
-    analysis_mode: str
+    recommendation: Recommendation
+    analysis_mode: AnalysisMode
 
 
 class RunSummary(FrozenModel):
