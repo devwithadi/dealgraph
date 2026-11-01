@@ -245,13 +245,13 @@ class DeepDiligenceAgent:
                     )
                 )
 
-            if availability_gap is not None:
-                break
-
             current_evidence.extend(hop_new_evidence)
             current_gaps = evaluate_evidence_gaps(candidate, current_evidence, topic)
             resolved_count = sum(1 for g in current_gaps if g.resolved)
             unresolved_count = sum(1 for g in current_gaps if not g.resolved)
+
+            if availability_gap is not None:
+                break
 
             self._emit(
                 "diligence_hop_complete",

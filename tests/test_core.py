@@ -456,7 +456,7 @@ def test_candidate_evidence_does_not_label_hacker_news_as_yc_verified() -> None:
         update={"source_url": "https://news.ycombinator.com/item?id=123"}
     )
 
-    item = candidate_evidence(hn_candidate)[0]
+    item = candidate_evidence(hn_candidate, resolver=lambda _host: ["93.184.216.34"])[0]
 
     assert item.source_type == "hacker_news"
     assert item.trust_tier == "public_community"
