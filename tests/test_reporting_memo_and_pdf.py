@@ -153,19 +153,20 @@ def test_citation_transformation() -> None:
         ),
     }
 
-    raw_text = "Founded in 2026 [ev-001]. Benchmark score is 99% [ev-002]. Multiple [ev-001][ev-002]. Missing citation [ev-999]."
+    raw_text = "Founded in 2026 [ev-001]. Benchmark score is 99% [ev-002]. Multiple [ev-001][ev-002]. Composite [ev-001, ev-002]. Missing citation [ev-999]."
     transformed = transform_citations(raw_text, ev_map)
 
     assert "[[1] ↗](https://ycombinator.com/companies/vortex)" in transformed
     assert "[[2] ↗](https://benchmarks.io/test)" in transformed
     assert "[[1] ↗](https://ycombinator.com/companies/vortex)[[2] ↗](https://benchmarks.io/test)" in transformed
+    assert "[[1] ↗](https://ycombinator.com/companies/vortex) [[2] ↗](https://benchmarks.io/test)" in transformed
     assert "[[EV-999] ↗](#auditable-sources)" in transformed
     assert transform_citations("", ev_map) == ""
 
     # Test PDF citation transformation
     pdf_transformed = _transform_citations_for_pdf(raw_text, ev_map)
-    assert '<a href="https://ycombinator.com/companies/vortex" color="#2563EB"><b>[1] ↗</b></a>' in pdf_transformed
-    assert '<a href="https://benchmarks.io/test" color="#2563EB"><b>[2] ↗</b></a>' in pdf_transformed
+    assert '<a href="https://ycombinator.com/companies/vortex" color="#2563EB"><b>[1] &#8599;</b></a>' in pdf_transformed
+    assert '<a href="https://benchmarks.io/test" color="#2563EB"><b>[2] &#8599;</b></a>' in pdf_transformed
     assert '<font color="#64748B"><b>[EV-999]</b></font>' in pdf_transformed
     assert _transform_citations_for_pdf("", ev_map) == ""
 

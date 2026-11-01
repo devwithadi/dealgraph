@@ -27,6 +27,13 @@ SOURCE_REGISTRY = {
         "evidence_type": "hacker_news",
         "manifest": HN_URL,
     },
+    "product_hunt": {
+        "access": "agent_reach_scraper",
+        "trust": "product_community",
+        "enabled": True,
+        "evidence_type": "product_hunt",
+        "manifest": "Product Hunt Discovery",
+    },
     "company_website": {
         "access": "public_html",
         "trust": "first_party_self_reported",
