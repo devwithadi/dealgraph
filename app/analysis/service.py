@@ -90,18 +90,22 @@ def _evidence_confidence(evidence: list[Evidence]) -> float:
         if (host := (urlsplit(item.source_url).hostname or "").lower())
     }
     source_types = {item.source_type for item in evidence}
+    has_independent = CitationTag.TRUSTED in statuses or any(
+        item.status == CitationTag.VERIFIED and item.source_type == "regulatory"
+        for item in evidence
+    )
     financials = _financials(evidence)
     score = sum(
         (
             0.25 if statuses & {CitationTag.VERIFIED, CitationTag.TRUSTED} else 0,
-            0.25 if CitationTag.TRUSTED in statuses else 0,
+            0.25 if has_independent else 0,
             0.15 if len(hosts) >= 2 else 0,
             0.15 if len(evidence) >= 3 else 0,
             0.10 if len(source_types) >= 2 else 0,
             0.10 if financials.evidence_ids else 0,
         )
     )
-    return round(score, 2)
+    return round(score if has_independent else min(score, 0.65), 2)
 
 
 def screen_candidates(
