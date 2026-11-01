@@ -21,6 +21,7 @@ from app.analysis.diligence.tools.scraper import WebFetchTool
 from app.analysis.diligence.agent import default_live_search
 from app.domain.models import Candidate, Evidence
 from app.domain.enums import CitationTag
+from app.sourcing.policy import SourcePolicyError
 
 
 @pytest.fixture
@@ -359,6 +360,47 @@ def test_default_live_search_error_handling(mock_candidate: Candidate) -> None:
         return subprocess.CompletedProcess(args=args, returncode=1, stdout="", stderr="error")
 
     assert default_live_search(mock_candidate, query_item, start_id=1, runner=error_runner) == []
+
+
+def test_rate_limit_is_safe_and_stops_repeated_search_calls(
+    mock_candidate: Candidate,
+    mock_initial_evidence: list[Evidence],
+) -> None:
+    calls = 0
+    events: list[tuple[str, dict]] = []
+
+    def rate_limited_runner(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return subprocess.CompletedProcess(
+            args=args,
+            returncode=1,
+            stdout="",
+            stderr="HTTP 429 quota exhausted secret-provider-body",
+        )
+
+    query = SearchQuery(query="Nexus AI customers", pillar=DiligencePillar.COMMERCIAL_TAM.value)
+    with pytest.raises(SourcePolicyError, match="rate limited"):
+        default_live_search(mock_candidate, query, 2, runner=rate_limited_runner)
+
+    calls = 0
+    scraper = WebFetchTool(
+        client=httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(404, request=req))),
+        url_validator=lambda url: url,
+    )
+    state = DeepDiligenceAgent(
+        runner=rate_limited_runner,
+        scraper_tool=scraper,
+        progress_callback=lambda event, data: events.append((event, data)),
+    ).run(mock_candidate, "Enterprise AI", initial_evidence=mock_initial_evidence)
+
+    assert calls == 1
+    availability_gap = next(gap for gap in state.gaps if gap.pillar == "Research availability")
+    assert availability_gap.resolved is False
+    assert availability_gap.severity == "high"
+    event = next(data for name, data in events if name == "diligence_search_unavailable")
+    assert event["status"] == "rate_limited"
+    assert "secret-provider-body" not in str(event)
 
 
 def test_is_allowed_url_edge_cases() -> None:
