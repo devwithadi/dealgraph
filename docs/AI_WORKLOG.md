@@ -51,3 +51,5 @@ AI produced the implementation and tests. The scoring thesis, trust policy, and 
 - Verified the current Bedrock Converse request/response contract against official AWS documentation before implementation.
 - `7bafa70`: RED — tests defined Bedrock-default selection, Converse metadata, manifest provenance, and a configurable OpenAI base URL.
 - `227622a`: GREEN — added direct Bedrock/OpenAI/deterministic dispatch, Bedrock request metadata, HTTPS OpenAI base URL validation, and Boto3 support without provider factories.
+- `ddc8bc4` and `2aef38a`: RED — covered private OpenAI gateway rejection, fail-fast configuration, offline AWS-client isolation, and mixed-provider provenance.
+- `1cf902a`: GREEN — centralized public target validation, blocked private/custom-port credential exfiltration, and recorded mixed analysis modes accurately. Final verification: 43 tests, 90.88% coverage, compatible dependencies, and successful wheel/source builds.
