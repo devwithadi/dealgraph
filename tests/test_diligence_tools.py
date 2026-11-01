@@ -168,10 +168,16 @@ def test_scraper_extract_html_text() -> None:
 
 def test_scraper_redacts_token_like_page_text() -> None:
     token = f"{'A' * 32}{'7' * 16}"
+    compact_token = "03RaJHSJNDBJERUGBEIPGSCMS"
+    segmented_token = "d94k·77f2e01x·b344qz·af8c·02"
 
-    _title, text = extract_html_text(f"<html><body>Security {token} overview</body></html>")
+    _title, text = extract_html_text(
+        f"<html><body>Security {token} {compact_token} {segmented_token} overview</body></html>"
+    )
 
     assert token not in text
+    assert compact_token not in text
+    assert segmented_token not in text
     assert "[redacted token-like text]" in text
 
 
