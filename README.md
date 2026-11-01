@@ -16,6 +16,26 @@ The investment thesis is deliberately narrow: pre-seed and seed B2B AI companies
 frequent, expensive SMB workflow, show value quickly, and compound an advantage through
 integrations, data, or distribution.
 
+## The Problem & Why DealGraph
+
+### 1. The Problem We Are Solving
+Early-stage venture deal discovery and triage are flooded with noisy, high-volume inputs. Accelerators, incubator batches (such as YC), and public launch directories produce hundreds of candidate companies simultaneously. Thoroughly reviewing each candidate requires manual research across disparate sources—founder profiles, product pages, pricing models, and independent validation—creating an unsustainable bottleneck for investors, leading to either superficial skimming or missed high-potential deals.
+
+### 2. The Exact Reason
+Generic LLM tools and off-the-shelf "AI research agents" fail catastrophically in investment screening due to four structural flaws:
+- **Uncorroborated Marketing Claims**: Naive models treat founder claims and website marketing copy as verified facts rather than unvalidated assertions.
+- **Metric Hallucination & Inflation**: When financial, pricing, or team data is missing, language models routinely hallucinate estimates or invent plausible traction numbers.
+- **Non-Deterministic Scoring**: Asking an LLM to "score this deal from 1 to 10" yields arbitrary, drift-prone numbers that cannot be calibrated or compared across candidates.
+- **No Verifiable Audit Trail**: Standard chat tools output freeform text with no structured evidence links, leaving investment committees unable to verify claims against primary sources.
+
+### 3. Why We Are Doing This
+DealGraph was built to enforce an **evidence-first, deterministic, and auditable pipeline** for early-stage investment analysis:
+- **Thesis-Driven Sourcing**: Systematically filters candidates against an explicit, narrow thesis rather than generic industry tags.
+- **Independent Evidence Verification**: Multi-pillar research prioritizes third-party proof over claimed founder copy, penalizing unverified marketing statements.
+- **Explicit Missing Information**: Undisclosed details remain strictly `Not disclosed` or `Unknown`—hallucination is blocked at the schema level.
+- **Deterministic Python Scoring**: LLMs extract cited facts, but Python code validates evidence IDs, enforces dimension weights, and computes final scores and recommendations (`Take a meeting`, `Watch`, `Pass`).
+- **Auditable Artifacts**: Every run generates cited, structurally single-page PDF memos along with complete, reviewer-visible JSON trails for every decision.
+
 ## Run it
 
 Python 3.10+, `uv`, and valid credentials for the selected model provider are required.
