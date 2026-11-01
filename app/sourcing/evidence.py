@@ -22,7 +22,7 @@ def yc_evidence(candidate: Candidate) -> list[Evidence]:
         Evidence(
             id="ev-001",
             claim="YC company profile",
-            excerpt=" ".join(filter(None, facts))[:1200],
+            excerpt=" ".join(filter(None, facts))[:2500],
             source_url=candidate.source_url,
             source_title=f"YC profile: {candidate.name}",
             source_type="yc_directory",
@@ -108,7 +108,7 @@ def agent_reach_evidence(
             Evidence(
                 id=f"ev-{start + len(evidence):03d}",
                 claim=f"Agent Reach search result: {title.group(1).strip()}",
-                excerpt=" ".join(highlights.split())[:1200],
+                excerpt=" ".join(highlights.split())[:2500],
                 source_url=url.group(1),
                 source_title=title.group(1).strip(),
                 source_type="agent_reach",

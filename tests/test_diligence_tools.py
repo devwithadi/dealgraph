@@ -141,6 +141,47 @@ def test_scraper_extract_html_text() -> None:
     assert "var x = 123" not in text
 
 
+def test_scraper_extract_rich_structured_signals() -> None:
+    html_sample = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>OmniFlow Pricing & Team</title>
+    </head>
+    <body>
+        <section class="pricing">
+            <h2>Pricing Plans</h2>
+            <div class="tier">Starter: $49/mo with 5 users</div>
+            <div class="tier">Pro: $199/month billed annually</div>
+            <div class="tier">Enterprise: Custom pricing for unlimited seats</div>
+        </section>
+        <section class="team">
+            <h2>Leadership</h2>
+            <p>Jane Doe, CEO & Co-founder, previously Staff Engineer at Google and Stanford PhD.</p>
+            <p>John Smith, CTO, ex-OpenAI Research Lead.</p>
+        </section>
+        <section class="testimonials">
+            <p>"OmniFlow reduced our query latency by 85%." — VP of Eng, Fortune 500 Bank</p>
+        </section>
+        <section class="integrations">
+            <p>Seamless integrations with Slack, Salesforce, Snowflake, and AWS Postgres.</p>
+        </section>
+    </body>
+    </html>
+    """
+    title, text = extract_html_text(html_sample)
+    assert "OmniFlow Pricing & Team" in title
+    assert "[PRICING & TIERS]" in text
+    assert "$49/mo" in text
+    assert "[TEAM & FOUNDERS]" in text
+    assert "Jane Doe" in text
+    assert "[CUSTOMER TESTIMONIALS & TRACTION]" in text
+    assert "OmniFlow reduced our query latency" in text
+    assert "[INTEGRATIONS & ECOSYSTEM]" in text
+    assert "Slack" in text
+
+
+
 def test_scraper_tool_fetches_and_creates_evidence(test_candidate: Candidate) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         content = "<html><head><title>Strata Product</title></head><body>Enterprise data lake indexing.</body></html>"
@@ -200,10 +241,10 @@ def test_scraper_tool_scrape_candidate_pages(test_candidate: Candidate) -> None:
         on_page_scraped=lambda subpage, title, length: scraped_events.append((subpage, title, length)),
     )
 
-    assert len(evidence_list) == 6
+    assert len(evidence_list) == 8
     assert all(e.source_type == "web_scraper" for e in evidence_list)
     assert all(e.status == CitationTag.CLAIMED for e in evidence_list)
-    assert len(scraped_events) == 6
+    assert len(scraped_events) == 8
 
     # Test with empty website
     empty_cand = Candidate(

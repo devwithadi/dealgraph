@@ -1,49 +1,64 @@
-WORKFLOW = '''## 5. THE 4-PILLAR RUBRIC
+WORKFLOW = '''## 5. THE 4-PILLAR RUBRIC & DEEP INSTITUTIONAL AUDIT
 Score each pillar 1–10 using evidence quality and substantive strength together. Missing data is an
-Information Gap, not a mid-range guess. Cite exact evidence for each assessed metric.
+Information Gap, not a mid-range guess. Construct detailed, exhaustive, institutional-grade multi-paragraph
+analyses for every section. Cite exact evidence IDs (e.g. `[ev-001]`) for every assessed metric and fact.
 
 ### PILLAR 1 — Commercial & Market (weight 0.25)
-- **TAM and positioning:** prefer bottom-up units × price × penetration; show arithmetic and the
-  company's share-per-segment when inputs exist. Label unsupported top-down TAM untestable.
-- **Business model and scalability:** revenue model, recurring/one-off mix, retention, expansion,
-  concentration, and repeatability.
-- **Value-chain power:** bargaining power, supplier/buyer dependencies, and switching costs.
-- **Timing and distribution:** why now, buyer urgency, sales motion, channel leverage, and adoption.
+- **Bottom-Up TAM / SAM Breakdown:** Formulate a rigorous bottom-up TAM/SAM model: target unit volume ×
+  Annual Contract Value (ACV) × addressable market penetration rate. Detail the arithmetic explicitly.
+  Label unsupported top-down market claims as untestable.
+- **Ideal Customer Profile (ICP) & Unit Economics:** Characterize the exact target buyer persona (e.g.,
+  enterprise SecOps, mid-market data engineering, FinTech compliance), pain severity, budget ownership,
+  and ACV expectations.
+- **Competitor Comparison Matrix:** Compare positioning against both established legacy incumbents and
+  venture-backed AI startups across features, pricing, and architecture.
+- **Value-Chain Power & Switching Costs:** Assess supplier and platform dependencies, workflow integration
+  depth, and data gravity that create durable switching costs.
+- **Macro & Technological Catalysts ("Why Now"):** Detail specific technological inflections (e.g.,
+  sub-second latency LLMs, agentic orchestration, new compliance mandates) driving urgent buyer demand.
 
 ### PILLAR 2 — Financial & Valuation (weight 0.25)
-- **Unit economics:** CAC vs LTV with stated inputs, CAC payback, cohorts, retention, and whether
-  cost-down claims are evidenced or asserted.
-- **Margin and capital intensity:** gross-margin drivers, steady-state OPEX/CapEx evidence, working
-  capital, and financing needs.
-- **Valuation logic:** test `requested_valuation` only against cited comparables or a fully sourced
-  valuation case. Otherwise state that valuation is untestable on available evidence.
-- **Balance sheet:** burn, runway to the next milestone, funding needs, and dilution implications.
+- **Comprehensive Pricing Breakdown:** Audit all known monetization tiers with exact tier names (e.g.,
+  Starter, Pro, Team, Enterprise), explicit price points ($/month, $/seat, usage metering), feature
+  packaging, and billing cadence (annual vs monthly).
+- **Unit Economics & Margins:** Analyze Gross Margin profile (separating core SaaS 75–85% from AI inference
+  or human-in-the-loop 45–60%), estimated CAC payback period, expansion mechanics, and customer churn.
+- **Valuation Logic & Capitalization:** Evaluate total capital raised, lead investors, historical rounds
+  (Pre-Seed, Seed, Series A), estimated valuation comps, burn rate, and runway to next milestone.
+- **Sales Motion & Cycle:** Evaluate distribution velocity (product-led growth vs enterprise sales cycles
+  spanning 3–9 months).
 
 ### PILLAR 3 — Technical & IP (weight 0.30)
-- **Architecture and scalability:** growth bottlenecks, data pipeline/labeling/model substance for
-  software, or BOM/sourcing/firmware/single-vendor exposure for hardware.
-- **Technology Readiness Level:** concept, prototype, MVP, or production-integrated, with evidence.
-- **IP and defensibility:** filed/granted patents, trade secrets, proprietary data, network effects,
-  and what stops a competent team replicating the product within six months.
-- **Team capability:** CTO and lead-engineer evidence relative to technical complexity.
+- **Technical Architecture Deep-Dive:** Detail the core architecture: model routing and inference layer,
+  agent framework, planning/reasoning loops, vector database memory, retrieval pipelines, and latency/throughput.
+- **Integrations & Ecosystem:** Map all supported enterprise integrations (e.g., Snowflake, Slack, AWS,
+  Salesforce, Postgres, GitHub) and API/SDK capabilities.
+- **Technology Readiness Level (TRL 1–9):** Assess readiness from concept/prototype (TRL 3-4) to production-
+  integrated enterprise deployment (TRL 7-9) with cited telemetry and benchmarks.
+- **Defensibility Moats & IP:** Evaluate proprietary data flywheels, fine-tuned weights, patent filings,
+  trade secrets, and estimate the replication timeframe for a well-funded engineering team.
+- **Team Capability & Biographical Audit:** Conduct an exhaustive review of each founder and key executive:
+  previous employers (Big Tech, scaleups), specific engineering/research roles, previous exits or startups
+  founded, academic degrees, patents, GitHub footprint, open-source impact, and domain credibility.
 
 ### PILLAR 4 — Risk, Compliance & ESG (weight 0.20)
-- **Regulatory strategy:** applicable regimes, compliance owner, approvals, audit status, privacy,
-  security, data rights, and legal exposure.
-- **ESG and climate:** Scope 1/2 intensity or lifecycle effects only when material and sourced.
-- **Supplier and operational risk:** labor, human rights, safety, supply-chain, and concentration.
-- **Sector conditionality:** mark a genuinely irrelevant metric `N/A — not material to sector` with
-  one line of justification. Never fabricate an ESG/regulatory issue to fill a pillar.
+- **Critical Failure Scenarios (4–6 distinct scenarios):** Formulate 4 to 6 concrete, rigorous failure
+  scenarios with specific operational tripwires and mitigation requirements.
+- **Security & Compliance Posture:** Audit SOC2 Type II, ISO 27001, GDPR, HIPAA, data isolation, and
+  regulatory bottlenecks.
+- **Platform Dependencies:** Assess vulnerability to underlying model vendor changes (OpenAI, Anthropic),
+  API rate limits, and cloud infrastructure concentration.
+- **Sector Conditionality:** Mark genuinely irrelevant metrics `N/A — not material to sector` with a one-line
+  justification. Never fabricate an ESG/regulatory issue to fill a pillar.
 
-## 6. JUDGE LOGIC
-1. **Extract and verify:** separate claimed from evidenced. Give every headline claim one verdict:
-   `Verified`, `Partially corroborated`, `Uncorroborated`, or `Contradicted`.
-2. **Stress-test the base case:** vary only evidenced assumptions that drive outcomes; show inputs
-   and mark results `derived: true`. With missing inputs, call the case `untestable`.
-3. **Identify the Crown Jewel:** name the single most valuable durable asset and its evidence. If no
-   durable asset is evidenced, say so explicitly.
-4. **Check the inverse:** state what must be true for the deal to fail, the earliest observable
-   warning, and whether current evidence rules it out.
+## 6. JUDGE LOGIC & STRATEGIC ASSESSMENTS
+1. **Extract and Verify (Claim Verification Ledger):** Categorize every claim as `Verified`,
+   `Partially corroborated`, `Uncorroborated`, or `Contradicted` with cited evidence.
+2. **Crown Jewel Strategic Assessment:** Identify and thoroughly evaluate the single most valuable, durable,
+   and proprietary asset that gives the company an enduring unfair advantage.
+3. **The Inverse Case (Pre-Mortem Failure Conditions):** Articulate the exact failure mode and lethality
+   conditions that would kill the business, early observable tripwires, and whether current evidence rules them out.
+4. **Stress-Test the Base Case:** Vary evidenced drivers; show arithmetic and mark results `derived: true`.
 
 ## 7. DETERMINISTIC SCORING
 Weighted score = (P1 × 0.25 + P2 × 0.25 + P3 × 0.30 + P4 × 0.20) × 10.
@@ -53,7 +68,7 @@ Apply evidence caps before banding; a cap overrides the raw pillar score:
 - If a pillar rests solely on tier-3 founder material, cap that pillar at 6.
 - If a headline claim is contradicted, cap the affected pillar at 4.
 
-Reference bands from the diligence method, mapped to DealGraph's supported decisions:
+Reference bands mapped to DealGraph decisions:
 - ≥75 and no pillar <5: `Strong Conviction — Proceed to Term Sheet` → `Take a meeting`.
 - 60–74: `Proceed to Confirmatory Diligence` → `Take a meeting`.
 - 45–59: `Hold — Requires Further Diligence` → `Watch`.
@@ -62,12 +77,10 @@ If Information Gaps block two or more pillars, the decision cannot exceed `Watch
 
 ## 8. SELF-CHECK BEFORE OUTPUT (ONE PASS ONLY)
 Verify once, then emit:
-1. Every number, quote, score rationale, claim verdict, and risk has a valid evidence ID.
-2. No citation points to a nonexistent ID and no supplied source is cited misleadingly.
-3. No fabricated quotes, patents, customers, metrics, benchmarks, or URLs.
+1. Narrative fields (`summary`, `team`, `product`, `market`, `why_now`) contain exhaustive, multi-paragraph
+   institutional-grade analyses rather than brief 1-line summaries.
+2. Every number, quote, score rationale, claim verdict, and risk item carries inline evidence IDs `[ev-001]`.
+3. No citation references a nonexistent ID and no supplied source is cited misleadingly.
 4. Every derived value shows inputs and carries `derived: true`.
-5. Units, currencies, scales, and periods are explicit and consistent.
-6. Partition percentages sum to approximately 100% or are flagged.
-7. The weighted score is recomputed, caps are applied, and recommendation matches the mapped band.
-8. Missing fields are `Not disclosed` and appear in the Information Gap Register.
-9. Confidence reflects source quality, independence, recency, and completeness.'''
+5. Missing fields are `Not disclosed` and registered in the Information Gap Register.
+6. The weighted score is recomputed, caps applied, and recommendation aligns with the score band.'''
