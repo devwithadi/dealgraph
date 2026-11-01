@@ -82,3 +82,30 @@ def test_cli_centralizes_expected_errors(monkeypatch, capsys) -> None:
     assert captured.out == ""
     assert captured.err == "Error [req-test]: candidate source unavailable\n"
     assert "Traceback" not in captured.err
+
+
+def test_verbose_cli_logs_lifecycle_to_stderr(tmp_path: Path, capsys) -> None:
+    exit_code = main(
+        [
+            "run",
+            "--topic",
+            "AI agents for SMBs",
+            "--batch",
+            "W25",
+            "--limit",
+            "1",
+            "--source-file",
+            str(FIXTURE),
+            "--offline",
+            "--output",
+            str(tmp_path),
+            "--request-id",
+            "req-readable",
+            "--verbose",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert "INFO [req-readable] run started" in captured.err
+    assert "INFO [req-readable] run completed candidates=1 succeeded=1 failed=0" in captured.err

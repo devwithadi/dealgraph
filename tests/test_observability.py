@@ -1,5 +1,8 @@
 import logging
 
+import pytest
+
+from app.errors import AppError
 from app.logging import RequestIdFilter, bind_request_id, request_headers
 
 
@@ -13,3 +16,9 @@ def test_request_context_is_shared_by_logs_and_http_headers() -> None:
         "User-Agent": "IDA-case-study/1.0 (public research; contact in repository)",
         "X-Kong-Request-ID": "req-test",
     }
+
+
+@pytest.mark.parametrize("request_id", ["bad\nheader", "x" * 129, "contains space"])
+def test_request_id_rejects_log_and_header_injection(request_id: str) -> None:
+    with pytest.raises(AppError, match="request ID"):
+        bind_request_id(request_id)
