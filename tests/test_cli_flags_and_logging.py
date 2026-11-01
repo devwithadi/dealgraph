@@ -195,7 +195,7 @@ def test_safe_stage_error_preserves_meaningful_messages() -> None:
     assert _safe_stage_error(empty_err, "finalist") == "Finalist failed"
 
 
-def test_pipeline_run_with_progress_callback_and_model_aliases(tmp_path: Path, monkeypatch) -> None:
+def test_pipeline_run_with_progress_callback_and_model_overrides(tmp_path: Path, monkeypatch) -> None:
     candidate_record = {
         "id": "agentdesk",
         "slug": "agentdesk",
@@ -273,19 +273,19 @@ def test_pipeline_run_with_progress_callback_and_model_aliases(tmp_path: Path, m
         output=tmp_path / "run",
         source_file=source,
         provider=AIProvider.BEDROCK,
-        screening_model="nova-micro",
-        synthesis_model="llama-3.3-70b",
+        screening_model="amazon.nova-micro-v1:0",
+        synthesis_model="us.meta.llama3-3-70b-instruct-v1:0",
         progress_callback=callback,
         now=NOW,
     )
 
     assert result.succeeded == 1
     assert result.failed == 0
-    # Model aliases resolved
+    # Model IDs used directly
     assert models_called == ["amazon.nova-micro-v1:0", "us.meta.llama3-3-70b-instruct-v1:0"]
     assert (tmp_path / "run" / "agentdesk.pdf").exists()
 
-    # Header event contains resolved models
+    # Header event contains configured models
     header_data = events_received[0][1]
     assert header_data["screening_model"] == "amazon.nova-micro-v1:0"
     assert header_data["synthesis_model"] == "us.meta.llama3-3-70b-instruct-v1:0"
