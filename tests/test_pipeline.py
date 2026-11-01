@@ -13,7 +13,10 @@ FIXTURE = Path(__file__).parent / "fixtures" / "yc.json"
 
 
 def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
+    requests: list[httpx.Request] = []
+
     def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
         if request.url.host == "agentdesk.example" and request.url.path == "/robots.txt":
             return httpx.Response(200, text="User-agent: *\nAllow: /", request=request)
         if request.url.host == "agentdesk.example":
@@ -57,11 +60,18 @@ def test_pipeline_runs_source_to_memo_with_mocked_http(tmp_path: Path) -> None:
         limit=1,
         output=tmp_path,
         source_file=FIXTURE,
+        request_id="req-pipeline-test",
     )
 
     assert result.succeeded == 1
     assert result.failed == 0
+    assert result.request_id == "req-pipeline-test"
+    assert requests
+    assert {request.headers["x-kong-request-id"] for request in requests} == {
+        "req-pipeline-test"
+    }
     manifest = json.loads((tmp_path / "manifest.json").read_text())
+    assert manifest["request_id"] == "req-pipeline-test"
     assert manifest["analysis_mode"] == "deterministic_fallback"
     assert (tmp_path / "evidence" / "agentdesk.json").exists()
     assert (tmp_path / "analyses" / "agentdesk.json").exists()
