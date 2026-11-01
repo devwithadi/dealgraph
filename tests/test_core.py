@@ -496,7 +496,9 @@ Licensed data.
         return subprocess.CompletedProcess(command, 0, stdout=output, stderr="")
 
     bind_request_id("req-research")
-    results = agent_reach_evidence(candidate(), "AI", 2, runner=runner)
+    results = agent_reach_evidence(
+        candidate(), "AI", 2, runner=runner, resolver=lambda _host: ["93.184.216.34"]
+    )
 
     assert captured["command"][:3] == ["mcporter", "call", "exa.web_search_exa"]
     assert captured["kwargs"]["check"] is False

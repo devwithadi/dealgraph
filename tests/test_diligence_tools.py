@@ -34,9 +34,10 @@ def test_candidate() -> Candidate:
 
 
 def test_search_tool_url_allowlist_and_status_resolution() -> None:
-    assert is_allowed_url("https://techcrunch.com/article") is True
-    assert is_allowed_url("https://sec.gov/edgar/data") is True
-    assert is_allowed_url("http://github.com/stratadata") is True
+    public = lambda _host: ["93.184.216.34"]
+    assert is_allowed_url("https://techcrunch.com/article", public) is True
+    assert is_allowed_url("https://sec.gov/edgar/data", public) is True
+    assert is_allowed_url("http://github.com/stratadata", public) is True
     assert is_allowed_url("http://127.0.0.1/private") is False
     assert is_allowed_url("http://169.254.169.254/latest/meta-data") is False
 
@@ -72,7 +73,9 @@ Highlights: LinkedIn employee directory.
         hop=1,
     )
 
-    ev_list = _parse_search_output(sample_stdout, query, start_id=1)
+    ev_list = _parse_search_output(
+        sample_stdout, query, start_id=1, resolver=lambda _host: ["93.184.216.34"]
+    )
     assert len(ev_list) == 2  # LinkedIn blocked
 
     assert ev_list[0].id == "ev-001"
@@ -97,6 +100,7 @@ Highlights: Strata Data says customers reduced indexing time by 80 percent.
         query,
         start_id=1,
         company_website=test_candidate.website,
+        resolver=lambda _host: ["93.184.216.34"],
     )
 
     assert evidence[0].status == CitationTag.CLAIMED
@@ -160,6 +164,15 @@ def test_scraper_extract_html_text() -> None:
     assert "Next-Gen Data Lake Indexing" in text
     assert "sub-millisecond semantic search" in text
     assert "var x = 123" not in text
+
+
+def test_scraper_redacts_token_like_page_text() -> None:
+    token = f"{'A' * 32}{'7' * 16}"
+
+    _title, text = extract_html_text(f"<html><body>Security {token} overview</body></html>")
+
+    assert token not in text
+    assert "[redacted token-like text]" in text
 
 
 def test_scraper_extract_rich_structured_signals() -> None:

@@ -11,6 +11,7 @@ from app.analysis.diligence.planner import generate_diligence_plan
 from app.analysis.diligence.tools.ranker import EvidenceRanker
 from app.analysis.diligence.tools.scraper import WebFetchTool
 from app.analysis.diligence.tools.search import SearchTool, is_allowed_url
+from app.core.urls import resolve_host
 from app.domain.enums import CitationTag
 from app.domain.models import Candidate, Evidence
 
@@ -25,9 +26,10 @@ def default_live_search(
     start_id: int,
     *,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    resolver: Callable[[str], list[str]] = resolve_host,
 ) -> list[Evidence]:
     """Execute live web search via SearchTool and normalize returned evidence."""
-    tool = SearchTool(runner=runner)
+    tool = SearchTool(runner=runner, resolver=resolver)
     return tool.search(candidate, query_item, start_id)
 
 

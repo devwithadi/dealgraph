@@ -300,7 +300,13 @@ def test_default_live_search_subprocess_and_parsing(mock_candidate: Candidate) -
             stderr="",
         )
 
-    results = default_live_search(mock_candidate, query_item, start_id=2, runner=mock_runner)
+    results = default_live_search(
+        mock_candidate,
+        query_item,
+        start_id=2,
+        runner=mock_runner,
+        resolver=lambda _host: ["93.184.216.34"],
+    )
     assert len(results) == 2  # http://127.0.0.1 filtered by policy
     assert results[0].id == "ev-002"
     assert results[0].source_url == "https://nexus.example.com/pricing"

@@ -36,6 +36,14 @@ DEFAULT_SUBPAGES: tuple[str, ...] = (
     "/blog",
 )
 
+_TOKEN_LIKE_TEXT = re.compile(
+    r"\b(?=[A-Za-z0-9]{32,}\b)(?=[A-Za-z0-9]*[A-Za-z])(?=[A-Za-z0-9]*\d)[A-Za-z0-9]+\b"
+)
+
+
+def _redact_token_like_text(value: str) -> str:
+    return _TOKEN_LIKE_TEXT.sub("[redacted token-like text]", value)
+
 
 class _StructuredTextExtractor(HTMLParser):
     """HTML parser that preserves hierarchy, extracts tables, lists, and semantic blocks."""
@@ -218,7 +226,7 @@ def extract_html_text(html_content: str) -> tuple[str, str]:
             parser.testimonial_signals,
             parser.integration_signals,
         )
-        return title, rich_body
+        return title, _redact_token_like_text(rich_body)
     except Exception:
         # Fallback regex extraction
         title_match = re.search(r"<title[^>]*>(.*?)</title>", html_content, re.IGNORECASE | re.DOTALL)
@@ -226,7 +234,7 @@ def extract_html_text(html_content: str) -> tuple[str, str]:
         cleaned = re.sub(r"<(script|style|noscript)[^>]*>.*?</\1>", " ", html_content, flags=re.IGNORECASE | re.DOTALL)
         cleaned = re.sub(r"<[^>]+>", " ", cleaned)
         cleaned = re.sub(r"\s+", " ", html.unescape(cleaned)).strip()
-        return title, cleaned
+        return title, _redact_token_like_text(cleaned)
 
 
 class WebFetchTool:
